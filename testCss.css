@@ -21,3 +21,14 @@ a {
 body {
     background: #ECEBCD;
 }
+
+.twitter-timeline {
+    /* width: 300px;
+    height: 300px; */
+}
+
+.timeline {
+    max-width: 40%;
+    border: 1px solid #333;
+    padding: 10px;
+}
