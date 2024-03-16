@@ -32,3 +32,53 @@ body {
     border: 1px solid #333;
     padding: 10px;
 }
+
+/* 付箋の輪郭設定 */
+.trapezoid {
+    position: relative;
+    width: 300px; /* 正方形の幅 */
+    border-bottom: 80px solid; /* 正方形の高さ */
+    border-left: 30px solid transparent; /* 正方形の左に張り出す量（左斜辺の底部始点） */
+    border-right: 30px solid transparent; /* 正方形の右に張り出す量（右斜辺の底部始点） */
+    /* text-align: center; */
+    /* justify-content: center; */
+    /* align-items: center; */
+    /* display: flex; */
+}
+
+.trapezoid-red {
+    border-bottom-color: #F18B8B;
+}
+
+.trapezoid-yellow {
+    border-bottom-color: #F1EF8B;
+}
+
+.trapezoid-green {
+    border-bottom-color: #8BF1B9;
+}
+
+.trapezoid-lightblue {
+    border-bottom-color: #8BD6F1;
+}
+
+.trapezoid-blue {
+    border-bottom-color: #8BADF1;
+}
+
+/* 付箋の内側の文字の設定 */
+.trapezoid-text {
+    position: absolute;
+    width: 100%; /* 親要素（.trapezoid）の幅に合わせる */
+    height: 100%; 
+    /* top: 0; */
+    /* left: 0;
+    right: 0; */
+    bottom: -20px;
+    text-align: center;
+    color: #000000;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+}
