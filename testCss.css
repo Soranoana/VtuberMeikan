@@ -36,8 +36,8 @@ body {
 /* 付箋の輪郭設定 */
 .trapezoid {
     position: relative;
-    width: 540px;
-    height: 109px;
+    width: 300px;
+    height: 50px;
     /* background-color: #ff2828; */
     /* polygon(左上X Y, 右上X Y, 右下X Y, 左下X Y) */
     clip-path: polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%);
@@ -46,6 +46,12 @@ body {
     align-items: center;
     color: black;
     font-size: 20px;
+    /* box-shadow: 2px 2px 4px -2px gray inset; */
+    /* box-shadow: 10px 10px #000000; */
+}
+
+.trapezoid-shadow {
+    filter: drop-shadow(20px 20px 4px rgba(0, 0, 0, 40%));
 }
 
 .trapezoid-red {
@@ -53,17 +59,17 @@ body {
 }
 
 .trapezoid-yellow {
-    border-bottom-color: #F1EF8B;
+    background-color: #F1EF8B;
 }
 
 .trapezoid-green {
-    border-bottom-color: #8BF1B9;
+    background-color: #8BF1B9;
 }
 
 .trapezoid-lightblue {
-    border-bottom-color: #8BD6F1;
+    background-color: #8BD6F1;
 }
 
 .trapezoid-blue {
-    border-bottom-color: #8BADF1;
+    background-color: #8BADF1;
 }
