@@ -22,21 +22,23 @@ body {
     background: #ECEBCD;
 }
 
+/* Twitter */
 .twitter-timeline {
     /* width: 300px;
     height: 300px; */
 }
 
 .timeline {
-    max-width: 40%;
-    border: 1px solid #333;
-    padding: 10px;
+    position:relative;
+    max-width: 100%;
+    /* border: 1px solid #333; */
+    /* padding: 10px; */
 }
 
 /* 付箋の輪郭設定 */
 .trapezoid {
     position: relative;
-    width: 300px;
+    width: 250px;
     height: 50px;
     /* background-color: #ff2828; */
     /* polygon(左上X Y, 右上X Y, 右下X Y, 左下X Y) */
@@ -76,42 +78,66 @@ body {
 
 /* ポジション系 */
 
+/* アウトライン */
 .PageTitle{
+    background-color: #99ffff;
     position: absolute;
-    top: 0px;
+    /* top: 0px;
     left: 0px;
     width: 480px;
-    height: 130px;
+    height: 130px; */
+    top: 0%;
+    left: 0%;
+    width: 25%;
+    height: 12%;
     float: left;
+    /* 子要素を中央に配置 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .NavigationMenu{
+    background-color: #ff99ff;
     position: absolute;
-    top: 0px;
+    /* top: 0px;
     left: 480px;
     height: 130px;
-    width: 1440px;
+    width: 1440px; */
+    top: 0%;
+    left: 25%;
+    width: 75%;
+    height: 12%;
     float: right;
 }
 
 .LeftContent{
     position: absolute;
-    background-color: #ffffff;
-    top: 130px;
+    /* background-color: #ffffff; */
+    background-color: #ff99ff;
+    /* top: 130px;
     left: 0px;
     width: 288px;
-    height: 864px;
+    height: 864px; */
+    top: 12%;
+    left: 0%;
+    width: 15%;
+    height: 80%;
     float: left;
 }
 
 .RightContent{
     position: absolute;
-    background-color: #ffffff;
-    top: 130px;
+    /* background-color: #ffffff; */
+    background-color: #99ff99;
+    /* top: 130px;
     left: 288px;
-    scroll-margin-left: 20px;
     width: 1460px;
-    height: 864px;
+    height: 864px; */
+    top: 12%;
+    left: 15%;
+    width: 85%;
+    height: 80%;
     float: right;
 }
 
@@ -125,8 +151,60 @@ main{
     margin-left: 0%;
 } */
 
-/* footer{
+footer{
+    background-color: #999999;
+    position:absolute;
+    bottom: 3%;
+    left: 0%;
+    width: 100%;
+    height: 3%;
+    text-align: center;
+}
+
+/* インライン */
+.TitleText{
+    background-color: #ff00ff;
+    position: relative;
+    /* top: 2%;
+    left: 7.6%;
+    right: 7.6%;
+    bottom: 2%; */
+}
+
+.Tabs{
+    background-color: #ffffff;
     position: absolute;
-    bottom: 0px;
-    margin-left: 0%;
-} */
+    top: 50%;
+    left: 0%;
+    right: 0%;
+    bottom: 0%;
+}
+
+.Abstruct{
+    background-color: #0000ff;
+    position: relative;
+    top: 0%;
+    left: 3.5%;
+    right: 3.5%;
+    bottom: 0%;
+}
+
+.MainContents{
+    /* background-color: #ff00ff; */
+    position: relative;
+    top: 0%;
+    left: 0%;
+    right: 0.6%;
+    bottom: 0%;
+}
+
+.FooterText{
+    background-color: #f0f00f;
+    position: relative;
+    top: 11.6%;
+    /* left: 7.6%;
+    right: 7.6%; */
+    bottom: 11.6%;
+    text-align: center;
+}
+
