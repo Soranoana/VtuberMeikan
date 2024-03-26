@@ -23,10 +23,10 @@ body {
 }
 
 /* Twitter */
-.twitter-timeline {
-    /* width: 300px;
-    height: 300px; */
-}
+/* .twitter-timeline {
+    width: 300px;
+    height: 300px;
+} */
 
 .timeline {
     position:relative;
@@ -178,6 +178,15 @@ footer{
     left: 0%;
     right: 0%;
     bottom: 0%;
+    /* tabの下揃え */
+    display: flex;
+}
+
+/* tabの下揃え */
+.Tabs ul {
+    padding: 0;
+    margin: 0;
+    align-items: flex-end;
 }
 
 .Abstruct{
