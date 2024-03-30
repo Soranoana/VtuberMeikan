@@ -5,12 +5,15 @@ nav {
     padding-top: 5px;
     box-sizing: border-box;
 }
+
 ul {
     display: flex;
 }
+
 li {
     list-style: none;
 }
+
 a {
     display: block;
     text-decoration: none;
@@ -29,7 +32,7 @@ body {
 } */
 
 .timeline {
-    position:relative;
+    position: relative;
     max-width: 100%;
     /* border: 1px solid #333; */
     /* padding: 10px; */
@@ -79,7 +82,7 @@ body {
 /* ポジション系 */
 
 /* アウトライン */
-.PageTitle{
+.PageTitle {
     background-color: #99ffff;
     position: absolute;
     /* top: 0px;
@@ -97,7 +100,7 @@ body {
     align-items: center;
 }
 
-.NavigationMenu{
+.NavigationMenu {
     background-color: #ff99ff;
     position: absolute;
     /* top: 0px;
@@ -111,7 +114,7 @@ body {
     float: right;
 }
 
-.LeftContent{
+.LeftContent {
     position: absolute;
     /* background-color: #ffffff; */
     background-color: #ff99ff;
@@ -126,7 +129,7 @@ body {
     float: left;
 }
 
-.RightContent{
+.RightContent {
     position: absolute;
     /* background-color: #ffffff; */
     background-color: #99ff99;
@@ -151,9 +154,9 @@ main{
     margin-left: 0%;
 } */
 
-footer{
+footer {
     background-color: #999999;
-    position:absolute;
+    position: absolute;
     bottom: 3%;
     left: 0%;
     width: 100%;
@@ -162,7 +165,7 @@ footer{
 }
 
 /* インライン */
-.TitleText{
+.TitleText {
     background-color: #ff00ff;
     position: relative;
     /* top: 2%;
@@ -171,7 +174,7 @@ footer{
     bottom: 2%; */
 }
 
-.Tabs{
+.Tabs {
     background-color: #ffffff;
     position: absolute;
     top: 50%;
@@ -189,7 +192,7 @@ footer{
     align-items: flex-end;
 }
 
-.Abstruct{
+.Abstruct {
     background-color: #0000ff;
     position: relative;
     top: 0%;
@@ -198,7 +201,7 @@ footer{
     bottom: 0%;
 }
 
-.MainContents{
+.MainContents {
     /* background-color: #ff00ff; */
     position: relative;
     top: 0%;
@@ -207,7 +210,7 @@ footer{
     bottom: 0%;
 }
 
-.FooterText{
+.FooterText {
     background-color: #f0f00f;
     position: relative;
     top: 11.6%;
@@ -216,4 +219,3 @@ footer{
     bottom: 11.6%;
     text-align: center;
 }
-
