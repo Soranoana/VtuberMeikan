@@ -25,7 +25,7 @@ body {
     background: #ECEBCD;
     /* Grid設定 */
     display: grid;
-    grid-template-columns: 288px 192px 1440px;
+    grid-template-columns: 15% 10% 75%;
     grid-template-rows: 130px auto 86px;
     min-height: 100vh;
 }
@@ -111,6 +111,10 @@ body {
     /* グリッド */
     grid-row: 2 / 3;
     grid-column: 1 / 2;
+    /* 子要素グリッド */
+    display: grid;
+    grid-template-columns: 3.5% auto 3.5%;
+    grid-template-rows: 1fr;
 }
 
 .RightContent {
@@ -119,6 +123,10 @@ body {
     /* グリッド */
     grid-row: 2 / 3;
     grid-column: 2 / 4;
+    /* 子要素グリッド */
+    display: grid;
+    grid-template-columns: auto 3.6%;
+    grid-template-rows: 1fr;
 }
 
 /* header{
@@ -179,20 +187,14 @@ body {
 
 .Abstraction {
     background-color: #0000ff;
-    position: relative;
-    top: 0%;
-    left: 3.5%;
-    right: 3.5%;
-    bottom: 0%;
+    /* グリッド */
+    grid-column: 2 / 3;
 }
 
 .MainContents {
-    /* background-color: #ff00ff; */
-    position: relative;
-    top: 0%;
-    left: 0%;
-    right: 0.6%;
-    bottom: 0%;
+    background-color: #ff00ff;
+    /* グリッド */
+    grid-column: 1 / 2;
 }
 
 .FooterText {
