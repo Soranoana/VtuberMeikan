@@ -125,7 +125,8 @@ body {
     top: 12%;
     left: 0%;
     width: 15%;
-    height: 80%;
+    /* ビューポートの高さから上部の高さを引く（画面下まですべてを領域に指定する） */
+    min-height: calc(100vh - 12%);
     float: left;
 }
 
@@ -140,7 +141,8 @@ body {
     top: 12%;
     left: 15%;
     width: 85%;
-    height: 80%;
+    /* ビューポートの高さから上部の高さを引く（画面下まですべてを領域に指定する） */
+    min-height: calc(100vh - 12% - 3%);
     float: right;
 }
 
