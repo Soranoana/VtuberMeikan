@@ -103,6 +103,8 @@ body {
     /* グリッド */
     grid-row: 1 / 2;
     grid-column: 3 / 4;
+    /* タブの影がほかのグリッドに影響を及ぼすのを止める */
+    overflow: hidden;
 }
 
 .LeftContent {
