@@ -23,6 +23,11 @@ a {
 
 body {
     background: #ECEBCD;
+    /* Grid設定 */
+    display: grid;
+    grid-template-columns: 288px 192px 1440px;
+    grid-template-rows: 130px auto 86px;
+    min-height: 100vh;
 }
 
 /* Twitter */
@@ -84,81 +89,46 @@ body {
 /* アウトライン */
 .PageTitle {
     background-color: #99ffff;
-    position: absolute;
-    /* top: 0px;
-    left: 0px;
-    width: 480px;
-    height: 130px; */
-    top: 0%;
-    left: 0%;
-    width: 25%;
-    height: 12%;
-    float: left;
     /* 子要素を中央に配置 */
     display: flex;
     justify-content: center;
     align-items: center;
+    /* グリッド */
+    grid-row: 1 / 2;
+    grid-column: 1 / 3;
 }
 
 .NavigationMenu {
     background-color: #ff99ff;
-    position: absolute;
-    /* top: 0px;
-    left: 480px;
-    height: 130px;
-    width: 1440px; */
-    top: 0%;
-    left: 25%;
-    width: 75%;
-    height: 12%;
-    float: right;
+    /* グリッド */
+    grid-row: 1 / 2;
+    grid-column: 3 / 4;
 }
 
 .LeftContent {
-    position: absolute;
     /* background-color: #ffffff; */
     background-color: #ff99ff;
-    /* top: 130px;
-    left: 0px;
-    width: 288px;
-    height: 864px; */
-    top: 12%;
-    left: 0%;
-    width: 15%;
-    /* ビューポートの高さから上部の高さを引く（画面下まですべてを領域に指定する） */
-    min-height: calc(100vh - 12%);
-    float: left;
+    /* グリッド */
+    grid-row: 2 / 3;
+    grid-column: 1 / 2;
 }
 
 .RightContent {
-    position: absolute;
     /* background-color: #ffffff; */
     background-color: #99ff99;
-    /* top: 130px;
-    left: 288px;
-    width: 1460px;
-    height: 864px; */
-    top: 12%;
-    left: 15%;
-    width: 85%;
-    /* ビューポートの高さから上部の高さを引く（画面下まですべてを領域に指定する） */
-    min-height: calc(100vh - 12% - 3%);
-    float: right;
+    /* グリッド */
+    grid-row: 2 / 3;
+    grid-column: 2 / 4;
 }
 
 /* header{
     margin-top: 0%;
     margin-left: 0%;
-}
-
-main{
-    margin-top: 12%;
-    margin-left: 0%;
 } */
 
 .ViewFooter {
     background-color: #999999;
-    position: absolute;
+    position: relative;
     bottom: 3%;
     left: 0%;
     width: 100%;
@@ -168,19 +138,19 @@ main{
 
 .SiteFooter {
     background-color: #999999;
-    position: absolute;
-    bottom: 3%;
-    left: 0%;
     width: 100%;
-    height: 3%;
+    height: 100%;
     text-align: center;
+    /* グリッド */
+    grid-row: 3 / 4;
+    grid-column: 1 / 4;
 }
 
 /* インライン */
 .TitleText {
     background-color: #ff00ff;
-    position: relative;
-    /* top: 2%;
+    /* position: relative;
+    top: 2%;
     left: 7.6%;
     right: 7.6%;
     bottom: 2%; */
@@ -188,7 +158,7 @@ main{
 
 .Tabs {
     background-color: #ffffff;
-    position: absolute;
+    position: relative;
     top: 50%;
     left: 0%;
     right: 0%;
