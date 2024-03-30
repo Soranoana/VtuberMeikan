@@ -116,7 +116,7 @@ body {
     /* 子要素グリッド */
     display: grid;
     grid-template-columns: 3.5% auto 3.5%;
-    grid-template-rows: 1fr;
+    grid-template-rows: auto 1fr;
 }
 
 .RightContent {
@@ -161,7 +161,7 @@ body {
     height: 100%;
     width: 100%;
     /* ECEBCD */
-    background-image: repeating-linear-gradient(0deg, rgba(236, 235, 205, 1), rgba(255, 255, 255, 0) );
+    background-image: repeating-linear-gradient(0deg, rgba(236, 235, 205, 1), rgba(255, 255, 255, 0));
 }
 
 /* コピーライトなど */
@@ -176,7 +176,7 @@ body {
 }
 
 /* インライン */
-.TitleText {
+.PageTitle_TitleText {
     /* background-color: #ff00ff; */
     /* position: relative;
     top: 2%;
@@ -185,7 +185,7 @@ body {
     bottom: 2%; */
 }
 
-.Tabs {
+.NavigationMenu_Tabs {
     /* background-color: #ffffff; */
     position: relative;
     /* タブの高さ（領域の高さが同じになるようにしている） */
@@ -197,7 +197,7 @@ body {
 }
 
 /* tabの下揃え */
-.Tabs ul {
+.NavigationMenu_Tabs ul {
     /* 左右に余白ゼロ */
     padding: 0;
     /* 上下に余白ゼロ */
@@ -206,19 +206,19 @@ body {
     align-items: flex-end;
 }
 
-.Abstraction {
+.LeftContent_Abstraction {
     background-color: #0000ff;
     /* グリッド */
     grid-column: 2 / 3;
 }
 
-.MainContents {
+.RightContent_MainContents {
     background-color: #ff00ff;
     /* グリッド */
     grid-column: 1 / 2;
 }
 
-.FooterText {
+.SiteFooter_FooterText {
     background-color: #f0f00f;
     position: relative;
     top: 11.6%;
@@ -226,4 +226,11 @@ body {
     right: 7.6%; */
     bottom: 11.6%;
     text-align: center;
+}
+
+.LeftContent_Abstraction_NoteArea {
+    top: 11.6%;
+    left: 7.6%;
+    right: 7.6%;
+    bottom: 11.6%;
 }
