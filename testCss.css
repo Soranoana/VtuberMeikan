@@ -159,18 +159,21 @@ body {
 .Tabs {
     background-color: #ffffff;
     position: relative;
-    top: 50%;
-    left: 0%;
-    right: 0%;
-    bottom: 0%;
+    /* タブの高さ（領域の高さが同じになるようにしている） */
+    --tabHeight: 50%;
+    top: calc(100% - var(--tabHeight));
+    height: var(--tabHeight);
     /* tabの下揃え */
     display: flex;
 }
 
 /* tabの下揃え */
 .Tabs ul {
+    /* 左右に余白ゼロ */
     padding: 0;
+    /* 上下に余白ゼロ */
     margin: 0;
+    /* 下揃え */
     align-items: flex-end;
 }
 
