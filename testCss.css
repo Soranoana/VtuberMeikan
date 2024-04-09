@@ -59,6 +59,9 @@ body {
     /* box-shadow: 2px 2px 4px -2px gray inset; */
     /* box-shadow: 10px 10px #000000; */
 }
+.note-shadow {
+    filter: drop-shadow(20px 20px 4px rgba(0, 0, 0, 40%));
+}
 
 .trapezoid-shadow {
     filter: drop-shadow(20px 20px 4px rgba(0, 0, 0, 40%));
@@ -117,6 +120,8 @@ body {
     display: grid;
     grid-template-columns: 3.5% auto 3.5%;
     grid-template-rows: auto 1fr;
+    /* タブの影がほかのグリッドに影響を及ぼすのを止める */
+    overflow: hidden;
 }
 
 .RightContent {
@@ -129,6 +134,8 @@ body {
     display: grid;
     grid-template-columns: auto 3.6%;
     grid-template-rows: 1fr;
+    /* タブの影がほかのグリッドに影響を及ぼすのを止める */
+    overflow: hidden;
 }
 
 /* header{
