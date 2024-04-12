@@ -1,3 +1,13 @@
+:root {
+    /* color */
+    --color_body_release: #ECEBCD;
+    --color_dropShadow_rgba: rgba(0, 0, 0, 40%);
+    --color_pageTitle_debug: #99ffff;
+    --color_pageTitle_release: #00000000;
+    --color_NavigationMenu_debug: #ff99ff;
+    --color_NavigationMenu_release: #00000000;
+}
+
 nav {
     width: 100%;
     height: 70px;
@@ -22,7 +32,7 @@ a {
 }
 
 body {
-    background: #ECEBCD;
+    background: var(--color_body_release);
     /* Grid設定 */
     display: grid;
     grid-template-columns: 15% 10% 75%;
@@ -59,12 +69,13 @@ body {
     /* box-shadow: 2px 2px 4px -2px gray inset; */
     /* box-shadow: 10px 10px #000000; */
 }
+
 .note-shadow {
-    filter: drop-shadow(20px 20px 4px rgba(0, 0, 0, 40%));
+    filter: drop-shadow(20px 20px 4px var(--color_dropShadow_rgba));
 }
 
 .trapezoid-shadow {
-    filter: drop-shadow(20px 20px 4px rgba(0, 0, 0, 40%));
+    filter: drop-shadow(20px 20px 4px var(--color_dropShadow_rgba));
 }
 
 .trapezoid-red {
@@ -91,7 +102,7 @@ body {
 
 /* アウトライン */
 .PageTitle {
-    /* background-color: #99ffff; */
+    background-color: var(--color_pageTitle_release);
     /* 子要素を中央に配置 */
     display: flex;
     justify-content: center;
@@ -102,7 +113,7 @@ body {
 }
 
 .NavigationMenu {
-    /* background-color: #ff99ff; */
+    background-color: var(--color_NavigationMenu_release);
     /* グリッド */
     grid-row: 1 / 2;
     grid-column: 3 / 4;
@@ -136,6 +147,11 @@ body {
     grid-template-rows: 1fr;
     /* タブの影がほかのグリッドに影響を及ぼすのを止める */
     overflow: hidden;
+
+
+    /* マスクを使って中央に丸い穴をあける */
+    /* -webkit-mask-image: radial-gradient(circle, transparent 100px, black 0);
+    mask-image: radial-gradient(circle, transparent 100px, black 0); */
 }
 
 /* header{
@@ -239,9 +255,44 @@ body {
     text-align: center;
 }
 
+.LeftContent_Abstraction_PunchArea {
+    background-color: #00ff00;
+    /* グリッド */
+    grid-row: 2 / 3;
+    grid-column: 1 / 2;
+}
+
 .LeftContent_Abstraction_NoteArea {
     background-color: #00ffff;
     /* グリッド */
     grid-row: 2 / 3;
     grid-column: 2 / 3;
+}
+
+.PunchHole {
+    --test: 30px;
+    position: relative;
+    /* left: calc(var(--test)/2); */
+    margin: 20px;
+    /* top: 30px; */
+    width: var(--test);
+    height: var(--test);
+    background-color: rgb(118, 117, 102);
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    background-image: radial-gradient(circle at 40px 40px, #ECEBCD 40%, rgba(236, 235, 205, 0.5) 50%, transparent 60%);
+}
+
+.PunchHoleImg {
+    --test: 30px;
+    position: relative;
+    /* left: calc(var(--test)/2); */
+    /* top: 30px; */
+    /* margin: 10px; */
+    margin-left: 25px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: var(--test);
+    height: var(--test);
 }
