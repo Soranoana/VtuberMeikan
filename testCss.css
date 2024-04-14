@@ -1,17 +1,42 @@
 :root {
     /* color */
     --color_body_release: #ECEBCD;
-    --color_dropShadow_rgba: rgba(0, 0, 0, 40%);
+    --color_body_release_rgba: rgba(236, 235, 205, 1);
+    --color_PunchHole_shadow_body_rgba: var(--color_body_release_rgba);
+    --color_PunchHole_shadow_mid_rgba: rgba(236, 235, 205, 0.5);
+    --color_PunchHole_shadow_gray_rgba: transparent;
+    --color_dropShadow_rgba: rgba(0, 0, 0, 0.4);
+    --color_PunchHole_shadow_rgba: rgb(118, 117, 102);
     --color_pageTitle_debug: #99ffff;
     --color_pageTitle_release: #00000000;
     --color_NavigationMenu_debug: #ff99ff;
     --color_NavigationMenu_release: #00000000;
+    --color_LeftContent_debug: #ff99ff;
+    --color_LeftContent_release: #ffffff;
+    --color_RightContent_debug: #99ff99;
+    --color_RightContent_release: transparent;
+    --color_clear_rgba: rgba(255, 255, 255, 0);
+    --color_SiteFooter_debug: #999999;
+    --color_PageTitle_TitleText_debug: #ff00ff;
+    --color_PageTitle_TitleText_release: transparent;
+    --color_NavigationMenu_Tabs_debug: #ffffff;
+    --color_NavigationMenu_Tabs_release: transparent;
+    --color_LeftContent_Abstraction_debug: #0000ff;
+    --color_LeftContent_Abstraction_release: #ffffff;
+    --color_RightContent_MainContents_debug: #ff00ff;
+    --color_RightContent_MainContents_release: #ffffff;
+    --color_SiteFooter_FooterText_debug: #f0f00f;
+    --color_SiteFooter_FooterText_release: transparent;
+    --color_LeftContent_Abstraction_PunchArea_debug: #00ff00;
+    --color_LeftContent_Abstraction_PunchArea_release: transparent;
+    --color_LeftContent_Abstraction_NoteArea_debug: #00ffff;
+    --color_LeftContent_Abstraction_NoteArea_release: transparent;
 }
 
 nav {
     width: 100%;
     height: 70px;
-    background-color: dimgray;
+    /* background-color: dimgray; */
     padding-top: 5px;
     box-sizing: border-box;
 }
@@ -27,7 +52,7 @@ li {
 a {
     display: block;
     text-decoration: none;
-    color: white;
+    /* color: white; */
     margin-right: 35px;
 }
 
@@ -122,8 +147,7 @@ body {
 }
 
 .LeftContent {
-    /* background-color: #ffffff; */
-    background-color: #ff99ff;
+    background-color: var(--color_LeftContent_release);
     /* グリッド */
     grid-row: 2 / 3;
     grid-column: 1 / 2;
@@ -136,8 +160,7 @@ body {
 }
 
 .RightContent {
-    /* background-color: #ffffff; */
-    /* background-color: #99ff99; */
+    background-color: var(--color_RightContent_release);
     /* グリッド */
     grid-row: 2 / 3;
     grid-column: 2 / 4;
@@ -183,13 +206,12 @@ body {
     /* https://arts-factory.net/rgbatool/ */
     height: 100%;
     width: 100%;
-    /* ECEBCD */
-    background-image: repeating-linear-gradient(0deg, rgba(236, 235, 205, 1), rgba(255, 255, 255, 0));
+    background-image: repeating-linear-gradient(0deg, var(--color_body_release_rgba), var(--color_clear_rgba));
 }
 
 /* コピーライトなど */
 .SiteFooter {
-    background-color: #999999;
+    background-color: var(--color_SiteFooter_debug);
     width: 100%;
     height: 100%;
     text-align: center;
@@ -200,7 +222,7 @@ body {
 
 /* インライン */
 .PageTitle_TitleText {
-    /* background-color: #ff00ff; */
+    background-color: var(--color_PageTitle_TitleText_release);
     /* position: relative;
     top: 2%;
     left: 7.6%;
@@ -209,7 +231,7 @@ body {
 }
 
 .NavigationMenu_Tabs {
-    /* background-color: #ffffff; */
+    background-color: var(--color_NavigationMenu_Tabs_release);
     position: relative;
     /* タブの高さ（領域の高さが同じになるようにしている） */
     --tabHeight: 50%;
@@ -230,7 +252,7 @@ body {
 }
 
 .LeftContent_Abstraction {
-    background-color: #0000ff;
+    background-color: var(--color_LeftContent_Abstraction_debug);
     /* グリッド */
     grid-column: 2 / 3;
     /* 子要素グリッド */
@@ -240,13 +262,13 @@ body {
 }
 
 .RightContent_MainContents {
-    background-color: #ff00ff;
+    background-color: var(--color_RightContent_MainContents_debug);
     /* グリッド */
     grid-column: 1 / 2;
 }
 
 .SiteFooter_FooterText {
-    background-color: #f0f00f;
+    background-color: var(--color_SiteFooter_FooterText_debug);
     position: relative;
     top: 11.6%;
     /* left: 7.6%;
@@ -256,14 +278,14 @@ body {
 }
 
 .LeftContent_Abstraction_PunchArea {
-    background-color: #00ff00;
+    background-color: var(--color_LeftContent_Abstraction_PunchArea_debug);
     /* グリッド */
     grid-row: 2 / 3;
     grid-column: 1 / 2;
 }
 
 .LeftContent_Abstraction_NoteArea {
-    background-color: #00ffff;
+    background-color: var(--color_LeftContent_Abstraction_NoteArea_debug);
     /* グリッド */
     grid-row: 2 / 3;
     grid-column: 2 / 3;
@@ -277,11 +299,11 @@ body {
     /* top: 30px; */
     width: var(--test);
     height: var(--test);
-    background-color: rgb(118, 117, 102);
+    background-color: var(--color_PunchHole_shadow_rgba);
     border-radius: 50%;
     overflow: hidden;
     position: relative;
-    background-image: radial-gradient(circle at 40px 40px, #ECEBCD 40%, rgba(236, 235, 205, 0.5) 50%, transparent 60%);
+    background-image: radial-gradient(circle at 40px 40px, var(--color_PunchHole_shadow_body_rgba) 40%, var(--color_PunchHole_shadow_mid_rgba) 50%, var(--color_PunchHole_shadow_gray_rgba) 60%);
 }
 
 .PunchHoleImg {
