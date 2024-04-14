@@ -1,36 +1,48 @@
 :root {
     /* color */
+    /* common */
+    --color_clear_rgba: rgba(255, 255, 255, 0);
+
+    /* release */
     --color_body_release: #ECEBCD;
-    --color_body_release_rgba: rgba(236, 235, 205, 1);
+    --color_body_rgba_release: rgba(236, 235, 205, 1);
     --color_PunchHole_shadow_body_rgba: var(--color_body_release_rgba);
     --color_PunchHole_shadow_mid_rgba: rgba(236, 235, 205, 0.5);
     --color_PunchHole_shadow_gray_rgba: transparent;
     --color_dropShadow_rgba: rgba(0, 0, 0, 0.4);
     --color_PunchHole_shadow_rgba: rgb(118, 117, 102);
-    --color_pageTitle_debug: #99ffff;
     --color_pageTitle_release: #00000000;
-    --color_NavigationMenu_debug: #ff99ff;
     --color_NavigationMenu_release: #00000000;
-    --color_LeftContent_debug: #ff99ff;
     --color_LeftContent_release: #ffffff;
-    --color_RightContent_debug: #99ff99;
     --color_RightContent_release: transparent;
-    --color_clear_rgba: rgba(255, 255, 255, 0);
+    --color_SiteFooter_release: transparent;
+    --color_PageTitle_TitleText_release: transparent;
+    --color_NavigationMenu_Tabs_release: transparent;
+    --color_LeftContent_Abstraction_release: #ffffff;
+    --color_RightContent_MainContents_release: #ffffff;
+    --color_SiteFooter_FooterText_release: transparent;
+    --color_LeftContent_Abstraction_PunchArea_release: transparent;
+    --color_LeftContent_Abstraction_NoteArea_release: transparent;
+    /* debug */
+    --color_body_debug: #ECEBCD;
+    --color_body_rgba_debug: rgba(236, 235, 205, 1);
+    --color_PunchHole_shadow_body_rgba: var(--color_body_release_rgba);
+    --color_PunchHole_shadow_mid_rgba: rgba(236, 235, 205, 0.5);
+    --color_PunchHole_shadow_gray_rgba: transparent;
+    --color_PunchHole_shadow_rgba: rgb(118, 117, 102);
+    --color_dropShadow_rgba: rgba(0, 0, 0, 0.4);
+    --color_pageTitle_debug: #99ffff;
+    --color_NavigationMenu_debug: #ff99ff;
+    --color_LeftContent_debug: #ff99ff;
+    --color_RightContent_debug: #99ff99;
     --color_SiteFooter_debug: #999999;
     --color_PageTitle_TitleText_debug: #ff00ff;
-    --color_PageTitle_TitleText_release: transparent;
     --color_NavigationMenu_Tabs_debug: #ffffff;
-    --color_NavigationMenu_Tabs_release: transparent;
     --color_LeftContent_Abstraction_debug: #0000ff;
-    --color_LeftContent_Abstraction_release: #ffffff;
     --color_RightContent_MainContents_debug: #ff00ff;
-    --color_RightContent_MainContents_release: #ffffff;
     --color_SiteFooter_FooterText_debug: #f0f00f;
-    --color_SiteFooter_FooterText_release: transparent;
     --color_LeftContent_Abstraction_PunchArea_debug: #00ff00;
-    --color_LeftContent_Abstraction_PunchArea_release: transparent;
     --color_LeftContent_Abstraction_NoteArea_debug: #00ffff;
-    --color_LeftContent_Abstraction_NoteArea_release: transparent;
 }
 
 nav {
@@ -257,7 +269,7 @@ body {
     grid-column: 2 / 3;
     /* 子要素グリッド */
     display: grid;
-    grid-template-columns: 20px auto 20px;
+    grid-template-columns: auto auto 20px;
     grid-template-rows: 20px auto 20px;
 }
 
