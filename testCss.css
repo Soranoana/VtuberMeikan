@@ -2,47 +2,46 @@
     /* color */
     /* common */
     --color_clear_rgba: rgba(255, 255, 255, 0);
-
     /* release */
-    --color_body_release: #ECEBCD;
-    --color_body_rgba_release: rgba(236, 235, 205, 1);
-    --color_PunchHole_shadow_body_rgba: var(--color_body_release_rgba);
+    /* --color_body: #ECEBCD;
+    --color_body_rgba: rgba(236, 235, 205, 1);
+    --color_PunchHole_shadow_body_rgba: var(--color_body_rgba);
     --color_PunchHole_shadow_mid_rgba: rgba(236, 235, 205, 0.5);
     --color_PunchHole_shadow_gray_rgba: transparent;
     --color_dropShadow_rgba: rgba(0, 0, 0, 0.4);
     --color_PunchHole_shadow_rgba: rgb(118, 117, 102);
-    --color_pageTitle_release: #00000000;
-    --color_NavigationMenu_release: #00000000;
-    --color_LeftContent_release: #ffffff;
-    --color_RightContent_release: transparent;
-    --color_SiteFooter_release: transparent;
-    --color_PageTitle_TitleText_release: transparent;
-    --color_NavigationMenu_Tabs_release: transparent;
-    --color_LeftContent_Abstraction_release: #ffffff;
-    --color_RightContent_MainContents_release: #ffffff;
-    --color_SiteFooter_FooterText_release: transparent;
-    --color_LeftContent_Abstraction_PunchArea_release: transparent;
-    --color_LeftContent_Abstraction_NoteArea_release: transparent;
+    --color_pageTitle: #00000000;
+    --color_NavigationMenu: #00000000;
+    --color_LeftContent: #ffffff;
+    --color_RightContent: transparent;
+    --color_SiteFooter: transparent;
+    --color_PageTitle_TitleText: transparent;
+    --color_NavigationMenu_Tabs: transparent;
+    --color_LeftContent_Abstraction: #ffffff;
+    --color_RightContent_MainContents: #ffffff;
+    --color_SiteFooter_FooterText: transparent;
+    --color_LeftContent_Abstraction_PunchArea: transparent;
+    --color_LeftContent_Abstraction_NoteArea: transparent; */
     /* debug */
-    --color_body_debug: #ECEBCD;
-    --color_body_rgba_debug: rgba(236, 235, 205, 1);
-    --color_PunchHole_shadow_body_rgba: var(--color_body_release_rgba);
+    --color_body: #ECEBCD;
+    --color_body_rgba: rgba(236, 235, 205, 1);
+    --color_PunchHole_shadow_body_rgba: var(--color_body_rgba);
     --color_PunchHole_shadow_mid_rgba: rgba(236, 235, 205, 0.5);
     --color_PunchHole_shadow_gray_rgba: transparent;
     --color_PunchHole_shadow_rgba: rgb(118, 117, 102);
     --color_dropShadow_rgba: rgba(0, 0, 0, 0.4);
-    --color_pageTitle_debug: #99ffff;
-    --color_NavigationMenu_debug: #ff99ff;
-    --color_LeftContent_debug: #ff99ff;
-    --color_RightContent_debug: #99ff99;
-    --color_SiteFooter_debug: #999999;
-    --color_PageTitle_TitleText_debug: #ff00ff;
-    --color_NavigationMenu_Tabs_debug: #ffffff;
-    --color_LeftContent_Abstraction_debug: #0000ff;
-    --color_RightContent_MainContents_debug: #ff00ff;
-    --color_SiteFooter_FooterText_debug: #f0f00f;
-    --color_LeftContent_Abstraction_PunchArea_debug: #00ff00;
-    --color_LeftContent_Abstraction_NoteArea_debug: #00ffff;
+    --color_pageTitle: #99ffff;
+    --color_NavigationMenu: #ff99ff;
+    --color_LeftContent: #ff99ff;
+    --color_RightContent: #99ff99;
+    --color_SiteFooter: #999999;
+    --color_PageTitle_TitleText: #ff00ff;
+    --color_NavigationMenu_Tabs: #ffffff;
+    --color_LeftContent_Abstraction: #0000ff;
+    --color_RightContent_MainContents: #ff00ff;
+    --color_SiteFooter_FooterText: #f0f00f;
+    --color_LeftContent_Abstraction_PunchArea: #00ff00;
+    --color_LeftContent_Abstraction_NoteArea: #00ffff;
 }
 
 nav {
@@ -69,7 +68,7 @@ a {
 }
 
 body {
-    background: var(--color_body_release);
+    background: var(--color_body);
     /* Grid設定 */
     display: grid;
     grid-template-columns: 15% 10% 75%;
@@ -139,7 +138,7 @@ body {
 
 /* アウトライン */
 .PageTitle {
-    background-color: var(--color_pageTitle_release);
+    background-color: var(--color_pageTitle);
     /* 子要素を中央に配置 */
     display: flex;
     justify-content: center;
@@ -150,7 +149,7 @@ body {
 }
 
 .NavigationMenu {
-    background-color: var(--color_NavigationMenu_release);
+    background-color: var(--color_NavigationMenu);
     /* グリッド */
     grid-row: 1 / 2;
     grid-column: 3 / 4;
@@ -159,7 +158,7 @@ body {
 }
 
 .LeftContent {
-    background-color: var(--color_LeftContent_release);
+    background-color: var(--color_LeftContent);
     /* グリッド */
     grid-row: 2 / 3;
     grid-column: 1 / 2;
@@ -172,7 +171,7 @@ body {
 }
 
 .RightContent {
-    background-color: var(--color_RightContent_release);
+    background-color: var(--color_RightContent);
     /* グリッド */
     grid-row: 2 / 3;
     grid-column: 2 / 4;
@@ -218,12 +217,12 @@ body {
     /* https://arts-factory.net/rgbatool/ */
     height: 100%;
     width: 100%;
-    background-image: repeating-linear-gradient(0deg, var(--color_body_release_rgba), var(--color_clear_rgba));
+    background-image: repeating-linear-gradient(0deg, var(--color_body_rgba), var(--color_clear_rgba));
 }
 
 /* コピーライトなど */
 .SiteFooter {
-    background-color: var(--color_SiteFooter_debug);
+    background-color: var(--color_SiteFooter);
     width: 100%;
     height: 100%;
     text-align: center;
@@ -231,19 +230,8 @@ body {
     grid-row: 3 / 4;
     grid-column: 1 / 4;
 }
-
-/* インライン */
-.PageTitle_TitleText {
-    background-color: var(--color_PageTitle_TitleText_release);
-    /* position: relative;
-    top: 2%;
-    left: 7.6%;
-    right: 7.6%;
-    bottom: 2%; */
-}
-
 .NavigationMenu_Tabs {
-    background-color: var(--color_NavigationMenu_Tabs_release);
+    background-color: var(--color_NavigationMenu_Tabs);
     position: relative;
     /* タブの高さ（領域の高さが同じになるようにしている） */
     --tabHeight: 50%;
@@ -264,7 +252,7 @@ body {
 }
 
 .LeftContent_Abstraction {
-    background-color: var(--color_LeftContent_Abstraction_debug);
+    background-color: var(--color_LeftContent_Abstraction);
     /* グリッド */
     grid-column: 2 / 3;
     /* 子要素グリッド */
@@ -274,13 +262,13 @@ body {
 }
 
 .RightContent_MainContents {
-    background-color: var(--color_RightContent_MainContents_debug);
+    background-color: var(--color_RightContent_MainContents);
     /* グリッド */
     grid-column: 1 / 2;
 }
 
 .SiteFooter_FooterText {
-    background-color: var(--color_SiteFooter_FooterText_debug);
+    background-color: var(--color_SiteFooter_FooterText);
     position: relative;
     top: 11.6%;
     /* left: 7.6%;
@@ -290,14 +278,14 @@ body {
 }
 
 .LeftContent_Abstraction_PunchArea {
-    background-color: var(--color_LeftContent_Abstraction_PunchArea_debug);
+    background-color: var(--color_LeftContent_Abstraction_PunchArea);
     /* グリッド */
     grid-row: 2 / 3;
     grid-column: 1 / 2;
 }
 
 .LeftContent_Abstraction_NoteArea {
-    background-color: var(--color_LeftContent_Abstraction_NoteArea_debug);
+    background-color: var(--color_LeftContent_Abstraction_NoteArea);
     /* グリッド */
     grid-row: 2 / 3;
     grid-column: 2 / 3;
