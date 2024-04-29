@@ -194,7 +194,7 @@ body {
     overflow: hidden;
     /* 子要素グリッド */
     display: grid;
-    /* grid-template-columns: auto 20rem; */
+    grid-template-columns: auto 15rem;
     /* grid-template-rows: 20px auto 20px; */
 
     .Tabs {
@@ -208,22 +208,62 @@ body {
         display: flex;
         /* グリッド */
         /* grid-row: 1 / 2; */
-        /* grid-column: 1 / 2; */
+        grid-column: 1 / 2;
         /* 子要素グリッド */
-        display: grid;
-        --tabWidth: 40px;
-        --tabOverlap: 10px;
-        grid-template-columns: var(--tabWidth) var(--tabOverlap) var(--tabWidth) var(--tabOverlap) var(--tabWidth) var(--tabOverlap) var(--tabWidth) var(--tabOverlap) var(--tabWidth) var(--tabOverlap);
+        /* display: grid; */
+        /* grid-template-columns: repeat(5, var(--tabWidth) var(--tabOverlap)); */
         /* grid-template-rows: 20px auto 20px;*/
 
         /* tabの下揃え */
         ul {
+            display: grid;
+            --tabWidth: 200px;
+            --tabOverlap: 30px;
+            grid-template-columns: repeat(5, var(--tabWidth) var(--tabOverlap));
+            list-style: none;
+            /* ul要素が全体をカバーするように設定 */
+            width: 100%;
+            /* 中央揃え */
+            /* align-items: center; */
             /* 左右に余白ゼロ */
             padding: 0;
             /* 上下に余白ゼロ */
             margin: 0;
             /* 下揃え */
             align-items: flex-end;
+
+            li {
+                /* それぞれのli要素が1列を占めるように */
+                grid-column: span 2;
+
+                a {
+                    display: block;
+                    /* リンクの下線を消去 */
+                    text-decoration: none;
+                    /* 親要素から色を継承 */
+                    color: inherit;
+                }
+            }
+        }
+
+        .zIndex1 {
+            z-index: 1;
+        }
+
+        .zIndex2 {
+            z-index: 2;
+        }
+
+        .zIndex3 {
+            z-index: 3;
+        }
+
+        .zIndex4 {
+            z-index: 4;
+        }
+
+        .zIndex5 {
+            z-index: 5;
         }
     }
 }
