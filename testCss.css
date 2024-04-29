@@ -11,17 +11,17 @@
     --color_PunchHole_shadow_gray_rgba: transparent;
     --color_dropShadow_rgba: rgba(0, 0, 0, 0.4);
     --color_pageTitle: #00000000;
-    --color_PageTitle_TitleText: transparent;
+    --color_TitleText: transparent;
     --color_NavigationMenu: #00000000;
-    --color_NavigationMenu_Tabs: transparent;
+    --color_Tabs: transparent;
     --color_LeftContent: #ffffff;
-    --color_LeftContent_Abstraction: #ffffff;
-    --color_LeftContent_Abstraction_PunchArea: transparent;
-    --color_LeftContent_Abstraction_NoteArea: transparent;
+    --color_Abstraction: #ffffff;
+    --color_PunchArea: transparent;
+    --color_NoteArea: transparent;
     --color_RightContent: transparent;
-    --color_RightContent_MainContents: #ffffff;
+    --color_MainContents: #ffffff;
     --color_SiteFooter: transparent;
-    --color_SiteFooter_FooterText: transparent; */
+    --color_FooterText: transparent; */
     /* debug */
     --color_body: #ECEBCD;
     --color_body_rgba: rgba(236, 235, 205, 1);
@@ -31,17 +31,17 @@
     --color_PunchHole_shadow_gray_rgba: transparent;
     --color_dropShadow_rgba: rgba(0, 0, 0, 0.4);
     --color_pageTitle: #99ffff;
-    --color_PageTitle_TitleText: #ff00ff;
+    --color_TitleText: #ff00ff;
     --color_NavigationMenu: #ff99ff;
-    --color_NavigationMenu_Tabs: #ffffff;
+    --color_Tabs: #ffffff;
     --color_LeftContent: #ff99ff;
-    --color_LeftContent_Abstraction: #0000ff;
-    --color_LeftContent_Abstraction_PunchArea: #00ff00;
-    --color_LeftContent_Abstraction_NoteArea: #00ffff;
+    --color_Abstraction: #0000ff;
+    --color_PunchArea: #00ff00;
+    --color_NoteArea: #00ffff;
     --color_RightContent: #99ff99;
-    --color_RightContent_MainContents: #ff00ff;
+    --color_MainContents: #ff00ff;
     --color_SiteFooter: #999999;
-    --color_SiteFooter_FooterText: #f0f00f;
+    --color_FooterText: #f0f00f;
 }
 
 nav {
@@ -80,49 +80,49 @@ a {
     /* padding: 10px; */
 }
 
-/* 付箋の輪郭設定 */
-.trapezoid {
-    position: relative;
-    width: 15rem;
-    height: 3rem;
-    /* background-color: #ff2828; */
-    /* polygon(左上X Y, 右上X Y, 右下X Y, 左下X Y) */
-    clip-path: polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: black;
-    font-size: 1.3rem;
-    /* box-shadow: 2px 2px 4px -2px gray inset; */
-    /* box-shadow: 10px 10px #000000; */
-}
-
-.note-shadow {
+.noteWithShadow {
     filter: drop-shadow(20px 20px 4px var(--color_dropShadow_rgba));
 }
 
-.trapezoid-shadow {
+.trapezoidWithShadow {
     filter: drop-shadow(20px 20px 4px var(--color_dropShadow_rgba));
-}
 
-.trapezoid-red {
-    background-color: #F18B8B;
-}
+    /* 付箋の輪郭設定 */
+    .rectTrapezoid {
+        position: relative;
+        width: 15rem;
+        height: 3rem;
+        /* background-color: #ff2828; */
+        /* polygon(左上X Y, 右上X Y, 右下X Y, 左下X Y) */
+        clip-path: polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: black;
+        font-size: 1.3rem;
+        /* box-shadow: 2px 2px 4px -2px gray inset; */
+        /* box-shadow: 10px 10px #000000; */
+    }
 
-.trapezoid-yellow {
-    background-color: #F1EF8B;
-}
+    .red {
+        background-color: #F18B8B;
+    }
 
-.trapezoid-green {
-    background-color: #8BF1B9;
-}
+    .yellow {
+        background-color: #F1EF8B;
+    }
 
-.trapezoid-lightblue {
-    background-color: #8BD6F1;
-}
+    .green {
+        background-color: #8BF1B9;
+    }
 
-.trapezoid-blue {
-    background-color: #8BADF1;
+    .lightblue {
+        background-color: #8BD6F1;
+    }
+
+    .blue {
+        background-color: #8BADF1;
+    }
 }
 
 .PunchHole {
@@ -175,8 +175,8 @@ body {
     grid-row: 1 / 2;
     grid-column: 1 / 3;
 
-    .PageTitle_TitleText {
-        background-color: var(--color_PageTitle_TitleText);
+    .TitleText {
+        background-color: var(--color_TitleText);
         /* position: relative;
         top: 2%;
         left: 7.6%;
@@ -197,8 +197,8 @@ body {
     /* grid-template-columns: auto 20rem; */
     /* grid-template-rows: 20px auto 20px; */
 
-    .NavigationMenu_Tabs {
-        background-color: var(--color_NavigationMenu_Tabs);
+    .Tabs {
+        background-color: var(--color_Tabs);
         position: relative;
         /* タブの高さ（領域の高さが同じになるようにしている） */
         --tabHeight: 50%;
@@ -240,8 +240,8 @@ body {
     /* タブの影がほかのグリッドに影響を及ぼすのを止める */
     overflow: hidden;
 
-    .LeftContent_Abstraction {
-        background-color: var(--color_LeftContent_Abstraction);
+    .Abstraction {
+        background-color: var(--color_Abstraction);
         /* グリッド */
         grid-column: 2 / 3;
         /* 子要素グリッド */
@@ -249,15 +249,15 @@ body {
         grid-template-columns: auto auto 20px;
         grid-template-rows: 20px auto 20px;
 
-        .LeftContent_Abstraction_PunchArea {
-            background-color: var(--color_LeftContent_Abstraction_PunchArea);
+        .PunchArea {
+            background-color: var(--color_PunchArea);
             /* グリッド */
             grid-row: 2 / 3;
             grid-column: 1 / 2;
         }
 
-        .LeftContent_Abstraction_NoteArea {
-            background-color: var(--color_LeftContent_Abstraction_NoteArea);
+        .NoteArea {
+            background-color: var(--color_NoteArea);
             /* グリッド */
             grid-row: 2 / 3;
             grid-column: 2 / 3;
@@ -281,8 +281,8 @@ body {
     /* -webkit-mask-image: radial-gradient(circle, transparent 100px, black 0);
     mask-image: radial-gradient(circle, transparent 100px, black 0); */
 
-    .RightContent_MainContents {
-        background-color: var(--color_RightContent_MainContents);
+    .MainContents {
+        background-color: var(--color_MainContents);
         /* グリッド */
         grid-column: 1 / 2;
     }
@@ -301,7 +301,7 @@ body {
     height: 10%;
     text-align: center;
 
-    /* .ViewFooter img {
+    /* img {
         height: 100%;
         width: 100%;
         object-fit: cover;
@@ -330,8 +330,8 @@ body {
     grid-row: 3 / 4;
     grid-column: 1 / 4;
 
-    .SiteFooter_FooterText {
-        background-color: var(--color_SiteFooter_FooterText);
+    .FooterText {
+        background-color: var(--color_FooterText);
         position: relative;
         top: 11.6%;
         /* left: 7.6%;
