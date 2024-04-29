@@ -5,43 +5,43 @@
     /* release */
     /* --color_body: #ECEBCD;
     --color_body_rgba: rgba(236, 235, 205, 1);
+    --color_PunchHole_shadow_rgba: rgb(118, 117, 102);
     --color_PunchHole_shadow_body_rgba: var(--color_body_rgba);
     --color_PunchHole_shadow_mid_rgba: rgba(236, 235, 205, 0.5);
     --color_PunchHole_shadow_gray_rgba: transparent;
     --color_dropShadow_rgba: rgba(0, 0, 0, 0.4);
-    --color_PunchHole_shadow_rgba: rgb(118, 117, 102);
     --color_pageTitle: #00000000;
-    --color_NavigationMenu: #00000000;
-    --color_LeftContent: #ffffff;
-    --color_RightContent: transparent;
-    --color_SiteFooter: transparent;
     --color_PageTitle_TitleText: transparent;
+    --color_NavigationMenu: #00000000;
     --color_NavigationMenu_Tabs: transparent;
+    --color_LeftContent: #ffffff;
     --color_LeftContent_Abstraction: #ffffff;
-    --color_RightContent_MainContents: #ffffff;
-    --color_SiteFooter_FooterText: transparent;
     --color_LeftContent_Abstraction_PunchArea: transparent;
-    --color_LeftContent_Abstraction_NoteArea: transparent; */
+    --color_LeftContent_Abstraction_NoteArea: transparent;
+    --color_RightContent: transparent;
+    --color_RightContent_MainContents: #ffffff;
+    --color_SiteFooter: transparent;
+    --color_SiteFooter_FooterText: transparent; */
     /* debug */
     --color_body: #ECEBCD;
     --color_body_rgba: rgba(236, 235, 205, 1);
+    --color_PunchHole_shadow_rgba: rgb(118, 117, 102);
     --color_PunchHole_shadow_body_rgba: var(--color_body_rgba);
     --color_PunchHole_shadow_mid_rgba: rgba(236, 235, 205, 0.5);
     --color_PunchHole_shadow_gray_rgba: transparent;
-    --color_PunchHole_shadow_rgba: rgb(118, 117, 102);
     --color_dropShadow_rgba: rgba(0, 0, 0, 0.4);
     --color_pageTitle: #99ffff;
-    --color_NavigationMenu: #ff99ff;
-    --color_LeftContent: #ff99ff;
-    --color_RightContent: #99ff99;
-    --color_SiteFooter: #999999;
     --color_PageTitle_TitleText: #ff00ff;
+    --color_NavigationMenu: #ff99ff;
     --color_NavigationMenu_Tabs: #ffffff;
+    --color_LeftContent: #ff99ff;
     --color_LeftContent_Abstraction: #0000ff;
-    --color_RightContent_MainContents: #ff00ff;
-    --color_SiteFooter_FooterText: #f0f00f;
     --color_LeftContent_Abstraction_PunchArea: #00ff00;
     --color_LeftContent_Abstraction_NoteArea: #00ffff;
+    --color_RightContent: #99ff99;
+    --color_RightContent_MainContents: #ff00ff;
+    --color_SiteFooter: #999999;
+    --color_SiteFooter_FooterText: #f0f00f;
 }
 
 nav {
@@ -83,8 +83,8 @@ a {
 /* 付箋の輪郭設定 */
 .trapezoid {
     position: relative;
-    width: 250px;
-    height: 50px;
+    width: 15rem;
+    height: 3rem;
     /* background-color: #ff2828; */
     /* polygon(左上X Y, 右上X Y, 右下X Y, 左下X Y) */
     clip-path: polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%);
@@ -92,7 +92,7 @@ a {
     justify-content: center;
     align-items: center;
     color: black;
-    font-size: 20px;
+    font-size: 1.3rem;
     /* box-shadow: 2px 2px 4px -2px gray inset; */
     /* box-shadow: 10px 10px #000000; */
 }
@@ -174,16 +174,15 @@ body {
     /* グリッド */
     grid-row: 1 / 2;
     grid-column: 1 / 3;
-}
 
-/* インライン */
-.PageTitle_TitleText {
-    background-color: var(--color_PageTitle_TitleText);
-    /* position: relative;
-    top: 2%;
-    left: 7.6%;
-    right: 7.6%;
-    bottom: 2%; */
+    .PageTitle_TitleText {
+        background-color: var(--color_PageTitle_TitleText);
+        /* position: relative;
+        top: 2%;
+        left: 7.6%;
+        right: 7.6%;
+        bottom: 2%; */
+    }
 }
 
 .NavigationMenu {
@@ -197,36 +196,36 @@ body {
     display: grid;
     /* grid-template-columns: auto 20rem; */
     /* grid-template-rows: 20px auto 20px; */
-}
 
-.NavigationMenu_Tabs {
-    background-color: var(--color_NavigationMenu_Tabs);
-    position: relative;
-    /* タブの高さ（領域の高さが同じになるようにしている） */
-    --tabHeight: 50%;
-    top: calc(100% - var(--tabHeight));
-    height: var(--tabHeight);
-    /* tabの下揃え */
-    display: flex;
-    /* グリッド */
-    /* grid-row: 1 / 2; */
-    /* grid-column: 1 / 2; */
-    /* 子要素グリッド */
-    display: grid;
-    --tabWidth: 50%;
-    --tabOverlap: 50%;
-    grid-template-columns: var(--tabWidth) var(--tabOverlap) var(--tabWidth) var(--tabOverlap) var(--tabWidth) var(--tabOverlap) var(--tabWidth) var(--tabOverlap) var(--tabWidth) var(--tabOverlap);
-    /* grid-template-rows: 20px auto 20px;*/
-}
+    .NavigationMenu_Tabs {
+        background-color: var(--color_NavigationMenu_Tabs);
+        position: relative;
+        /* タブの高さ（領域の高さが同じになるようにしている） */
+        --tabHeight: 50%;
+        top: calc(100% - var(--tabHeight));
+        height: var(--tabHeight);
+        /* tabの下揃え */
+        display: flex;
+        /* グリッド */
+        /* grid-row: 1 / 2; */
+        /* grid-column: 1 / 2; */
+        /* 子要素グリッド */
+        display: grid;
+        --tabWidth: 40px;
+        --tabOverlap: 10px;
+        grid-template-columns: var(--tabWidth) var(--tabOverlap) var(--tabWidth) var(--tabOverlap) var(--tabWidth) var(--tabOverlap) var(--tabWidth) var(--tabOverlap) var(--tabWidth) var(--tabOverlap);
+        /* grid-template-rows: 20px auto 20px;*/
 
-/* tabの下揃え */
-.NavigationMenu_Tabs ul {
-    /* 左右に余白ゼロ */
-    padding: 0;
-    /* 上下に余白ゼロ */
-    margin: 0;
-    /* 下揃え */
-    align-items: flex-end;
+        /* tabの下揃え */
+        ul {
+            /* 左右に余白ゼロ */
+            padding: 0;
+            /* 上下に余白ゼロ */
+            margin: 0;
+            /* 下揃え */
+            align-items: flex-end;
+        }
+    }
 }
 
 .LeftContent {
@@ -240,30 +239,30 @@ body {
     grid-template-rows: auto 1fr;
     /* タブの影がほかのグリッドに影響を及ぼすのを止める */
     overflow: hidden;
-}
 
-.LeftContent_Abstraction {
-    background-color: var(--color_LeftContent_Abstraction);
-    /* グリッド */
-    grid-column: 2 / 3;
-    /* 子要素グリッド */
-    display: grid;
-    grid-template-columns: auto auto 20px;
-    grid-template-rows: 20px auto 20px;
-}
+    .LeftContent_Abstraction {
+        background-color: var(--color_LeftContent_Abstraction);
+        /* グリッド */
+        grid-column: 2 / 3;
+        /* 子要素グリッド */
+        display: grid;
+        grid-template-columns: auto auto 20px;
+        grid-template-rows: 20px auto 20px;
 
-.LeftContent_Abstraction_PunchArea {
-    background-color: var(--color_LeftContent_Abstraction_PunchArea);
-    /* グリッド */
-    grid-row: 2 / 3;
-    grid-column: 1 / 2;
-}
+        .LeftContent_Abstraction_PunchArea {
+            background-color: var(--color_LeftContent_Abstraction_PunchArea);
+            /* グリッド */
+            grid-row: 2 / 3;
+            grid-column: 1 / 2;
+        }
 
-.LeftContent_Abstraction_NoteArea {
-    background-color: var(--color_LeftContent_Abstraction_NoteArea);
-    /* グリッド */
-    grid-row: 2 / 3;
-    grid-column: 2 / 3;
+        .LeftContent_Abstraction_NoteArea {
+            background-color: var(--color_LeftContent_Abstraction_NoteArea);
+            /* グリッド */
+            grid-row: 2 / 3;
+            grid-column: 2 / 3;
+        }
+    }
 }
 
 .RightContent {
@@ -278,16 +277,15 @@ body {
     /* タブの影がほかのグリッドに影響を及ぼすのを止める */
     overflow: hidden;
 
-
     /* マスクを使って中央に丸い穴をあける */
     /* -webkit-mask-image: radial-gradient(circle, transparent 100px, black 0);
     mask-image: radial-gradient(circle, transparent 100px, black 0); */
-}
 
-.RightContent_MainContents {
-    background-color: var(--color_RightContent_MainContents);
-    /* グリッド */
-    grid-column: 1 / 2;
+    .RightContent_MainContents {
+        background-color: var(--color_RightContent_MainContents);
+        /* グリッド */
+        grid-column: 1 / 2;
+    }
 }
 
 /* header{
@@ -302,24 +300,24 @@ body {
     width: 100%;
     height: 10%;
     text-align: center;
-}
 
-/* .ViewFooter img {
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
-    object-position: auto 30%;
-} */
+    /* .ViewFooter img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        object-position: auto 30%;
+    } */
 
-.FeedFooter {
-    /* 参考サイト */
-    /* グラデーション作成 */
-    /* https://front-end-tools.com/generateGradient/ */
-    /* カラーコードからrgbaに変換 */
-    /* https://arts-factory.net/rgbatool/ */
-    height: 100%;
-    width: 100%;
-    background-image: repeating-linear-gradient(0deg, var(--color_body_rgba), var(--color_clear_rgba));
+    .FeedFooter {
+        /* 参考サイト */
+        /* グラデーション作成 */
+        /* https://front-end-tools.com/generateGradient/ */
+        /* カラーコードからrgbaに変換 */
+        /* https://arts-factory.net/rgbatool/ */
+        height: 100%;
+        width: 100%;
+        background-image: repeating-linear-gradient(0deg, var(--color_body_rgba), var(--color_clear_rgba));
+    }
 }
 
 /* コピーライトなど */
@@ -331,14 +329,14 @@ body {
     /* グリッド */
     grid-row: 3 / 4;
     grid-column: 1 / 4;
-}
 
-.SiteFooter_FooterText {
-    background-color: var(--color_SiteFooter_FooterText);
-    position: relative;
-    top: 11.6%;
-    /* left: 7.6%;
-    right: 7.6%; */
-    bottom: 11.6%;
-    text-align: center;
+    .SiteFooter_FooterText {
+        background-color: var(--color_SiteFooter_FooterText);
+        position: relative;
+        top: 11.6%;
+        /* left: 7.6%;
+        right: 7.6%; */
+        bottom: 11.6%;
+        text-align: center;
+    }
 }
