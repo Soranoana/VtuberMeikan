@@ -134,6 +134,34 @@ body {
     background-color: #8BADF1;
 }
 
+.PunchHole {
+    --test: 30px;
+    position: relative;
+    /* left: calc(var(--test)/2); */
+    margin: 20px;
+    /* top: 30px; */
+    width: var(--test);
+    height: var(--test);
+    background-color: var(--color_PunchHole_shadow_rgba);
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    background-image: radial-gradient(circle at 40px 40px, var(--color_PunchHole_shadow_body_rgba) 40%, var(--color_PunchHole_shadow_mid_rgba) 50%, var(--color_PunchHole_shadow_gray_rgba) 60%);
+}
+
+.PunchHoleImg {
+    --test: 30px;
+    position: relative;
+    /* left: calc(var(--test)/2); */
+    /* top: 30px; */
+    /* margin: 10px; */
+    margin-left: 25px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: var(--test);
+    height: var(--test);
+}
+
 /* ポジション系 */
 
 /* アウトライン */
@@ -157,6 +185,27 @@ body {
     overflow: hidden;
 }
 
+.NavigationMenu_Tabs {
+    background-color: var(--color_NavigationMenu_Tabs);
+    position: relative;
+    /* タブの高さ（領域の高さが同じになるようにしている） */
+    --tabHeight: 50%;
+    top: calc(100% - var(--tabHeight));
+    height: var(--tabHeight);
+    /* tabの下揃え */
+    display: flex;
+}
+
+/* tabの下揃え */
+.NavigationMenu_Tabs ul {
+    /* 左右に余白ゼロ */
+    padding: 0;
+    /* 上下に余白ゼロ */
+    margin: 0;
+    /* 下揃え */
+    align-items: flex-end;
+}
+
 .LeftContent {
     background-color: var(--color_LeftContent);
     /* グリッド */
@@ -168,6 +217,30 @@ body {
     grid-template-rows: auto 1fr;
     /* タブの影がほかのグリッドに影響を及ぼすのを止める */
     overflow: hidden;
+}
+
+.LeftContent_Abstraction {
+    background-color: var(--color_LeftContent_Abstraction);
+    /* グリッド */
+    grid-column: 2 / 3;
+    /* 子要素グリッド */
+    display: grid;
+    grid-template-columns: auto auto 20px;
+    grid-template-rows: 20px auto 20px;
+}
+
+.LeftContent_Abstraction_PunchArea {
+    background-color: var(--color_LeftContent_Abstraction_PunchArea);
+    /* グリッド */
+    grid-row: 2 / 3;
+    grid-column: 1 / 2;
+}
+
+.LeftContent_Abstraction_NoteArea {
+    background-color: var(--color_LeftContent_Abstraction_NoteArea);
+    /* グリッド */
+    grid-row: 2 / 3;
+    grid-column: 2 / 3;
 }
 
 .RightContent {
@@ -186,6 +259,12 @@ body {
     /* マスクを使って中央に丸い穴をあける */
     /* -webkit-mask-image: radial-gradient(circle, transparent 100px, black 0);
     mask-image: radial-gradient(circle, transparent 100px, black 0); */
+}
+
+.RightContent_MainContents {
+    background-color: var(--color_RightContent_MainContents);
+    /* グリッド */
+    grid-column: 1 / 2;
 }
 
 /* header{
@@ -230,42 +309,6 @@ body {
     grid-row: 3 / 4;
     grid-column: 1 / 4;
 }
-.NavigationMenu_Tabs {
-    background-color: var(--color_NavigationMenu_Tabs);
-    position: relative;
-    /* タブの高さ（領域の高さが同じになるようにしている） */
-    --tabHeight: 50%;
-    top: calc(100% - var(--tabHeight));
-    height: var(--tabHeight);
-    /* tabの下揃え */
-    display: flex;
-}
-
-/* tabの下揃え */
-.NavigationMenu_Tabs ul {
-    /* 左右に余白ゼロ */
-    padding: 0;
-    /* 上下に余白ゼロ */
-    margin: 0;
-    /* 下揃え */
-    align-items: flex-end;
-}
-
-.LeftContent_Abstraction {
-    background-color: var(--color_LeftContent_Abstraction);
-    /* グリッド */
-    grid-column: 2 / 3;
-    /* 子要素グリッド */
-    display: grid;
-    grid-template-columns: auto auto 20px;
-    grid-template-rows: 20px auto 20px;
-}
-
-.RightContent_MainContents {
-    background-color: var(--color_RightContent_MainContents);
-    /* グリッド */
-    grid-column: 1 / 2;
-}
 
 .SiteFooter_FooterText {
     background-color: var(--color_SiteFooter_FooterText);
@@ -275,46 +318,4 @@ body {
     right: 7.6%; */
     bottom: 11.6%;
     text-align: center;
-}
-
-.LeftContent_Abstraction_PunchArea {
-    background-color: var(--color_LeftContent_Abstraction_PunchArea);
-    /* グリッド */
-    grid-row: 2 / 3;
-    grid-column: 1 / 2;
-}
-
-.LeftContent_Abstraction_NoteArea {
-    background-color: var(--color_LeftContent_Abstraction_NoteArea);
-    /* グリッド */
-    grid-row: 2 / 3;
-    grid-column: 2 / 3;
-}
-
-.PunchHole {
-    --test: 30px;
-    position: relative;
-    /* left: calc(var(--test)/2); */
-    margin: 20px;
-    /* top: 30px; */
-    width: var(--test);
-    height: var(--test);
-    background-color: var(--color_PunchHole_shadow_rgba);
-    border-radius: 50%;
-    overflow: hidden;
-    position: relative;
-    background-image: radial-gradient(circle at 40px 40px, var(--color_PunchHole_shadow_body_rgba) 40%, var(--color_PunchHole_shadow_mid_rgba) 50%, var(--color_PunchHole_shadow_gray_rgba) 60%);
-}
-
-.PunchHoleImg {
-    --test: 30px;
-    position: relative;
-    /* left: calc(var(--test)/2); */
-    /* top: 30px; */
-    /* margin: 10px; */
-    margin-left: 25px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    width: var(--test);
-    height: var(--test);
 }
