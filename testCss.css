@@ -153,6 +153,20 @@ a {
     height: var(--test);
 }
 
+.RowBorderLine {
+    /* TODO 行間調整 */
+    /* 背景色 */
+    background-color: #fff;
+    /* 罫線の色と太さ  */
+    background-image: linear-gradient(180deg, #ccc 1px, transparent 1px);
+    /* 行の高さ */
+    background-size: 100% 2.5em;
+    /* 文字の高さ */
+    line-height: 2.5em;
+    /* 最終行の下にも罫線を引く */
+    padding-bottom: 1px;
+}
+
 /* ポジション系 */
 
 /* アウトライン */
