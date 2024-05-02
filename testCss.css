@@ -21,7 +21,8 @@
     --color_RightContent: transparent;
     --color_MainContents: #ffffff;
     --color_SiteFooter: transparent;
-    --color_FooterText: transparent; */
+    --color_FooterText: transparent;
+    --color_RowBorderLine:#00b7ff; */
     /* debug */
     --color_body: #ECEBCD;
     --color_body_rgba: rgba(236, 235, 205, 1);
@@ -42,6 +43,7 @@
     --color_MainContents: #ff00ff;
     --color_SiteFooter: #999999;
     --color_FooterText: #f0f00f;
+    --color_RowBorderLine:#ffffff;
 }
 
 nav {
@@ -155,10 +157,8 @@ a {
 
 .RowBorderLine {
     /* TODO 行間調整 */
-    /* 背景色 */
-    background-color: #fff;
     /* 罫線の色と太さ  */
-    background-image: linear-gradient(180deg, #ccc 1px, transparent 1px);
+    background-image: linear-gradient(180deg, var(--color_RowBorderLine) 1px, transparent 1px);
     /* 行の高さ */
     background-size: 100% 2.5em;
     /* 文字の高さ */
@@ -428,27 +428,69 @@ body {
 }
 
 .card-group {
+    /* margin-left: auto; */
+    /* margin-right: auto; */
+    /* max-width: 640px; */
+    /* width: 90%; */
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
 
     .card {
-        height: 200px;
-        width: 400px;
+        height: auto;
+        width: calc((100% - 20px * 2) / 3);
         /* Grid設定 */
         display: grid;
         grid-template-columns: 50% 50%;
         /* grid-template-rows: 100%; */
+        /* ポイント４ */
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, .2);
 
-        .thumbnailImg {
-            height: 100%;
+        .overviewImg {
+            height: auto;
             width: 100%;
+            padding-top: 56.25%;
+            background: #bbb;
+            box-sizing: border-box;
             /* グリッド */
             /* grid-row: 1 / 2; */
             grid-column: 1 / 2;
         }
 
-        .thumbnailText {
+        .overviewTextArea {
+            width: 100%;
+            height: auto;
+            padding: 20px 18px;
+            background: #fff;
+            box-sizing: border-box;
             /* グリッド */
             /* grid-row: 1 / 2; */
             grid-column: 2 / 3;
+            
+            *+*{
+                margin-top: 10px;
+            }
+
+            .overviewTitle {
+                font-size: 20px;
+                font-weight: bold;
+                line-height: 125%;
+            }
+
+            .overviewText {
+                font-size: 12px;
+                font-weight: bold;
+                line-height: 150%;
+            }
         }
     }
 }
+
+.card-group> :not(:nth-child(3n-2)) {
+    margin-left: 20px;
+}
+
