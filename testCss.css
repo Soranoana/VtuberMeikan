@@ -1,15 +1,15 @@
 :root {
     /* color */
     /* common */
-    --color_clear_rgba: rgba(255, 255, 255, 0);
+    --color_clear_rgb: rgb(255 255 255 / 0);
     /* release */
     /* --color_body: #ECEBCD;
-    --color_body_rgba: rgba(236, 235, 205, 1);
-    --color_PunchHole_shadow_rgba: rgb(118, 117, 102);
-    --color_PunchHole_shadow_body_rgba: var(--color_body_rgba);
-    --color_PunchHole_shadow_mid_rgba: rgba(236, 235, 205, 0.5);
-    --color_PunchHole_shadow_gray_rgba: transparent;
-    --color_dropShadow_rgba: rgba(0, 0, 0, 0.4);
+    --color_body_rgb: rgb(236 235 205 / 1);
+    --color_PunchHole_shadow_rgb: rgb(118 117 102);
+    --color_PunchHole_shadow_body_rgb: var(--color_body_rgb);
+    --color_PunchHole_shadow_mid_rgb: rgb(236 235 205 / .5);
+    --color_PunchHole_shadow_gray_rgb: transparent;
+    --color_dropShadow_rgb: rgb(0 0 0 / .4);
     --color_pageTitle: #00000000;
     --color_TitleText: transparent;
     --color_NavigationMenu: #00000000;
@@ -25,12 +25,12 @@
     --color_RowBorderLine:#00b7ff; */
     /* debug */
     --color_body: #ECEBCD;
-    --color_body_rgba: rgba(236, 235, 205, 1);
-    --color_PunchHole_shadow_rgba: rgb(118, 117, 102);
-    --color_PunchHole_shadow_body_rgba: var(--color_body_rgba);
-    --color_PunchHole_shadow_mid_rgba: rgba(236, 235, 205, 0.5);
-    --color_PunchHole_shadow_gray_rgba: transparent;
-    --color_dropShadow_rgba: rgba(0, 0, 0, 0.4);
+    --color_body_rgb: rgb(236 235 205 / 1);
+    --color_PunchHole_shadow_rgb: rgb(118 117 102);
+    --color_PunchHole_shadow_body_rgb: var(--color_body_rgb);
+    --color_PunchHole_shadow_mid_rgb: rgb(236 235 205 / .5);
+    --color_PunchHole_shadow_gray_rgb: transparent;
+    --color_dropShadow_rgb: rgb(0 0 0 / .4);
     --color_pageTitle: #99ffff;
     --color_TitleText: #ff00ff;
     --color_NavigationMenu: #ff99ff;
@@ -83,11 +83,11 @@ a {
 }
 
 .noteWithShadow {
-    filter: drop-shadow(20px 20px 4px var(--color_dropShadow_rgba));
+    filter: drop-shadow(20px 20px 4px var(--color_dropShadow_rgb));
 }
 
 .trapezoidWithShadow {
-    filter: drop-shadow(20px 20px 4px var(--color_dropShadow_rgba));
+    filter: drop-shadow(20px 20px 4px var(--color_dropShadow_rgb));
 
     /* 付箋の輪郭設定 */
     .rectTrapezoid {
@@ -135,11 +135,11 @@ a {
     /* top: 30px; */
     width: var(--test);
     height: var(--test);
-    background-color: var(--color_PunchHole_shadow_rgba);
+    background-color: var(--color_PunchHole_shadow_rgb);
     border-radius: 50%;
     overflow: hidden;
     position: relative;
-    background-image: radial-gradient(circle at 40px 40px, var(--color_PunchHole_shadow_body_rgba) 40%, var(--color_PunchHole_shadow_mid_rgba) 50%, var(--color_PunchHole_shadow_gray_rgba) 60%);
+    background-image: radial-gradient(circle at 40px 40px, var(--color_PunchHole_shadow_body_rgb) 40%, var(--color_PunchHole_shadow_mid_rgb) 50%, var(--color_PunchHole_shadow_gray_rgb) 60%);
 }
 
 .PunchHoleImg {
@@ -416,7 +416,7 @@ body {
             /* https://arts-factory.net/rgbatool/ */
             height: 100%;
             width: 100%;
-            background-image: repeating-linear-gradient(0deg, var(--color_body_rgba), var(--color_clear_rgba));
+            background-image: repeating-linear-gradient(0deg, var(--color_body_rgb), var(--color_clear_rgb));
         }
     }
 
@@ -448,7 +448,7 @@ body {
         /* ポイント４ */
         border-radius: 8px;
         overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, .2);
+        box-shadow: 0 4px 15px rgb(0 0 0 / .2);
 
         .overviewImg {
             height: auto;
