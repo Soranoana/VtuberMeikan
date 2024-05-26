@@ -1,0 +1,496 @@
+:root {
+    /* color */
+    /* common */
+    --color_clear_rgb: rgb(255 255 255 / 0);
+    /* release */
+    /* --color_body: #ECEBCD;
+    --color_body_rgb: rgb(236 235 205 / 1);
+    --color_PunchHole_shadow_rgb: rgb(118 117 102);
+    --color_PunchHole_shadow_body_rgb: var(--color_body_rgb);
+    --color_PunchHole_shadow_mid_rgb: rgb(236 235 205 / .5);
+    --color_PunchHole_shadow_gray_rgb: transparent;
+    --color_dropShadow_rgb: rgb(0 0 0 / .4);
+    --color_pageTitle: #00000000;
+    --color_TitleText: transparent;
+    --color_NavigationMenu: #00000000;
+    --color_Tabs: transparent;
+    --color_LeftContent: transparent;
+    --color_Abstraction: #ffffff;
+    --color_PunchArea: transparent;
+    --color_NoteArea: transparent;
+    --color_RightContent: transparent;
+    --color_MainContents: #ffffff;
+    --color_SiteFooter: transparent;
+    --color_FooterText: transparent;
+    --color_RowBorderLine:#00b7ff; */
+    /* debug */
+    --color_body: #ECEBCD;
+    --color_body_rgb: rgb(236 235 205 / 1);
+    --color_PunchHole_shadow_rgb: rgb(118 117 102);
+    --color_PunchHole_shadow_body_rgb: var(--color_body_rgb);
+    --color_PunchHole_shadow_mid_rgb: rgb(236 235 205 / .5);
+    --color_PunchHole_shadow_gray_rgb: transparent;
+    --color_dropShadow_rgb: rgb(0 0 0 / .4);
+    --color_pageTitle: #99ffff;
+    --color_TitleText: #ff00ff;
+    --color_NavigationMenu: #ff99ff;
+    --color_Tabs: #ffffff;
+    --color_LeftContent: #ff99ff;
+    --color_Abstraction: #0000ff;
+    --color_PunchArea: #00ff00;
+    --color_NoteArea: #00ffff;
+    --color_RightContent: #99ff99;
+    --color_MainContents: #ff00ff;
+    --color_SiteFooter: #999999;
+    --color_FooterText: #f0f00f;
+    --color_RowBorderLine:#ffffff;
+}
+
+nav {
+    width: 100%;
+    height: 70px;
+    /* background-color: dimgray; */
+    padding-top: 5px;
+    box-sizing: border-box;
+}
+
+ul {
+    display: flex;
+}
+
+li {
+    list-style: none;
+}
+
+a {
+    display: block;
+    text-decoration: none;
+    /* color: white; */
+    margin-right: 35px;
+}
+
+/* Twitter */
+/* .twitter-timeline {
+    width: 300px;
+    height: 300px;
+} */
+
+.timeline {
+    position: relative;
+    max-width: 100%;
+    /* border: 1px solid #333; */
+    /* padding: 10px; */
+}
+
+.noteWithShadow {
+    filter: drop-shadow(20px 20px 4px var(--color_dropShadow_rgb));
+}
+
+.trapezoidWithShadow {
+    filter: drop-shadow(20px 20px 4px var(--color_dropShadow_rgb));
+
+    /* 付箋の輪郭設定 */
+    .rectTrapezoid {
+        position: relative;
+        width: 15rem;
+        height: 3rem;
+        /* background-color: #ff2828; */
+        /* polygon(左上X Y, 右上X Y, 右下X Y, 左下X Y) */
+        clip-path: polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: black;
+        font-size: 1.3rem;
+        /* box-shadow: 2px 2px 4px -2px gray inset; */
+        /* box-shadow: 10px 10px #000000; */
+    }
+
+    .red {
+        background-color: #F18B8B;
+    }
+
+    .yellow {
+        background-color: #F1EF8B;
+    }
+
+    .green {
+        background-color: #8BF1B9;
+    }
+
+    .lightblue {
+        background-color: #8BD6F1;
+    }
+
+    .blue {
+        background-color: #8BADF1;
+    }
+}
+
+.PunchHole {
+    --test: 30px;
+    position: relative;
+    /* left: calc(var(--test)/2); */
+    margin: 20px;
+    /* top: 30px; */
+    width: var(--test);
+    height: var(--test);
+    background-color: var(--color_PunchHole_shadow_rgb);
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    background-image: radial-gradient(circle at 40px 40px, var(--color_PunchHole_shadow_body_rgb) 40%, var(--color_PunchHole_shadow_mid_rgb) 50%, var(--color_PunchHole_shadow_gray_rgb) 60%);
+}
+
+.PunchHoleImg {
+    --test: 30px;
+    position: relative;
+    /* left: calc(var(--test)/2); */
+    /* top: 30px; */
+    /* margin: 10px; */
+    margin-left: 25px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: var(--test);
+    height: var(--test);
+}
+
+.RowBorderLine {
+    /* TODO 行間調整 */
+    /* 罫線の色と太さ  */
+    background-image: linear-gradient(180deg, var(--color_RowBorderLine) 1px, transparent 1px);
+    /* 行の高さ */
+    background-size: 100% 2.5em;
+    /* 文字の高さ */
+    line-height: 2.5em;
+    /* 最終行の下にも罫線を引く */
+    padding-bottom: 1px;
+}
+
+/* ポジション系 */
+
+/* アウトライン */
+body {
+    background: var(--color_body);
+    /* Grid設定 */
+    display: grid;
+    grid-template-columns: 15% 10% 75%;
+    grid-template-rows: 130px auto 86px;
+    min-height: 100vh;
+
+    /* 
+    body直下のGridの分割イメージ
+
+    row |              column
+    1↘__1_____________2____3________________4
+        |                  |                |
+        |    PageTitle     | NavigationMenu |
+    2↘__|__________________|________________|
+        |             |                     |
+        |             |                     |
+        |             |                     |
+        | LeftContent |    RightContent     |
+        |             |                     |
+        |             |                     |
+    3↘__|_____________|_____________________|
+        |                                   |
+        |            SiteFooter             |
+    4↘__|___________________________________|
+    */
+
+    .PageTitle {
+        background-color: var(--color_pageTitle);
+        /* 子要素を中央に配置 */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* グリッド */
+        grid-row: 1 / 2;
+        grid-column: 1 / 3;
+
+        .TitleText {
+            background-color: var(--color_TitleText);
+            /* position: relative;
+            top: 2%;
+            left: 7.6%;
+            right: 7.6%;
+            bottom: 2%; */
+        }
+    }
+
+    .NavigationMenu {
+        background-color: var(--color_NavigationMenu);
+        /* グリッド */
+        grid-row: 1 / 2;
+        grid-column: 3 / 4;
+        /* タブの影がほかのグリッドに影響を及ぼすのを止める */
+        overflow: hidden;
+        /* 子要素グリッド */
+        display: grid;
+        grid-template-columns: auto 15rem;
+        /* grid-template-rows: 20px auto 20px; */
+
+        .Tabs {
+            background-color: var(--color_Tabs);
+            position: relative;
+            /* タブの高さ（領域の高さが同じになるようにしている） */
+            --tabHeight: 50%;
+            top: calc(100% - var(--tabHeight));
+            height: var(--tabHeight);
+            /* tabの下揃え */
+            display: flex;
+            /* グリッド */
+            /* grid-row: 1 / 2; */
+            grid-column: 1 / 2;
+            /* 子要素グリッド */
+            /* display: grid; */
+            /* grid-template-columns: repeat(5, var(--tabWidth) var(--tabOverlap)); */
+            /* grid-template-rows: 20px auto 20px;*/
+
+            /* tabの下揃え */
+            ul {
+                display: grid;
+                --tabWidth: 200px;
+                --tabOverlap: 30px;
+                grid-template-columns: repeat(5, var(--tabWidth) var(--tabOverlap));
+                list-style: none;
+                /* ul要素が全体をカバーするように設定 */
+                width: 100%;
+                /* 中央揃え */
+                /* align-items: center; */
+                /* 左右に余白ゼロ */
+                padding: 0;
+                /* 上下に余白ゼロ */
+                margin: 0;
+                /* 下揃え */
+                align-items: flex-end;
+
+                li {
+                    /* それぞれのli要素が1列を占めるように */
+                    grid-column: span 2;
+
+                    a {
+                        display: block;
+                        /* リンクの下線を消去 */
+                        text-decoration: none;
+                        /* 親要素から色を継承 */
+                        color: inherit;
+                    }
+                }
+            }
+
+            .zIndex1 {
+                z-index: 1;
+            }
+
+            .zIndex2 {
+                z-index: 2;
+            }
+
+            .zIndex3 {
+                z-index: 3;
+            }
+
+            .zIndex4 {
+                z-index: 4;
+            }
+
+            .zIndex5 {
+                z-index: 5;
+            }
+        }
+    }
+
+    .LeftContent {
+        background-color: var(--color_LeftContent);
+        /* グリッド */
+        grid-row: 2 / 3;
+        grid-column: 1 / 2;
+        /* 子要素グリッド */
+        display: grid;
+        --rightPadding: 3.5%;
+        --leftPadding: 3.5%;
+        grid-template-columns: var(--rightPadding) calc(100% - var(--rightPadding) - var(--leftPadding)) var(--leftPadding);
+        grid-template-rows: auto 1fr;
+        /* タブの影がほかのグリッドに影響を及ぼすのを止める */
+        overflow: hidden;
+
+        .Abstraction {
+            background-color: var(--color_Abstraction);
+            /* グリッド */
+            grid-column: 2 / 3;
+            grid-row: 1 / 2;
+            /* 子要素グリッド */
+            display: grid;
+            grid-template-columns: auto auto 20px;
+            grid-template-rows: 20px auto 20px;
+
+            .PunchArea {
+                background-color: var(--color_PunchArea);
+                /* グリッド */
+                grid-row: 2 / 3;
+                grid-column: 1 / 2;
+            }
+
+            .NoteArea {
+                background-color: var(--color_NoteArea);
+                /* グリッド */
+                grid-row: 2 / 3;
+                grid-column: 2 / 3;
+                /* 参考 */
+                /* https://ics.media/entry/240411/ */
+                /* 収まらない場合に折り返す */
+                overflow-wrap: anywhere;
+                /* 単語の分割はデフォルトに依存 */
+                word-break: normal;
+                /* 禁則処理を厳格に適用 */
+                line-break: strict;
+            }
+        }
+    }
+
+    .RightContent {
+        background-color: var(--color_RightContent);
+        /* グリッド */
+        grid-row: 2 / 3;
+        grid-column: 2 / 4;
+        /* 子要素グリッド */
+        display: grid;
+        grid-template-columns: auto 15rem;
+        grid-template-rows: 1fr;
+        /* タブの影がほかのグリッドに影響を及ぼすのを止める */
+        overflow: hidden;
+
+        /* マスクを使って中央に丸い穴をあける */
+        /* -webkit-mask-image: radial-gradient(circle, transparent 100px, black 0);
+        mask-image: radial-gradient(circle, transparent 100px, black 0); */
+
+        .MainContents {
+            background-color: var(--color_MainContents);
+            /* グリッド */
+            grid-column: 1 / 2;
+        }
+    }
+
+    /* コピーライトなど */
+    .SiteFooter {
+        background-color: var(--color_SiteFooter);
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        /* グリッド */
+        grid-row: 3 / 4;
+        grid-column: 1 / 4;
+
+        .FooterText {
+            background-color: var(--color_FooterText);
+            position: relative;
+            top: 11.6%;
+            /* left: 7.6%;
+            right: 7.6%; */
+            bottom: 11.6%;
+            text-align: center;
+        }
+    }
+
+    /* フェードする画像 */
+    .ViewFooter {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        height: 10%;
+        text-align: center;
+
+        /* img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            object-position: auto 30%;
+        } */
+
+        .FeedFooter {
+            /* 参考サイト */
+            /* グラデーション作成 */
+            /* https://front-end-tools.com/generateGradient/ */
+            /* カラーコードからrgbaに変換 */
+            /* https://arts-factory.net/rgbatool/ */
+            height: 100%;
+            width: 100%;
+            background-image: repeating-linear-gradient(0deg, var(--color_body_rgb), var(--color_clear_rgb));
+        }
+    }
+
+
+    /* header{
+        margin-top: 0%;
+        margin-left: 0%;
+    } */
+}
+
+.card-group {
+    /* margin-left: auto; */
+    /* margin-right: auto; */
+    /* max-width: 640px; */
+    /* width: 90%; */
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+
+    .card {
+        height: auto;
+        width: calc((100% - 20px * 2) / 3);
+        /* Grid設定 */
+        display: grid;
+        grid-template-columns: 50% 50%;
+        /* grid-template-rows: 100%; */
+        /* ポイント４ */
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgb(0 0 0 / .2);
+
+        .overviewImg {
+            height: auto;
+            width: 100%;
+            padding-top: 56.25%;
+            background: #bbb;
+            box-sizing: border-box;
+            /* グリッド */
+            /* grid-row: 1 / 2; */
+            grid-column: 1 / 2;
+        }
+
+        .overviewTextArea {
+            width: 100%;
+            height: auto;
+            padding: 20px 18px;
+            background: #fff;
+            box-sizing: border-box;
+            /* グリッド */
+            /* grid-row: 1 / 2; */
+            grid-column: 2 / 3;
+            
+            *+*{
+                margin-top: 10px;
+            }
+
+            .overviewTitle {
+                font-size: 20px;
+                font-weight: bold;
+                line-height: 125%;
+            }
+
+            .overviewText {
+                font-size: 12px;
+                font-weight: bold;
+                line-height: 150%;
+            }
+        }
+    }
+}
+
+.card-group> :not(:nth-child(3n-2)) {
+    margin-left: 20px;
+}
+
