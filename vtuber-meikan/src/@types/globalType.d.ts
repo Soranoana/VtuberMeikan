@@ -1,3 +1,0 @@
-interface test {
-    text: string;
-};

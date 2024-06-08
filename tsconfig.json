@@ -99,7 +99,7 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
   "include": [
-    "src",
-    "@types/globalType.d.ts"
+    "./src",
+    "./@types/globalType.d.ts"
   ]
 }
