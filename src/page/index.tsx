@@ -5,14 +5,18 @@ import LeftContent from "./common/LeftContent";
 import ViewFooter from "./common/ViewFooter";
 import SiteFooter from "./common/SiteFooter";
 import Top from "./top";
+import "./../testCss.css";
 
 export default function page() {
     return (
         <>
             <body>
                 <PageTitle />
+                {/* メニューバー */}
                 <NavigationMenu />
+                {/* サブメニュー */}
                 <LeftContent />
+                {/* メインページ */}
                 <RightContent />
                 <ViewFooter />
                 <SiteFooter />

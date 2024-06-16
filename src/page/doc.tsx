@@ -1,12 +1,12 @@
 import React from 'react';
 import { createSwaggerSpec } from "next-swagger-doc";
-import SwaggerUI from "swagger-ui-react";
+// import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
 
 const ApiDoc = ({ spec }) => {
     // docを空ページに差し替えて無効化
-    return <SwaggerUI spec={spec} />;
-    // return <></>
+    // return <SwaggerUI spec={spec} />;
+    return <></>
 };
 
 export const getStaticProps = async ctx => {
