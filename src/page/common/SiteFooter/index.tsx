@@ -3,13 +3,14 @@ import "./../../../testCss.css";
 
 export default function page() {
     return (
-        <div className="SiteFooter">
-            {/* コピーライトなど */}
-            <footer>
-                <div className="FooterText">
-                    <p>©ソラノアナ</p>
-                </div>
-            </footer>
-        </div>
+        <>
+            <div className="SiteFooter">
+                <footer>
+                    <div className="FooterText">
+                        <p>©ソラノアナ</p>
+                    </div>
+                </footer>
+            </div>
+        </>
     )
 }
