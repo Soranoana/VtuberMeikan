@@ -1,5 +1,5 @@
 import React from 'react';
-import "./../../../testCss.css";
+import "@/src/page/testCss.css";
 
 export default function page() {
     return (

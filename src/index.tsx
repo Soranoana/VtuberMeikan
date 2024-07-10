@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
+import App from '@/src/App';
 
 var container = document.getElementById('root') as ReactDOM.Container;
-const root = ReactDOM.createRoot( container );
+const root = ReactDOM.createRoot(container);
 root.render(
   <React.StrictMode>
     <App />

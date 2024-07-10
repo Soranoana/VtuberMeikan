@@ -1,5 +1,5 @@
 import React from 'react';
-import page from './page';
+import page from '@/src/page';
 
 function App() {
   const pageTop = page() as React.JSX.Element;
