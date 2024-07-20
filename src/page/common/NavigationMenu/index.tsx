@@ -1,48 +1,28 @@
 import React from 'react';
 import "./../../../testCss.css";
+import { trapezoidInfoIF, rectTrapezoid } from "../../../component/page/trapezoid";
 
 export default function page() {
+
+    const trapezoidInfos = [
+        { label: "トップ", color: "red" },
+        { label: "検索", color: "yellow" },
+        { label: "新規Vtuber登録", color: "green" },
+        { label: "問い合わせ", color: "lightblue" },
+        { label: "ログイン", color: "blue" },
+    ] as trapezoidInfoIF[];
+
     return (
         <>
             <div className="NavigationMenu">
                 <div className="Tabs">
                     {/* <nav> */}
                     <ul>
-                        <li className="zIndex5">
-                            {/* <a href="#"> */}
-                            <div className="trapezoidWithShadow">
-                                <div className="rectTrapezoid red">トップ</div>
-                            </div>
-                            {/* </a> */}
-                        </li>
-                        <li className="zIndex4">
-                            {/* <a href="#"> */}
-                            <div className="trapezoidWithShadow">
-                                <div className="rectTrapezoid yellow">検索</div>
-                            </div>
-                            {/* </a> */}
-                        </li>
-                        <li className="zIndex3">
-                            {/* <a href="#"> */}
-                            <div className="trapezoidWithShadow">
-                                <div className="rectTrapezoid green">新規Vtuber登録</div>
-                            </div>
-                            {/* </a> */}
-                        </li>
-                        <li className="zIndex2">
-                            {/* <a href="#"> */}
-                            <div className="trapezoidWithShadow">
-                                <div className="rectTrapezoid lightblue">問い合わせ</div>
-                            </div>
-                            {/* </a> */}
-                        </li>
-                        <li className="zIndex1">
-                            {/* <a href="#"> */}
-                            <div className="trapezoidWithShadow">
-                                <div className="rectTrapezoid blue">ログイン</div>
-                            </div>
-                            {/* </a> */}
-                        </li>
+                        {!!trapezoidInfos && trapezoidInfos.map((item: trapezoidInfoIF, index) => (
+                            <li className={"zIndex" + (trapezoidInfos.length - index)}>
+                                {rectTrapezoid(item)}
+                            </li>
+                        ))}
                         {/* <li><a href="#"><img src="広告3.png" /></a></li> */}
                     </ul>
                     {/* </nav> */}
