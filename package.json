@@ -10,13 +10,13 @@
     "react-bootstrap": "2.10.2",
     "react-dom": "18.3.1",
     "react-scripts": "5.0.1",
-    "typescript": "4.9.5"
+    "next": "14.2.13"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "eslintConfig": {
     "extends": [
@@ -37,8 +37,12 @@
     ]
   },
   "devDependencies": {
+    "typescript": "4.9.5",
+    "@types/node": "^20",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.13",
     "next-swagger-doc": "0.4.0",
     "swagger-jsdoc": "6.2.8",
     "swagger-ui-express": "5.0.0",
