@@ -1,36 +1,163 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# プロフィール投稿サイト
 
-## Getting Started
+React + Next.js + PostgreSQLで構築されたプロフィール投稿サイトです。
 
-First, run the development server:
+## 機能
+
+- プロフィールの新規投稿
+- 投稿されたプロフィールの検索
+- 投稿されたプロフィールの閲覧
+- 投稿されたプロフィールの削除
+- 投稿されたプロフィールの編集
+
+## 技術スタック
+
+- **フロントエンド**: React 18 + Next.js 14 + TypeScript
+- **スタイリング**: Tailwind CSS
+- **データベース**: PostgreSQL 15
+- **コンテナ**: Docker + Docker Compose
+- **データベース管理**: pgAdmin
+
+## セットアップ
+
+### 前提条件
+
+- Docker
+- Docker Compose
+- Node.js 18以上（ローカル開発用）
+
+### 1. リポジトリのクローン
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd vtuber-meikan
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. 環境変数の設定
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cp .env.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+必要に応じて`.env.local`ファイルの値を編集してください。
 
-## Learn More
+### 3. Docker環境での起動
 
-To learn more about Next.js, take a look at the following resources:
+#### データベースのみ起動（推奨）
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# PostgreSQLとpgAdminを起動
+docker-compose up -d
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# アプリケーションをローカルで起動
+npm install
+npm run dev
+```
 
-## Deploy on Vercel
+#### 全環境をDockerで起動
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+# 全サービスを起動
+docker-compose -f docker-compose.dev.yml up -d
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 4. アクセス
+
+- **アプリケーション**: http://localhost:3000
+- **pgAdmin**: http://localhost:8080
+  - メール: admin@example.com
+  - パスワード: admin
+
+## 開発
+
+### データベース接続確認
+
+```bash
+# ヘルスチェックAPI
+curl http://localhost:3000/api/health
+```
+
+### ローカル開発
+
+```bash
+# 依存関係のインストール
+npm install
+
+# 開発サーバーの起動
+npm run dev
+
+# ビルド
+npm run build
+
+# 本番サーバーの起動
+npm start
+```
+
+### Dockerコマンド
+
+```bash
+# サービスの起動
+docker-compose up -d
+
+# サービスの停止
+docker-compose down
+
+# ログの確認
+docker-compose logs -f
+
+# データベースのリセット
+docker-compose down -v
+docker-compose up -d
+```
+
+## データベース構造
+
+### profiles テーブル
+
+| カラム名 | 型 | 説明 |
+|---------|----|----|
+| id | UUID | プライマリキー |
+| name | VARCHAR(255) | 名前（必須） |
+| age | INTEGER | 年齢 |
+| bio | TEXT | 自己紹介 |
+| email | VARCHAR(255) | メールアドレス |
+| location | VARCHAR(255) | 居住地 |
+| interests | TEXT | 興味・趣味 |
+| avatar | TEXT | アバター画像URL |
+| created_at | TIMESTAMP | 作成日時 |
+| updated_at | TIMESTAMP | 更新日時 |
+
+## 環境変数
+
+| 変数名 | デフォルト値 | 説明 |
+|--------|-------------|------|
+| DB_HOST | localhost | データベースホスト |
+| DB_PORT | 5432 | データベースポート |
+| DB_NAME | vtuber_meikan | データベース名 |
+| DB_USER | postgres | データベースユーザー |
+| DB_PASSWORD | password | データベースパスワード |
+
+## トラブルシューティング
+
+### データベース接続エラー
+
+1. PostgreSQLコンテナが起動しているか確認
+```bash
+docker-compose ps
+```
+
+2. データベース接続をテスト
+```bash
+curl http://localhost:3000/api/health
+```
+
+3. pgAdminでデータベースに接続できるか確認
+
+### ポート競合
+
+- ポート3000が使用中の場合、別のポートを指定
+- ポート5432が使用中の場合、`docker-compose.yml`でポートマッピングを変更
+
+## ライセンス
+
+MIT License

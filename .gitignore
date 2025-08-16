@@ -11,6 +11,10 @@
 # production
 /build
 
+# next.js
+/.next/
+/out/
+
 # misc
 .DS_Store
 .env.local
@@ -24,3 +28,14 @@ yarn-error.log*
 
 ~$*
 *.url
+
+# database
+*.db
+*.sqlite
+*.sqlite3
+
+# docker
+.dockerignore
+
+# logs
+*.log
