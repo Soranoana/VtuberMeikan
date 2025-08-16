@@ -188,16 +188,10 @@ export default function ProfilePage({ params }: ProfilePageProps) {
 
             {/* アクションボタン */}
             <div className="mt-8 pt-6 border-t border-gray-200">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link
-                  href="/"
-                  className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors text-center"
-                >
-                  ホームに戻る
-                </Link>
+              <div className="flex justify-center">
                 <Link
                   href={`/edit/${profile.id}`}
-                  className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors text-center"
+                  className="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition-colors"
                 >
                   プロフィールを編集
                 </Link>

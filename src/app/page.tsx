@@ -58,15 +58,15 @@ export default function Home() {
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            プロフィール投稿サイト
+            プロフィール一覧
           </h1>
           <p className="text-lg text-gray-600">
             あなたのプロフィールを投稿して、他の人と共有しましょう
           </p>
         </div>
 
-        {/* 検索と新規作成ボタン */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        {/* 検索フォーム */}
+        <div className="flex gap-4 mb-8">
           <div className="flex-1">
             <div className="flex gap-2">
               <input
@@ -85,12 +85,6 @@ export default function Home() {
               </button>
             </div>
           </div>
-          <Link
-            href="/create"
-            className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-center"
-          >
-            新規プロフィール作成
-          </Link>
         </div>
 
         {/* プロフィール一覧 */}
