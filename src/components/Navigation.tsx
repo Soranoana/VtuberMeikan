@@ -26,58 +26,53 @@ export default function Navigation() {
           </div>
 
           {/* ナビゲーションリンク */}
-          <div className="flex items-center space-x-8">
+          <div className="flex items-center space-x-12">
             <Link
               href="/"
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                isActive('/')
-                  ? 'bg-white text-red-700'
-                  : 'text-white hover:text-red-200 hover:bg-red-600'
-              }`}
+              className={`px-6 py-3 rounded-t-lg text-sm font-medium transition-all duration-200 border-b-2 ${isActive('/')
+                  ? 'bg-white text-red-700 border-red-700 shadow-lg'
+                  : 'text-white hover:text-red-200 hover:bg-red-600 border-transparent hover:border-red-300'
+                }`}
             >
               トップ
             </Link>
-            
+
             <Link
               href="/search"
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                isActive('/search')
-                  ? 'bg-white text-red-700'
-                  : 'text-white hover:text-red-200 hover:bg-red-600'
-              }`}
+              className={`px-6 py-3 rounded-t-lg text-sm font-medium transition-all duration-200 border-b-2 ${isActive('/search')
+                  ? 'bg-white text-red-700 border-red-700 shadow-lg'
+                  : 'text-white hover:text-red-200 hover:bg-red-600 border-transparent hover:border-red-300'
+                }`}
             >
               Vtuber検索
             </Link>
-            
+
             <Link
               href="/create"
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                isActive('/create')
-                  ? 'bg-white text-red-700'
-                  : 'text-white hover:text-red-200 hover:bg-red-600'
-              }`}
+              className={`px-6 py-3 rounded-t-lg text-sm font-medium transition-all duration-200 border-b-2 ${isActive('/create')
+                  ? 'bg-white text-red-700 border-red-700 shadow-lg'
+                  : 'text-white hover:text-red-200 hover:bg-red-600 border-transparent hover:border-red-300'
+                }`}
             >
               プロフィール作成
             </Link>
-            
+
             <Link
               href="/contact"
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                isActive('/contact')
-                  ? 'bg-white text-red-700'
-                  : 'text-white hover:text-red-200 hover:bg-red-600'
-              }`}
+              className={`px-6 py-3 rounded-t-lg text-sm font-medium transition-all duration-200 border-b-2 ${isActive('/contact')
+                  ? 'bg-white text-red-700 border-red-700 shadow-lg'
+                  : 'text-white hover:text-red-200 hover:bg-red-600 border-transparent hover:border-red-300'
+                }`}
             >
               問い合わせ
             </Link>
-            
+
             <Link
               href="/login"
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                isActive('/login')
-                  ? 'bg-white text-red-700'
-                  : 'text-white hover:text-red-200 hover:bg-red-600'
-              }`}
+              className={`px-6 py-3 rounded-t-lg text-sm font-medium transition-all duration-200 border-b-2 ${isActive('/login')
+                  ? 'bg-white text-red-700 border-red-700 shadow-lg'
+                  : 'text-white hover:text-red-200 hover:bg-red-600 border-transparent hover:border-red-300'
+                }`}
             >
               ログイン
             </Link>
