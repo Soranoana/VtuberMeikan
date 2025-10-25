@@ -1,8 +1,0 @@
-{
-  "/page": "app/page.js",
-  "/api/profiles/route": "app/api/profiles/route.js",
-  "/search/page": "app/search/page.js",
-  "/create/page": "app/create/page.js",
-  "/contact/page": "app/contact/page.js",
-  "/login/page": "app/login/page.js"
-}
