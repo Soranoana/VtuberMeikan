@@ -1,0 +1,34 @@
+export interface VTuberProfile {
+  id: string;
+  name: string;
+  nickname: string;
+  affiliation: string;
+  birthday: string;
+  debut: string;
+  bloodType: string;
+  height: string;
+  favoriteThings: string;
+  dislikedThings: string;
+  hobby: string;
+  catchphrase: string;
+  dream: string;
+  message: string;
+  oneWord?: string;
+  activityHistory?: string;
+  activityGenre?: string;
+  activityStatus?: string;
+  imageUrl?: string;
+  imageUrls?: string[];
+  tags?: string[];
+  createdAt: Date;
+  updatedAt?: Date;
+  viewCount?: number;
+  likeCount?: number;
+  youtubeUrl?: string;
+  xUrl?: string;
+  tiktokUrl?: string;
+  websiteUrl?: string;
+  videoUrls?: string[];
+  freeDescription?: string;
+  snsLinks?: { icon: string; label: string; url: string }[];
+}
