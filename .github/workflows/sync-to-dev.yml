@@ -4,7 +4,8 @@ on:
   schedule:
     # 平日（月〜金）の日本時間 9:00 〜 21:00 の間、1時間ごとに実行（UTC 0:00 〜 12:00）
     - cron: '0 0-12 * * 1-5'
-  workflow_dispatch: # 開発者がGitHub上のボタンから「今すぐ手動で同期」することも可能にする設定
+  # 開発者がGitHub上のボタンから「今すぐ手動で同期」することも可能にする設定
+  workflow_dispatch: 
 
 jobs:
   check-and-pull:
