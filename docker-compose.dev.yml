@@ -12,7 +12,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data_dev:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     restart: unless-stopped
 
   pgadmin:
@@ -35,12 +35,12 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_NAME=vtuber_meikan
-      - DB_USER=postgres
-      - DB_PASSWORD=password
-      - NODE_ENV=development
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: vtuber_meikan
+      DB_USER: postgres
+      DB_PASSWORD: password
+      NODE_ENV: development
     volumes:
       - .:/app
       - /app/node_modules
