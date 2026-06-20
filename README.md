@@ -161,3 +161,10 @@ curl http://localhost:3000/api/health
 ## ライセンス
 
 MIT License
+
+
+##個人メモ
+#docker環境構築
+docker build .
+#docker起動
+docker run .

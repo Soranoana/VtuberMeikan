@@ -1,0 +1,54 @@
+name: Pull Figma Design (Scheduled)
+
+on:
+  schedule:
+    # 平日（月〜金）の日本時間 9:00 〜 21:00 の間、1時間ごとに実行（UTC 0:00 〜 12:00）
+    - cron: '0 0-12 * * 1-5'
+  workflow_dispatch: # 開発者がGitHub上のボタンから「今すぐ手動で同期」することも可能にする設定
+
+jobs:
+  check-and-pull:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 自分のリポジトリ（開発リポジトリ）をチェックアウト
+        uses: actions/checkout@v4
+        with:
+          # 自身のブランチにプッシュするため、デフォルトのトークンを使用
+          fetch-depth: 0
+
+      - name: Figmaリポジトリを別フォルダにチェックアウト
+        uses: actions/checkout@v4
+        with:
+          repository: 'Soranoana/Vtubermeikanfigmaai' # Figma Makeがプッシュしているリポジトリ名
+          token: ${{ secrets.FIGMA_REPO_PAT }} # Secrets
+          path: 'figma-temp-src' # 一時的にファイルを展開するフォルダ名
+
+      - name: デザインの同期処理
+        run: |
+          # 1. Gitのコミットユーザー設定
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # 2. デザイン管理用ブランチ（例: figma-design）に切り替え（なければ新規作成）
+          git checkout -B figma-design
+
+          # 3. 開発リポジトリ内の格納先フォルダをクリア（例として src/figma 配下に格納する場合）
+          # ※プロジェクトの構成（src/assets/ 等）に合わせて書き換えてください
+          # TARGET_DIR="src/figma"
+          TARGET_DIR=".design/figma_ai"
+          mkdir -p $TARGET_DIR
+          rm -rf $TARGET_DIR/*
+
+          # 4. Figmaリポジトリの中身を、開発リポジトリのターゲットフォルダへコピー
+          # (.git や .github など不要なファイルを除外して安全にコピー)
+          rsync -av --exclude='.git' --exclude='.github' figma-temp-src/ $TARGET_DIR/
+
+          # 5. 変更差分があるか確認し、あればコミットしてプッシュ
+          git add $TARGET_DIR
+          if ! git diff --cached --quiet; then
+            git commit -m "design: Figmaから最新のデザインモックを定期同期"
+            git push origin figma-design
+            echo "デザインの更新を figma-design ブランチに反映しました。"
+          else
+            echo "デザインに変更はありませんでした。"
+          fi
