@@ -7,6 +7,10 @@ on:
   # 開発者がGitHub上のボタンから「今すぐ手動で同期」することも可能にする設定
   workflow_dispatch: 
 
+# GitHub Actionsにリポジトリへの書き込みを許可
+permissions:
+  contents: write
+
 jobs:
   check-and-pull:
     runs-on: ubuntu-latest
