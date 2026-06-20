@@ -1,0 +1,61 @@
+npm run devで実行できることを確認しました。
+
+画面表示について、全体的に元の状態から崩れています。
+
+修正してください。元の画像イメージやHTMLイメージが必要であれば教えてください
+
+import { DetailPage } from '../src/app/pages/DetailPage';
+import { DetailPage } from '../../src/app/pages/DetailPage';
+    '/Users/segar/Documents/GitHub/vtuber-meikan/node_modules/next/dist/build/utils.js',
+    '/Users/segar/Documents/GitHub/vtuber-meikan/node_modules/next/dist/build/worker.js',
+    '/Users/segar/Documents/GitHub/vtuber-meikan/node_modules/next/dist/compiled/jest-worker/processChild.js'
+  ]
+}
+  ├ css/0c2251e994872de6.css               19.5 kB
+  └ other shared chunks (total)            1.5 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+  --sidebar-ring: #3b82f6;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+<!DOCTYPE html><html><head><style data-next-hide-fouc="true">body{display:none}</style><noscript data-next-hide-fouc="true"><style>body{display:block}</style></noscript><meta charSet="utf-8"/><meta name="viewport" content="width=device-width"/><meta name="next-head-count" content="2"/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills.js"></script><script src="/_next/static/chunks/fallback/webpack.js" defer=""></script><script src="/_next/static/chunks/fallback/main.js" defer=""></script><script src="/_next/static/chunks/fallback/pages/_app.js" defer=""></script><script src="/_next/static/chunks/fallback/pages/_error.js" defer=""></script><noscript id="__next_css__DO_NOT_USE__"></noscript></head><body><div id="__next"></div><script src="/_next/static/chunks/fallback/react-refresh.js"></script><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"statusCode":500}},"page":"/_error","query":{},"buildId":"development","isFallback":false,"err":{"name":"Error","source":"server","message":"Cannot find module './309.js'\nRequire stack:\n- /Users/segar/Documents/GitHub/vtuber-meikan/.next/server/webpack-runtime.js\n- /Users/segar/Documents/GitHub/vtuber-meikan/.next/server/pages/_document.js\n- /Users/segar/Documents/GitHub/vtuber-meikan/node_modules/next/dist/server/require.js\n- /Users/segar/Documents/GitHub/vtuber-meikan/node_modules/next/dist/server/load-components.js\n- /Users/segar/Documents/GitHub/vtuber-meikan/node_modules/next/dist/build/utils.js\n- /Users/segar/Documents/GitHub/vtuber-meikan/node_modules/next/dist/server/dev/hot-middleware.js\n- /Users/segar/Documents/GitHub/vtuber-meikan/node_modules/next/dist/server/dev/hot-reloader-webpack.js\n- /Users/segar/Documents/GitHub/vtuber-meikan/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js\n- /Users/segar/Documents/GitHub/vtuber-meikan/node_modules/next/dist/server/lib/router-server.js\n- /Users/segar/Documents/GitHub/vtuber-me
+画面崩れの原因を特定し、修正しました。元の画像は不要でした。.design/figma_ai と git 上の元ファイルを参照して復元しています。
+
+原因
+Tailwind CSS の設定が壊れていた
+Next.js 移行時に index.css が Tailwind v3 記法（@tailwind base 等）に書き換えられ、v4 向けの @theme・bg-card・text-muted-foreground などのユーティリティが生成されていませんでした。
+
+ページ構成が簡略化されていた
+pages/ 配下がモック実装のままで、本来の TopPage・DetailPage 等が使われておらず、Layout（ナビ・サイドバー・フッター）も _app.tsx に組み込まれていませんでした。
+
+修正内容
+ファイル	内容
+src/styles/index.css
+元の Tailwind v4 記法に復元
+pages/_app.tsx
+Layout で全ページをラップ
+pages/*.tsx
+各 src/app/pages/* コンポーネントを使用
+TopPage.tsx
+未修正の navigate() を router.push() に修正
+DetailPage.tsx / EditProfilePage.tsx
+ルートパラメータの読み込みを修正
+tailwind.config.cjs
+v4 と競合するため削除
+確認方法
+dev サーバーが起動中の場合は、キャッシュを消して再起動してください。
+
+rm -rf .next && npm run dev
+ブラウザで http://localhost:3000/ を開き、以下が表示されることを確認してください。
+
+クリーム色のヘッダー（「VTuberプロフィール帳」）
+検索ボックス・人気タグ
+VTuber カード一覧（横スクロール）
+右側サイドバー（デスクトップ）
+フッター
+npm run build も成功しており、CSS サイズも 10KB → 19.5KB に増えており、Tailwind が正しく効いている状態です。
+
+まだ崩れている箇所があれば、ページ名と具体的な症状（例：「詳細ページのカードが縦並び」）を教えてください。
