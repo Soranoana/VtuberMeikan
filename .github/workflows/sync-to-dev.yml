@@ -42,6 +42,8 @@ jobs:
           # TARGET_DIR="src/figma"
           TARGET_DIR=".design/figma_ai"
           mkdir -p $TARGET_DIR
+          # 物理削除だけでなく、Gitのインデックス（履歴）からも一旦完全に削除・クリアする
+          git rm -rf --cached $TARGET_DIR || true
           rm -rf $TARGET_DIR/*
 
           # 4. Figmaリポジトリの中身を、開発リポジトリのターゲットフォルダへコピー
