@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router';
 import { ProfileFormPage } from '../components/ProfileFormPage';
 import { useApp } from '../context/AppContext';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 export function EditProfilePage() {
   const { id } = useParams<{ id: string }>();

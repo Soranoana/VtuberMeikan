@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router';
 import { ProfileFormPage } from '../components/ProfileFormPage';
 import { useApp } from '../context/AppContext';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 export function NewProfilePage() {
   const navigate = useNavigate();

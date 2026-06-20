@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { VTuberProfile } from '../types';
 import { sampleProfiles } from '../data/sampleData';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface AppContextType {
   profiles: VTuberProfile[];

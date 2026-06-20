@@ -2,7 +2,7 @@ import { Outlet, useLocation } from 'react-router';
 import { Navigation } from './Navigation';
 import { Sidebar } from './Sidebar';
 import { Footer } from './Footer';
-import { Toaster } from 'sonner@2.0.3';
+import { Toaster } from 'sonner';
 import { useApp } from '../context/AppContext';
 
 const NO_SIDEBAR_PATHS = ['/user', '/new', '/edit'];
