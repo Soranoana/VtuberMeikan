@@ -1,13 +1,7 @@
-import { RouterProvider } from 'react-router';
-import { router } from './routes';
 import { AppProvider } from './context/AppContext';
 
 export type { VTuberProfile } from './types';
 
-export default function App() {
-  return (
-    <AppProvider>
-      <RouterProvider router={router} />
-    </AppProvider>
-  );
+export default function App({ children }: { children?: React.ReactNode }) {
+  return <AppProvider>{children}</AppProvider>;
 }

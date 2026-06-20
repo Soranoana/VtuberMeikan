@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useRouter } from 'next/router';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import { VTuberCard } from '../components/VTuberCard';
@@ -19,7 +19,7 @@ const popularTags = [
 ];
 
 export function TopPage() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { profiles, isLoggedIn, likedProfileIds, recentlyEditedProfileIds, handleToggleLike } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -56,7 +56,7 @@ export function TopPage() {
         <div key={profile.id} className="w-80">
           <VTuberCard
             profile={profile}
-            onClick={() => navigate(`/vtuber/${profile.id}`)}
+            onClick={() => router.push(`/vtuber/${profile.id}`)}
             isLiked={likedProfileIds.includes(profile.id)}
             onToggleLike={(e) => { e.stopPropagation(); handleToggleLike(profile.id); }}
           />
@@ -89,15 +89,15 @@ export function TopPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             {popularTags.map(tag => (
-              <Badge
-                key={tag.name}
-                variant="outline"
-                className="cursor-pointer hover:bg-accent hover:text-accent-foreground border-border transition-colors"
-                onClick={() => navigate(`/search?tag=${encodeURIComponent(tag.name)}`)}
-              >
-                {tag.name}<span className="ml-1 text-xs text-muted-foreground">({tag.count})</span>
-              </Badge>
-            ))}
+                    <Badge
+                      key={tag.name}
+                      variant="outline"
+                      className="cursor-pointer hover:bg-accent hover:text-accent-foreground border-border transition-colors"
+                      onClick={() => router.push(`/search?tag=${encodeURIComponent(tag.name)}`)}
+                    >
+                      {tag.name}<span className="ml-1 text-xs text-muted-foreground">({tag.count})</span>
+                    </Badge>
+                  ))}
           </div>
         </div>
       </div>

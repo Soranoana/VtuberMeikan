@@ -1,8 +1,8 @@
 import { Home, Search, Plus, Mail, Twitter, Github, Youtube } from 'lucide-react';
-import { useNavigate } from 'react-router';
+import { useRouter } from 'next/router';
 
 export function Footer() {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   return (
     <footer className="bg-[#FFFEF8] border-t-2 border-[#D4C5A9] mt-12">
@@ -13,28 +13,28 @@ export function Footer() {
             <h3 className="text-lg font-semibold text-[#8B7355] mb-4">サイトマップ</h3>
             <nav className="space-y-2">
               <button
-                onClick={() => navigate('/')}
+                onClick={() => router.push('/')}
                 className="flex items-center gap-2 text-[#6b6b6b] hover:text-[#8B7355] hover:bg-[#F4E9D6] transition-all duration-200 px-3 py-2 rounded-lg w-full text-left group"
               >
                 <Home className="w-4 h-4 group-hover:scale-110 transition-transform" />
                 <span className="group-hover:translate-x-1 transition-transform">トップ</span>
               </button>
               <button
-                onClick={() => navigate('/search')}
+                onClick={() => router.push('/search')}
                 className="flex items-center gap-2 text-[#6b6b6b] hover:text-[#8B7355] hover:bg-[#F4E9D6] transition-all duration-200 px-3 py-2 rounded-lg w-full text-left group"
               >
                 <Search className="w-4 h-4 group-hover:scale-110 transition-transform" />
                 <span className="group-hover:translate-x-1 transition-transform">検索</span>
               </button>
               <button
-                onClick={() => navigate('/new')}
+                onClick={() => router.push('/new')}
                 className="flex items-center gap-2 text-[#6b6b6b] hover:text-[#8B7355] hover:bg-[#F4E9D6] transition-all duration-200 px-3 py-2 rounded-lg w-full text-left group"
               >
                 <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
                 <span className="group-hover:translate-x-1 transition-transform">新規Vtuber登録</span>
               </button>
               <button
-                onClick={() => navigate('/contact')}
+                onClick={() => router.push('/contact')}
                 className="flex items-center gap-2 text-[#6b6b6b] hover:text-[#8B7355] hover:bg-[#F4E9D6] transition-all duration-200 px-3 py-2 rounded-lg w-full text-left group"
               >
                 <Mail className="w-4 h-4 group-hover:scale-110 transition-transform" />

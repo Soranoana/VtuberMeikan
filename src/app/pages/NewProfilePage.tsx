@@ -1,10 +1,10 @@
-import { useNavigate } from 'react-router';
+import { useRouter } from 'next/router';
 import { ProfileFormPage } from '../components/ProfileFormPage';
 import { useApp } from '../context/AppContext';
 import { toast } from 'sonner';
 
 export function NewProfilePage() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { handleAddProfile } = useApp();
 
   return (
@@ -12,9 +12,9 @@ export function NewProfilePage() {
       onSubmit={(profile) => {
         const newProfile = handleAddProfile(profile);
         toast.success('登録完了しました！', { description: 'VTuberが正常に登録されました' });
-        navigate(`/vtuber/${newProfile.id}`);
+        router.push(`/vtuber/${newProfile.id}`);
       }}
-      onCancel={() => navigate(-1)}
+      onCancel={() => router.back()}
     />
   );
 }

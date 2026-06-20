@@ -1,6 +1,6 @@
 import { Home, Search, Plus, Mail, LogIn, LogOut, BookOpen, User, ChevronDown, Menu, X } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router';
+import { useRouter } from 'next/router';
 
 interface NavigationProps {
   isLoggedIn: boolean;
@@ -9,8 +9,7 @@ interface NavigationProps {
 }
 
 export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユーザー' }: NavigationProps) {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -34,7 +33,7 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
   }, []);
 
   const handleNavigation = (path: string) => {
-    navigate(path);
+    router.push(path);
     setIsMobileMenuOpen(false);
   };
 
@@ -44,7 +43,7 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
         <div className="flex items-center justify-between">
           {/* ロゴとサイト名 */}
           <button
-            onClick={() => navigate('/')}
+            onClick={() => router.push('/')}
             className="flex items-center gap-1 sm:gap-2 hover:opacity-80 transition-opacity"
           >
             <BookOpen className="w-5 h-5 sm:w-7 sm:h-7 text-[#8B7355]" />
@@ -54,9 +53,9 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
           {/* デスクトップナビゲーション（md以上） */}
           <nav className="hidden md:flex items-center gap-1 sm:gap-2 md:gap-3">
             <button
-              onClick={() => handleNavigation('/')}
+                onClick={() => handleNavigation('/')}
               className={`flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm ${
-                location.pathname === '/'
+                router.asPath === '/' 
                   ? 'bg-[#E8DFC4] text-[#8B7355]'
                   : 'text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355]'
               }`}
@@ -67,8 +66,8 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
 
             <button
               onClick={() => handleNavigation('/search')}
-              className={`flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm ${
-                location.pathname === '/search' || location.pathname.startsWith('/vtuber')
+                className={`flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm ${
+                router.asPath === '/search' || router.asPath.startsWith('/vtuber')
                   ? 'bg-[#E8DFC4] text-[#8B7355]'
                   : 'text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355]'
               }`}
@@ -79,8 +78,8 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
 
             <button
               onClick={() => handleNavigation('/new')}
-              className={`flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm ${
-                location.pathname === '/new'
+                className={`flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm ${
+                router.asPath === '/new'
                   ? 'bg-[#E8DFC4] text-[#8B7355]'
                   : 'text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355]'
               }`}
@@ -92,8 +91,8 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
 
             <button
               onClick={() => handleNavigation('/contact')}
-              className={`hidden sm:flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm ${
-                location.pathname === '/contact'
+                className={`hidden sm:flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm ${
+                router.asPath === '/contact'
                   ? 'bg-[#E8DFC4] text-[#8B7355]'
                   : 'text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355]'
               }`}
@@ -124,7 +123,7 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
                     <button
                       onClick={() => {
                         setIsDropdownOpen(false);
-                        navigate('/user');
+                        router.push('/user');
                       }}
                       className="w-full text-left px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355] transition-colors flex items-center gap-2"
                     >
@@ -148,7 +147,7 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
               <button
                 onClick={() => handleNavigation('/login')}
                 className={`flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm ${
-                  location.pathname === '/login'
+                  router.asPath === '/login'
                     ? 'bg-[#E8DFC4] text-[#8B7355]'
                     : 'text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355]'
                 }`}
@@ -161,7 +160,7 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
 
           {/* モバイルメニュー */}
           <div className="md:hidden" ref={mobileMenuRef}>
-            <button
+                <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-colors text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355]"
             >
@@ -178,7 +177,7 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
                 <button
                   onClick={() => handleNavigation('/')}
                   className={`w-full flex items-center gap-2 px-4 py-3 text-sm border-b border-[#D4C5A9] ${
-                    location.pathname === '/'
+                    router.asPath === '/'
                       ? 'bg-[#E8DFC4] text-[#8B7355]'
                       : 'text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355]'
                   }`}
@@ -190,7 +189,7 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
                 <button
                   onClick={() => handleNavigation('/search')}
                   className={`w-full flex items-center gap-2 px-4 py-3 text-sm border-b border-[#D4C5A9] ${
-                    location.pathname === '/search' || location.pathname.startsWith('/vtuber')
+                    router.asPath === '/search' || router.asPath.startsWith('/vtuber')
                       ? 'bg-[#E8DFC4] text-[#8B7355]'
                       : 'text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355]'
                   }`}
@@ -202,7 +201,7 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
                 <button
                   onClick={() => handleNavigation('/new')}
                   className={`w-full flex items-center gap-2 px-4 py-3 text-sm border-b border-[#D4C5A9] ${
-                    location.pathname === '/new'
+                    router.asPath === '/new'
                       ? 'bg-[#E8DFC4] text-[#8B7355]'
                       : 'text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355]'
                   }`}
@@ -214,7 +213,7 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
                 <button
                   onClick={() => handleNavigation('/contact')}
                   className={`w-full flex items-center gap-2 px-4 py-3 text-sm border-b border-[#D4C5A9] ${
-                    location.pathname === '/contact'
+                    router.asPath === '/contact'
                       ? 'bg-[#E8DFC4] text-[#8B7355]'
                       : 'text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355]'
                   }`}
@@ -228,7 +227,7 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
                     <button
                       onClick={() => handleNavigation('/user')}
                       className={`w-full flex items-center gap-2 px-4 py-3 text-sm border-b border-[#D4C5A9] ${
-                        location.pathname === '/user'
+                        router.asPath === '/user'
                           ? 'bg-[#E8DFC4] text-[#8B7355]'
                           : 'text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355]'
                       }`}

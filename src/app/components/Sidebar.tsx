@@ -4,7 +4,7 @@ import { Button } from './ui/button';
 import { Search, Info, ChevronRight } from 'lucide-react';
 import { VTuberProfile } from '../types';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useRouter } from 'next/router';
 
 interface SidebarProps {
   profiles: VTuberProfile[];
@@ -12,7 +12,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ profiles, collapsible = false }: SidebarProps) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
 
   const isExpanded = !collapsible || isHovered;
@@ -73,7 +73,7 @@ export function Sidebar({ profiles, collapsible = false }: SidebarProps) {
               />
               <Button
                 className="w-full bg-[#8B7355] hover:bg-[#6B5945] text-white"
-                onClick={() => navigate('/search')}
+                onClick={() => router.push('/search')}
               >
                 <Search className="w-4 h-4 mr-2" />
                 検索する
