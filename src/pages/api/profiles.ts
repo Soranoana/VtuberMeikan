@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { sampleProfiles } from '../../src/app/data/sampleData';
+import { sampleProfiles } from '../../app/data/sampleData';
 
 function serialize(profile: any) {
   return {
