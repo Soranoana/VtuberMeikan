@@ -20,13 +20,25 @@
 
 | 物理名 | 論理名 | 状態 | 備考 |
 |---|---|---|---|
-| profiles | プロフィール | 実装済み（init.sql） | 現行APIで利用 |
-| users | ユーザー | 実装済み（init.sql） | 認証用の最小構成 |
-| vtuber_profiles | VTuberプロフィール | 設計のみ（ER） | `profiles` と統合/分離を要検討 |
-| profile_tags | タグ | 設計のみ（ER） | 正規化案 |
-| profile_sns_links | SNSリンク | 設計のみ（ER） | 現状 `profiles.social_links` と重複可能性あり |
-| profile_videos | 動画リンク | 設計のみ（ER） | 別テーブル化案 |
-| profile_likes | いいね履歴 | 設計のみ（拡張ER） | `users`/`profiles` 参照想定 |
+| vtuber_profiles | Vtuberプロフィール | 実装上は「profiles」。差し替え予定 | |
+| group | 所属 | | |
+| tag | タグ | | |
+| badge | バッジ | | システム管理テーブル |
+| activity_status | 活動状態 | | システム管理テーブル |
+| sns_link | SNSリンク | | |
+| sns_icon | SNSアイコン | | システム管理テーブル |
+| bbs_res | BBS | | |
+| page_author | ページ編集者 | | |
+| contact | 問い合わせ | | |
+| priority | 優先度 | | システム管理テーブル |
+| response_status | 対応状況 | | システム管理テーブル |
+| language | 表示言語 | | システム管理テーブル |
+| screen_word | 画面文言 | | システム管理テーブル |
+| login_service | ログインサービス | | システム管理テーブル |
+| profile_report | プロフィール通報 | | システム管理テーブル |
+| report_reason | 通報理由 | | システム管理テーブル |
+| user | ユーザー | | |
+| theme | 画面テーマ | | システム管理テーブル |
 
 ---
 

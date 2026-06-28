@@ -25,3 +25,5 @@ pnpm-debug.log*
 # Misc
 coverage/
 node_modules
+
+**/~$*xlsx
