@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { VTuberProfile } from '../App';
 import { VTuberCard } from './VTuberCard';
 import { Button } from './ui/button';
@@ -10,14 +10,14 @@ import { ScrollableCardList } from './ScrollableCardList';
 import { AdBanner } from './AdBanner';
 import { adConfig } from '../config/adConfig';
 import { 
-  ArrowLeft, 
-  Edit, 
-  Flag, 
-  Mail, 
-  History, 
-  Youtube, 
-  Twitter, 
-  Music2, 
+  ArrowLeft,
+  Edit,
+  Flag,
+  Mail,
+  History,
+  Youtube,
+  Twitter,
+  Music2,
   Globe,
   Calendar,
   Cake,
@@ -37,12 +37,21 @@ import {
   ChevronRight,
   TrendingUp,
   Star,
-  Clock
+  Clock,
+  Eye,
+  Share2,
+  Copy,
+  Check,
+  CreditCard,
+  GitGraph,
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { motion, AnimatePresence } from 'motion/react';
 import { SnsIconDisplay } from './SnsLinksEditor';
 import { VideoSection } from './VideoSection';
+import { BusinessCardModal } from './BusinessCardModal';
+import { RelationshipGraphModal } from './RelationshipGraphModal';
+import { useApp } from '../context/AppContext';
 
 interface VTuberDetailPageProps {
   profile: VTuberProfile;
@@ -129,7 +138,44 @@ export function VTuberDetailPage({
     setReportDetailTouched(false);
     setReportingHistoryId('');
   };
+  const { isLoggedIn, loginService, pushModal, popModal } = useApp();
+
+  // ポップアップ表示中はフローティングボタンを非表示にする
+  useEffect(() => {
+    const anyOpen = isReportModalOpen || isReportDoneModalOpen || isImageModalOpen;
+    if (anyOpen) { pushModal(); return popModal; }
+  }, [isReportModalOpen, isReportDoneModalOpen, isImageModalOpen]);
+  const canShowBusinessCard = isLoggedIn && loginService === 'Google';
+
+  const [isCopied, setIsCopied] = useState(false);
+  const [showBusinessCard, setShowBusinessCard] = useState(false);
+  const [showRelationshipGraph, setShowRelationshipGraph] = useState(false);
   const [editorLikes, setEditorLikes] = useState<{ [key: string]: { count: number; isLiked: boolean } }>({});
+
+  const profileUrl = `${window.location.origin}/vtuber/${profile.id}`;
+
+  const formatViewCount = (n: number) => {
+    if (n >= 10000) return `${(n / 10000).toFixed(n >= 100000 ? 0 : 1)}万`;
+    return n.toLocaleString('ja-JP');
+  };
+
+  const handleCopyUrl = useCallback(() => {
+    navigator.clipboard.writeText(profileUrl).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    });
+  }, [profileUrl]);
+
+  const shareOnX = () => {
+    const text = encodeURIComponent(`${profile.name}のプロフィール | VTuber名鑑`);
+    const url = encodeURIComponent(profileUrl);
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'noopener');
+  };
+
+  const shareOnLine = () => {
+    const url = encodeURIComponent(profileUrl);
+    window.open(`https://line.me/R/msg/text/?${url}`, '_blank', 'noopener');
+  };
 
   // サンプル編集履歴データ（10人の編集者）
   const [editHistory] = useState<EditHistory[]>([
@@ -506,6 +552,27 @@ export function VTuberDetailPage({
                       編集する
                     </Button>
                   )}
+                  {/* 相関図 */}
+                  <Button
+                    onClick={() => setShowRelationshipGraph(true)}
+                    variant="outline"
+                    className="w-full border-violet-300 text-violet-700 hover:bg-violet-50"
+                  >
+                    <GitGraph className="w-4 h-4 mr-2" />
+                    相関図
+                  </Button>
+
+                  {/* 名刺表示（Googleログイン時のみ） */}
+                  {canShowBusinessCard && (
+                    <Button
+                      onClick={() => setShowBusinessCard(true)}
+                      variant="outline"
+                      className="w-full border-indigo-300 text-indigo-700 hover:bg-indigo-50"
+                    >
+                      <CreditCard className="w-4 h-4 mr-2" />
+                      名刺表示
+                    </Button>
+                  )}
                   {onReport && (
                     <Button
                       onClick={() => setIsReportModalOpen(true)}
@@ -586,41 +653,90 @@ export function VTuberDetailPage({
 
               {/* 右カラム：詳細情報 */}
               <div className="lg:w-2/3 space-y-6">
-                {/* 名前とニックネームといいね */}
-                <div>
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 mb-2">
-                    <div className="flex items-center gap-3 flex-1">
-                      <h1 className="text-2xl sm:text-3xl lg:text-4xl text-blue-900">{profile.name}</h1>
+                {/* 名前・ニックネーム・キャッチフレーズ＋アクション行 */}
+                <div className="space-y-3">
+                  {/* 1行目：名前（全幅・折り返し許容） */}
+                  <div>
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl text-blue-900 leading-snug break-words">
+                      {profile.name}
                       {profile.nickname && (
-                        <span className="text-lg sm:text-xl text-gray-500">({profile.nickname})</span>
+                        <span className="text-lg sm:text-xl text-gray-400 font-normal ml-2">({profile.nickname})</span>
                       )}
+                    </h1>
+                    {profile.catchphrase && (
+                      <p className="text-sm sm:text-base text-blue-700 italic mt-1">「{profile.catchphrase}」</p>
+                    )}
+                  </div>
+
+                  {/* 2行目：PV数・いいね・シェア */}
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1 border-t border-gray-100">
+                    {/* PV数 */}
+                    <div className="flex items-center gap-1.5 text-blue-500">
+                      <Eye className="w-4 h-4 flex-shrink-0" />
+                      <span className="font-bold text-base leading-none">{formatViewCount(profile.viewCount || 0)}</span>
+                      <span className="text-xs text-gray-400">PV</span>
                     </div>
-                    {/* いいねボタンといいね数 */}
+
+                    {/* いいね */}
                     {onToggleLike && (
                       <div className="flex items-center gap-2">
                         <button
                           onClick={onToggleLike}
-                          className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg border-2 transition-all text-sm sm:text-base ${
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-2 transition-all text-sm ${
                             isLiked
                               ? 'bg-pink-500 border-pink-500 text-white hover:bg-pink-600 hover:border-pink-600'
                               : 'bg-white border-gray-300 text-gray-700 hover:bg-pink-50 hover:border-pink-300'
                           }`}
                         >
-                          <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isLiked ? 'fill-current' : ''}`} />
-                          <span className="font-semibold hidden sm:inline">
-                            {isLiked ? 'いいね済み' : 'いいね'}
-                          </span>
+                          <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+                          <span className="font-semibold">{isLiked ? 'いいね済み' : 'いいね'}</span>
                         </button>
-                        <div className="text-center">
-                          <p className="text-xl sm:text-2xl font-bold text-pink-600">{profile.likeCount || 0}</p>
-                          <p className="text-xs text-gray-500">いいね</p>
-                        </div>
+                        <span className="font-bold text-base text-pink-600 leading-none">{profile.likeCount || 0}</span>
                       </div>
                     )}
+
+                    {/* セパレータ */}
+                    <div className="h-4 w-px bg-gray-200 hidden sm:block" />
+
+                    {/* SNS共有ボタン */}
+                    <div className="flex items-center gap-2">
+                      <Share2 className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                      <span className="text-xs text-gray-400">シェア</span>
+                      <button
+                        onClick={shareOnX}
+                        aria-label="Xでシェア"
+                        title="Xでシェア"
+                        className="w-7 h-7 rounded-full bg-black hover:bg-gray-800 text-white flex items-center justify-center transition-colors shadow-sm"
+                      >
+                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={shareOnLine}
+                        aria-label="LINEでシェア"
+                        title="LINEでシェア"
+                        className="w-7 h-7 rounded-full bg-[#06C755] hover:bg-[#05a849] text-white flex items-center justify-center transition-colors shadow-sm"
+                      >
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={handleCopyUrl}
+                        aria-label="URLをコピー"
+                        title="URLをコピー"
+                        className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors shadow-sm ${
+                          isCopied ? 'bg-green-500 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                        }`}
+                      >
+                        {isCopied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                      </button>
+                      {isCopied && (
+                        <span className="text-xs text-green-600 font-medium">コピーしました</span>
+                      )}
+                    </div>
                   </div>
-                  {profile.catchphrase && (
-                    <p className="text-sm sm:text-base text-blue-700 italic">「{profile.catchphrase}」</p>
-                  )}
                 </div>
 
                 {/* バッジ */}
@@ -700,6 +816,29 @@ export function VTuberDetailPage({
                     >
                       <Edit className="w-4 h-4 mr-2" />
                       編集する
+                    </Button>
+                  )}
+                  {/* 相関図 */}
+                  <Button
+                    onClick={() => setShowRelationshipGraph(true)}
+                    variant="outline"
+                    className="border-violet-300 text-violet-700 hover:bg-violet-50"
+                    size="sm"
+                  >
+                    <GitGraph className="w-4 h-4 mr-2" />
+                    相関図
+                  </Button>
+
+                  {/* 名刺表示（Googleログイン時のみ） */}
+                  {canShowBusinessCard && (
+                    <Button
+                      onClick={() => setShowBusinessCard(true)}
+                      variant="outline"
+                      className="border-indigo-300 text-indigo-700 hover:bg-indigo-50"
+                      size="sm"
+                    >
+                      <CreditCard className="w-4 h-4 mr-2" />
+                      名刺表示
                     </Button>
                   )}
                   {onReport && (
@@ -857,6 +996,24 @@ export function VTuberDetailPage({
                         </div>
                       </div>
                     )}
+                    {profile.weight && (
+                      <div className="flex items-start gap-3">
+                        <Sparkles className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="text-sm text-gray-500">体重</p>
+                          <p className="text-gray-800">{profile.weight}</p>
+                        </div>
+                      </div>
+                    )}
+                    {profile.location && (
+                      <div className="flex items-start gap-3">
+                        <Globe className="w-5 h-5 text-teal-500 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="text-sm text-gray-500">住んでいるところ</p>
+                          <p className="text-gray-800">{profile.location}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -913,6 +1070,36 @@ export function VTuberDetailPage({
                     <Card className="bg-blue-50/50 border-blue-200 p-4">
                       <p className="text-gray-800 whitespace-pre-wrap">{profile.message}</p>
                     </Card>
+                  </div>
+                )}
+
+                {/* タグ情報 */}
+                {(profile.streamingTags || profile.fanartTag || profile.r18FanartTag) && (
+                  <div>
+                    <h3 className="text-blue-900 mb-3 flex items-center gap-2">
+                      <Send className="w-5 h-5" />
+                      タグ情報
+                    </h3>
+                    <div className="space-y-2">
+                      {profile.streamingTags && (
+                        <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2.5">
+                          <span className="text-sm text-gray-500 w-28 flex-shrink-0">配信タグ</span>
+                          <span className="text-blue-700 font-medium">{profile.streamingTags}</span>
+                        </div>
+                      )}
+                      {profile.fanartTag && (
+                        <div className="flex items-center gap-3 bg-pink-50 border border-pink-200 rounded-lg px-4 py-2.5">
+                          <span className="text-sm text-gray-500 w-28 flex-shrink-0">ファンアートタグ</span>
+                          <span className="text-pink-700 font-medium">{profile.fanartTag}</span>
+                        </div>
+                      )}
+                      {profile.r18FanartTag && (
+                        <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">
+                          <span className="text-sm text-gray-500 w-28 flex-shrink-0">R18ファンアートタグ</span>
+                          <span className="text-red-700 font-medium">{profile.r18FanartTag}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
@@ -1365,6 +1552,24 @@ export function VTuberDetailPage({
           <AdBanner position="detail-bottom" variant="horizontal" />
         )}
       </motion.div>
+
+      {/* 名刺モーダル */}
+      {showBusinessCard && (
+        <BusinessCardModal
+          profile={profile}
+          onClose={() => setShowBusinessCard(false)}
+        />
+      )}
+
+      {/* 相関図モーダル */}
+      {showRelationshipGraph && (
+        <RelationshipGraphModal
+          profile={profile}
+          allProfiles={allProfiles}
+          onClose={() => setShowRelationshipGraph(false)}
+          onSelectProfile={(p) => { onSelectProfile(p); setShowRelationshipGraph(false); }}
+        />
+      )}
     </div>
   );
 }

@@ -1,3 +1,10 @@
+export interface VTuberRelationship {
+  targetId: string;
+  label: string;
+  direction?: 'to' | 'from' | 'both';
+  reverseLabel?: string; // target→center のラベル（label と異なる場合のみ設定）
+}
+
 export interface VTuberProfile {
   id: string;
   name: string;
@@ -31,4 +38,10 @@ export interface VTuberProfile {
   videoUrls?: string[];
   freeDescription?: string;
   snsLinks?: { icon: string; label: string; url: string }[];
+  weight?: string;
+  location?: string;
+  streamingTags?: string;
+  fanartTag?: string;
+  r18FanartTag?: string;
+  relationships?: VTuberRelationship[];
 }

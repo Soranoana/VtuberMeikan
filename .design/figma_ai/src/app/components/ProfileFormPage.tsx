@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
@@ -33,10 +34,14 @@ import {
   ArrowLeft,
   Plus,
   Video,
-  Link
+  Link,
+  AlertTriangle,
+  Info,
+  Trash2,
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { SnsLinksEditor, SnsIconDisplay, newSnsLink, type SnsLink } from './SnsLinksEditor';
+import { DeleteRequestModal } from './DeleteRequestModal';
 
 interface ProfileFormPageProps {
   onSubmit: (profile: Omit<VTuberProfile, 'id' | 'createdAt'>) => void;
@@ -45,7 +50,10 @@ interface ProfileFormPageProps {
 }
 
 export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileFormPageProps) {
+  const navigate = useNavigate();
   const [isConfirmMode, setIsConfirmMode] = useState(false);
+  const [termsAgreed, setTermsAgreed] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
     nickname: initialData?.nickname || '',
@@ -63,16 +71,24 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
     oneWord: initialData?.oneWord || '',
     activityHistory: initialData?.activityHistory || '',
     activityGenre: initialData?.activityGenre || '',
-    imageUrl: initialData?.imageUrl || '',
     tags: initialData?.tags?.join(', ') || '',
     youtubeUrl: initialData?.youtubeUrl || '',
     xUrl: initialData?.xUrl || '',
     tiktokUrl: initialData?.tiktokUrl || '',
     websiteUrl: initialData?.websiteUrl || '',
     freeDescription: initialData?.freeDescription || '',
+    weight: initialData?.weight || '',
+    location: initialData?.location || '',
+    streamingTags: initialData?.streamingTags || '',
+    fanartTag: initialData?.fanartTag || '',
+    r18FanartTag: initialData?.r18FanartTag || '',
   });
 
-  const [imagePreview, setImagePreview] = useState<string>(initialData?.imageUrl || '');
+  const [imageUrls, setImageUrls] = useState<string[]>(() => {
+    if (initialData?.imageUrls?.length) return initialData.imageUrls;
+    if (initialData?.imageUrl) return [initialData.imageUrl];
+    return [];
+  });
   const [showMarkdownPreview, setShowMarkdownPreview] = useState(false);
   const [videoUrls, setVideoUrls] = useState<string[]>(initialData?.videoUrls || ['']);
 
@@ -115,6 +131,7 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
 
   const handleConfirm = (e: React.FormEvent) => {
     e.preventDefault();
+    setTermsAgreed(false);
     setIsConfirmMode(true);
   };
 
@@ -123,17 +140,17 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
       .split(',')
       .map(tag => tag.trim())
       .filter(tag => tag !== '');
-    
+
     const filteredVideoUrls = videoUrls.filter(url => url.trim() !== '');
     const filteredSnsLinks = snsLinks.filter(l => l.url.trim() !== '').map(({ id: _id, ...rest }) => rest);
 
     onSubmit({
       ...formData,
       tags: tagsArray,
-      imageUrl: imagePreview || formData.imageUrl,
+      imageUrl: imageUrls[0] || undefined,
+      imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
       videoUrls: filteredVideoUrls.length > 0 ? filteredVideoUrls : undefined,
       snsLinks: filteredSnsLinks.length > 0 ? filteredSnsLinks : undefined,
-      // 旧フィールドはsnsLinksで管理するためクリア
       youtubeUrl: undefined,
       xUrl: undefined,
       tiktokUrl: undefined,
@@ -146,21 +163,27 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
+    const files = Array.from(e.target.files || []);
+    files.forEach(file => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        setImageUrls(prev => [...prev, reader.result as string]);
       };
       reader.readAsDataURL(file);
-    }
+    });
+    e.target.value = '';
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setImageUrls(prev => prev.filter((_, i) => i !== index));
   };
 
   // 確認画面用のプロフィールデータ
   const previewProfile: Omit<VTuberProfile, 'id' | 'createdAt'> = {
     ...formData,
     tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag !== ''),
-    imageUrl: imagePreview || formData.imageUrl,
+    imageUrl: imageUrls[0] || undefined,
+    imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
     videoUrls: videoUrls.filter(url => url.trim() !== ''),
     snsLinks: snsLinks.filter(l => l.url.trim() !== '').map(({ id: _id, ...rest }) => rest),
   };
@@ -191,15 +214,22 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
             <div className="p-8">
               <div className="flex flex-col lg:flex-row gap-8">
                 {/* 左カラム：画像 */}
-                <div className="lg:w-1/3">
-                  {previewProfile.imageUrl && (
-                    <div className="aspect-square rounded-lg overflow-hidden shadow-lg">
-                      <img
-                        src={previewProfile.imageUrl}
-                        alt={previewProfile.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+                <div className="lg:w-1/3 space-y-3">
+                  {imageUrls.length > 0 && (
+                    <>
+                      <div className="aspect-square rounded-lg overflow-hidden shadow-lg">
+                        <img src={imageUrls[0]} alt={previewProfile.name} className="w-full h-full object-cover" />
+                      </div>
+                      {imageUrls.length > 1 && (
+                        <div className="grid grid-cols-3 gap-2">
+                          {imageUrls.slice(1).map((url, i) => (
+                            <div key={i} className="aspect-square rounded-lg overflow-hidden shadow-md">
+                              <img src={url} alt={`${previewProfile.name} ${i + 2}`} className="w-full h-full object-cover" />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
 
@@ -327,6 +357,24 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
                           </div>
                         </div>
                       )}
+                      {previewProfile.weight && (
+                        <div className="flex items-start gap-3">
+                          <Sparkles className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="text-sm text-gray-500">体重</p>
+                            <p className="text-gray-800">{previewProfile.weight}</p>
+                          </div>
+                        </div>
+                      )}
+                      {previewProfile.location && (
+                        <div className="flex items-start gap-3">
+                          <Globe className="w-5 h-5 text-teal-500 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="text-sm text-gray-500">住んでいるところ</p>
+                            <p className="text-gray-800">{previewProfile.location}</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -385,6 +433,33 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
                       </Card>
                     </div>
                   )}
+
+                  {/* タグ情報 */}
+                  {(previewProfile.streamingTags || previewProfile.fanartTag || previewProfile.r18FanartTag) && (
+                    <div>
+                      <h3 className="text-blue-900 mb-3">タグ情報</h3>
+                      <div className="space-y-2">
+                        {previewProfile.streamingTags && (
+                          <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2.5">
+                            <span className="text-sm text-gray-500 w-28 flex-shrink-0">配信タグ</span>
+                            <span className="text-blue-700 font-medium">{previewProfile.streamingTags}</span>
+                          </div>
+                        )}
+                        {previewProfile.fanartTag && (
+                          <div className="flex items-center gap-3 bg-pink-50 border border-pink-200 rounded-lg px-4 py-2.5">
+                            <span className="text-sm text-gray-500 w-28 flex-shrink-0">ファンアートタグ</span>
+                            <span className="text-pink-700 font-medium">{previewProfile.fanartTag}</span>
+                          </div>
+                        )}
+                        {previewProfile.r18FanartTag && (
+                          <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">
+                            <span className="text-sm text-gray-500 w-28 flex-shrink-0">R18ファンアートタグ</span>
+                            <span className="text-red-700 font-medium">{previewProfile.r18FanartTag}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -402,6 +477,28 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
             </div>
           </Card>
 
+          {/* 利用規約同意チェックボックス */}
+          <div className="bg-[#FFFBF0] border border-[#D4C5A9] rounded-xl px-5 py-4">
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={termsAgreed}
+                onChange={e => setTermsAgreed(e.target.checked)}
+                className="mt-0.5 w-4 h-4 accent-blue-600 cursor-pointer flex-shrink-0"
+              />
+              <span className="text-sm text-[#3a3a3a] leading-relaxed">
+                <button
+                  type="button"
+                  onClick={() => navigate('/terms')}
+                  className="font-semibold text-blue-700 underline hover:text-blue-900 transition-colors"
+                >
+                  利用規約
+                </button>
+                を確認し、同意したうえで投稿します
+              </span>
+            </label>
+          </div>
+
           {/* ボタン */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -416,7 +513,8 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
             <Button
               type="button"
               onClick={handleSave}
-              className="bg-blue-600 hover:bg-blue-700 px-8 py-3 text-lg"
+              disabled={!termsAgreed}
+              className="bg-blue-600 hover:bg-blue-700 px-8 py-3 text-lg disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Save className="w-5 h-5 mr-2" />
               保存する
@@ -448,58 +546,64 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
               <ImageIcon className="w-5 h-5" />
               プロフィール画像
             </h3>
-            
+
+            {/* 注意書き */}
+            <div className="space-y-2 mb-5">
+              <div className="flex items-start gap-2 bg-yellow-50 border border-yellow-300 rounded-lg px-4 py-3">
+                <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-yellow-800">権利者の許諾を得た画像のみ使用してください。無断転載・著作権侵害となる画像のアップロードは禁止されています。</p>
+              </div>
+              <div className="flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
+                <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-blue-800">画像のアップロードを行う前に、必ず<button type="button" onClick={() => navigate('/terms')} className="font-semibold underline text-blue-700 hover:text-blue-900 transition-colors">利用規約</button>をご確認ください。</p>
+              </div>
+            </div>
+
             <div className="space-y-4">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                  <Label htmlFor="imageFile" className="text-blue-900 mb-2 block">
-                    画像をアップロード
-                  </Label>
-                  <div className="relative">
-                    <input
-                      id="imageFile"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                    />
-                    <label
-                      htmlFor="imageFile"
-                      className="flex items-center justify-center gap-2 w-full px-4 py-3 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors text-blue-700"
-                    >
-                      <Upload className="w-5 h-5" />
-                      <span>画像を選択</span>
-                    </label>
-                  </div>
-                </div>
-                
-                <div className="flex-1">
-                  <Label htmlFor="imageUrl" className="text-blue-900 mb-2 block">
-                    または画像URLを入力
-                  </Label>
-                  <Input
-                    id="imageUrl"
-                    value={formData.imageUrl}
-                    onChange={(e) => {
-                      handleChange('imageUrl', e.target.value);
-                      setImagePreview(e.target.value);
-                    }}
-                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
-                    placeholder="https://example.com/image.jpg"
-                  />
-                </div>
+              {/* アップロードボタン */}
+              <div>
+                <input
+                  id="imageFile"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="imageFile"
+                  className="flex items-center justify-center gap-2 w-full px-4 py-4 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors text-blue-700"
+                >
+                  <Upload className="w-5 h-5" />
+                  <span>画像を選択（複数枚可）</span>
+                </label>
+                <p className="text-xs text-gray-500 mt-1.5 text-center">最初にアップロードした画像がメイン画像として表示されます</p>
               </div>
 
-              {/* 画像プレビュー */}
-              {imagePreview && (
-                <div className="mt-4">
-                  <p className="text-sm text-blue-900 mb-2">プレビュー</p>
-                  <div className="w-48 h-48 mx-auto border-2 border-blue-200 rounded-lg overflow-hidden">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="w-full h-full object-cover"
-                    />
+              {/* アップロード済み画像一覧 */}
+              {imageUrls.length > 0 && (
+                <div>
+                  <p className="text-sm text-blue-900 mb-2 font-medium">アップロード済み画像（{imageUrls.length}枚）</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {imageUrls.map((url, index) => (
+                      <div key={index} className="relative group aspect-square">
+                        <img
+                          src={url}
+                          alt={`画像 ${index + 1}`}
+                          className="w-full h-full object-cover rounded-lg border-2 border-blue-200"
+                        />
+                        {index === 0 && (
+                          <span className="absolute top-1 left-1 bg-blue-600 text-white text-xs px-1.5 py-0.5 rounded font-medium">メイン</span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(index)}
+                          className="absolute top-1 right-1 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -634,6 +738,32 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
                   onChange={(e) => handleChange('height', e.target.value)}
                   className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
                   placeholder="例: 158cm"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="weight" className="text-blue-900">
+                  体重
+                </Label>
+                <Input
+                  id="weight"
+                  value={formData.weight}
+                  onChange={(e) => handleChange('weight', e.target.value)}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
+                  placeholder="例: 52kg"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="location" className="text-blue-900">
+                  住んでいるところ
+                </Label>
+                <Input
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) => handleChange('location', e.target.value)}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
+                  placeholder="例: 東京"
                 />
               </div>
 
@@ -814,6 +944,45 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
                   placeholder="例: いつも応援ありがとうございます！一緒に楽しい時間を過ごしましょう！"
                 />
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="streamingTags" className="text-blue-900">
+                  配信タグ
+                </Label>
+                <Input
+                  id="streamingTags"
+                  value={formData.streamingTags}
+                  onChange={(e) => handleChange('streamingTags', e.target.value)}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
+                  placeholder="例: #星空みらい配信"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="fanartTag" className="text-blue-900">
+                  ファンアートタグ
+                </Label>
+                <Input
+                  id="fanartTag"
+                  value={formData.fanartTag}
+                  onChange={(e) => handleChange('fanartTag', e.target.value)}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
+                  placeholder="例: #星空みらいファンアート"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="r18FanartTag" className="text-blue-900">
+                  R18ファンアートタグ
+                </Label>
+                <Input
+                  id="r18FanartTag"
+                  value={formData.r18FanartTag}
+                  onChange={(e) => handleChange('r18FanartTag', e.target.value)}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
+                  placeholder="例: #星空みらいR18"
+                />
+              </div>
             </div>
           </div>
 
@@ -857,25 +1026,50 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
           </div>
 
           {/* ボタン */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onCancel}
-              className="border-2 border-gray-300 hover:bg-gray-50"
-            >
-              <X className="w-4 h-4 mr-2" />
-              キャンセル
-            </Button>
-            <Button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              <CheckCircle className="w-4 h-4 mr-2" />
-              確認画面へ
-            </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-between">
+            {/* 削除申請（編集モードのみ） */}
+            {initialData ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowDeleteModal(true)}
+                className="border-2 border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                削除申請
+              </Button>
+            ) : (
+              <span />
+            )}
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onCancel}
+                className="border-2 border-gray-300 hover:bg-gray-50"
+              >
+                <X className="w-4 h-4 mr-2" />
+                キャンセル
+              </Button>
+              <Button
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <CheckCircle className="w-4 h-4 mr-2" />
+                確認画面へ
+              </Button>
+            </div>
           </div>
         </form>
+
+        {/* 削除申請モーダル */}
+        {showDeleteModal && (
+          <DeleteRequestModal
+            profileName={formData.name}
+            onClose={() => setShowDeleteModal(false)}
+          />
+        )}
 
         {/* 下部広告 */}
         {adConfig.newProfileBottom && (

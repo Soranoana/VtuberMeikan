@@ -1,7 +1,7 @@
 import { Card } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { Search, Info, ChevronRight } from 'lucide-react';
+import { Search, ChevronRight } from 'lucide-react';
 import { VTuberProfile } from '../types';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -42,21 +42,6 @@ export function Sidebar({ profiles, collapsible = false }: SidebarProps) {
           collapsible ? 'overflow-y-auto max-h-full pr-2' : ''
         } space-y-4`}
       >
-        {/* Webサイトの説明 */}
-        <Card className="bg-[#FFFEF8] border-2 border-[#D4C5A9] overflow-hidden shadow-md">
-          <div className="p-4 bg-gradient-to-r from-[#E8DFC4] to-[#F4E9D6] border-b-2 border-[#D4C5A9]">
-            <div className="flex items-center gap-2">
-              <Info className="w-5 h-5 text-[#8B7355]" />
-              <h3 className="text-[#8B7355]">このサイトについて</h3>
-            </div>
-          </div>
-          <div className="p-4">
-            <p className="text-sm text-[#6b6b6b] leading-relaxed">
-              VTuberさんの魅力を記録・共有するプロフィール帳です。みんなで素敵なVTuberさんを見つけて、応援しましょう！
-            </p>
-          </div>
-        </Card>
-
         {/* VTuberの検索 */}
         <Card className="bg-[#FFFEF8] border-2 border-[#D4C5A9] overflow-hidden shadow-md">
           <div className="p-4 bg-gradient-to-r from-[#E8DFC4] to-[#F4E9D6] border-b-2 border-[#D4C5A9]">

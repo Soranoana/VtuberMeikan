@@ -1,7 +1,12 @@
 import { VTuberProfile } from '../App';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
-import { Building2, Calendar, MessageCircle, Heart } from 'lucide-react';
+import { Building2, Calendar, MessageCircle, Heart, Eye } from 'lucide-react';
+
+function formatCount(n: number): string {
+  if (n >= 10000) return `${(n / 10000).toFixed(n >= 100000 ? 0 : 1)}万`;
+  return n.toLocaleString('ja-JP');
+}
 
 interface VTuberCardProps {
   profile: VTuberProfile;
@@ -75,7 +80,7 @@ export function VTuberCard({ profile, onClick, isLiked, onToggleLike }: VTuberCa
       </div>
 
       {/* プロフィール情報 */}
-      <div className="p-2.5 space-y-1.5 h-32">
+      <div className="p-2.5 space-y-1.5 h-32 flex flex-col">
         {/* ひとこと */}
         {profile.oneWord && (
           <div className="p-1.5 bg-accent rounded border-l-2 border-primary">
@@ -124,6 +129,18 @@ export function VTuberCard({ profile, onClick, isLiked, onToggleLike }: VTuberCa
             )}
           </div>
         )}
+
+        {/* PV・いいね数 */}
+        <div className="mt-auto pt-1 flex items-center gap-3 border-t border-border/50 text-[10px] text-muted-foreground">
+          <span className="flex items-center gap-0.5">
+            <Eye className="w-3 h-3" />
+            {formatCount(profile.viewCount || 0)}
+          </span>
+          <span className="flex items-center gap-0.5">
+            <Heart className="w-3 h-3 text-pink-400" />
+            {formatCount(profile.likeCount || 0)}
+          </span>
+        </div>
       </div>
     </Card>
   );

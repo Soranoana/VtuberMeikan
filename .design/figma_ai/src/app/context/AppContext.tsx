@@ -10,6 +10,15 @@ interface AppContextType {
   likedProfileIds: string[];
   recentlyEditedProfileIds: string[];
   editsLikedByVTuberIds: string[];
+  selectedTheme: string;
+  setSelectedTheme: (theme: string) => void;
+  language: string;
+  setLanguage: (lang: string) => void;
+  isMuted: boolean;
+  setIsMuted: (muted: boolean) => void;
+  modalCount: number;
+  pushModal: () => void;
+  popModal: () => void;
   handleLogin: (service: string) => void;
   handleLogout: () => void;
   handleAddProfile: (profile: Omit<VTuberProfile, 'id' | 'createdAt'>) => VTuberProfile;
@@ -27,11 +36,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [likedProfileIds, setLikedProfileIds] = useState<string[]>(['1', '2', '3']);
   const [recentlyEditedProfileIds, setRecentlyEditedProfileIds] = useState<string[]>(['6']);
   const [editsLikedByVTuberIds] = useState<string[]>(['1', '4']);
+  const [selectedTheme, setSelectedTheme] = useState('light');
+  const [language, setLanguage] = useState('ja');
+  const [isMuted, setIsMuted] = useState(true);
+  const [modalCount, setModalCount] = useState(0);
+  const pushModal = () => setModalCount(c => c + 1);
+  const popModal = () => setModalCount(c => Math.max(0, c - 1));
 
   const handleLogin = (service: string) => {
     setIsLoggedIn(true);
     setLoginService(service);
-    toast.success('ゲストユーザーにログインしました', { description: 'VTuberプロフィール帳へようこそ！' });
+    toast.success('ゲストユーザーにログインしました', { description: 'VTuber名鑑へようこそ！' });
   };
 
   const handleLogout = () => {
@@ -73,6 +88,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     <AppContext.Provider value={{
       profiles, isLoggedIn, loginService, likedProfileIds,
       recentlyEditedProfileIds, editsLikedByVTuberIds,
+      selectedTheme, setSelectedTheme,
+      language, setLanguage,
+      isMuted, setIsMuted,
+      modalCount, pushModal, popModal,
       handleLogin, handleLogout, handleAddProfile, handleEditProfile,
       handleDeleteProfile, handleToggleLike,
     }}>

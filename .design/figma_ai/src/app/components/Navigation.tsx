@@ -1,6 +1,7 @@
-import { Home, Search, Plus, Mail, LogIn, LogOut, BookOpen, User, ChevronDown, Menu, X } from 'lucide-react';
+import { Home, Search, Plus, Mail, LogIn, LogOut, BookOpen, User, ChevronDown, Menu, X, Palette, Check } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router';
+import { useApp } from '../context/AppContext';
 
 interface NavigationProps {
   isLoggedIn: boolean;
@@ -8,13 +9,24 @@ interface NavigationProps {
   userName?: string;
 }
 
+const THEME_OPTIONS = [
+  { value: 'light', label: 'ライトモード' },
+  { value: 'dark',  label: 'ダークモード（実装中）' },
+  { value: 'unknown1', label: '？？？？（実装中）' },
+  { value: 'unknown2', label: '？？？？（実装中）' },
+];
+
 export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユーザー' }: NavigationProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { selectedTheme, setSelectedTheme } = useApp();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isThemeOpen, setIsThemeOpen] = useState(false);
+  const [isMobileThemeOpen, setIsMobileThemeOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const themeRef = useRef<HTMLDivElement>(null);
 
   // ドロップダウン外をクリックしたら閉じる
   useEffect(() => {
@@ -24,6 +36,9 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
       }
       if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
         setIsMobileMenuOpen(false);
+      }
+      if (themeRef.current && !themeRef.current.contains(event.target as Node)) {
+        setIsThemeOpen(false);
       }
     };
 
@@ -39,7 +54,7 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
   };
 
   return (
-    <header className="bg-[#FFFEF8] border-b-2 border-[#D4C5A9] shadow-sm sticky top-0 z-50">
+    <header className="bg-[#FFFEF8] border-b-2 border-[#D4C5A9] shadow-sm fixed top-0 left-0 right-0 z-50">
       <div className="max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-3">
         <div className="flex items-center justify-between">
           {/* ロゴとサイト名 */}
@@ -48,7 +63,7 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
             className="flex items-center gap-1 sm:gap-2 hover:opacity-80 transition-opacity"
           >
             <BookOpen className="w-5 h-5 sm:w-7 sm:h-7 text-[#8B7355]" />
-            <h1 className="text-sm sm:text-lg font-semibold text-[#8B7355]">VTuberプロフィール帳</h1>
+            <h1 className="text-sm sm:text-lg font-semibold text-[#8B7355]">VTuber名鑑</h1>
           </button>
 
           {/* デスクトップナビゲーション（md以上） */}
@@ -101,6 +116,34 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
               <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="hidden md:inline">問い合わせ</span>
             </button>
+
+            {/* テーマ切替 */}
+            <div className="relative" ref={themeRef}>
+              <button
+                onClick={() => setIsThemeOpen(!isThemeOpen)}
+                className="flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355] whitespace-nowrap flex-shrink-0"
+              >
+                <Palette className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+                <span>テーマ選択</span>
+              </button>
+              {isThemeOpen && (
+                <div className="absolute right-0 mt-2 w-52 bg-white rounded-lg shadow-lg border-2 border-[#D4C5A9] overflow-hidden z-50">
+                  <div className="px-4 py-2 border-b border-[#D4C5A9] bg-[#FFFEF8]">
+                    <p className="text-xs text-[#8B7355] font-semibold">テーマ選択</p>
+                  </div>
+                  {THEME_OPTIONS.map(opt => (
+                    <button
+                      key={opt.value}
+                      onClick={() => { setSelectedTheme(opt.value); setIsThemeOpen(false); }}
+                      className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355] transition-colors"
+                    >
+                      <span>{opt.label}</span>
+                      {selectedTheme === opt.value && <Check className="w-4 h-4 text-[#8B7355]" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {isLoggedIn ? (
               <div className="relative" ref={dropdownRef}>
@@ -174,10 +217,10 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
 
             {/* モバイルメニュー内容 */}
             {isMobileMenuOpen && (
-              <div className="absolute right-2 top-14 w-56 bg-white rounded-lg shadow-lg border-2 border-[#D4C5A9] overflow-hidden z-50">
+              <div className="absolute right-2 top-14 w-56 bg-white rounded-lg shadow-lg border-2 border-[#D4C5A9] z-50">
                 <button
                   onClick={() => handleNavigation('/')}
-                  className={`w-full flex items-center gap-2 px-4 py-3 text-sm border-b border-[#D4C5A9] ${
+                  className={`w-full flex items-center gap-2 px-4 py-3 text-sm border-b border-[#D4C5A9] rounded-t-lg ${
                     location.pathname === '/'
                       ? 'bg-[#E8DFC4] text-[#8B7355]'
                       : 'text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355]'
@@ -223,6 +266,34 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
                   <span>問い合わせ</span>
                 </button>
 
+                {/* テーマ切替（モバイル） */}
+                <div className="border-b border-[#D4C5A9]">
+                  <button
+                    onClick={() => setIsMobileThemeOpen(!isMobileThemeOpen)}
+                    className="w-full flex items-center justify-between px-4 py-3 text-sm text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355] transition-colors"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Palette className="w-4 h-4" />
+                      テーマ選択
+                    </span>
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isMobileThemeOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {isMobileThemeOpen && (
+                    <div className="border-t border-[#D4C5A9] bg-[#FFFEF8]">
+                      {THEME_OPTIONS.map(opt => (
+                        <button
+                          key={opt.value}
+                          onClick={() => { setSelectedTheme(opt.value); setIsMobileMenuOpen(false); setIsMobileThemeOpen(false); }}
+                          className="w-full flex items-center justify-between pl-10 pr-4 py-2.5 text-sm text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355] transition-colors"
+                        >
+                          <span>{opt.label}</span>
+                          {selectedTheme === opt.value && <Check className="w-4 h-4 text-[#8B7355]" />}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 {isLoggedIn ? (
                   <>
                     <button
@@ -241,7 +312,7 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
                         onLogout();
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full flex items-center gap-2 px-4 py-3 text-sm text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355]"
+                      className="w-full flex items-center gap-2 px-4 py-3 text-sm text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355] rounded-b-lg"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>ログアウト</span>
@@ -250,7 +321,7 @@ export function Navigation({ isLoggedIn, onLogout, userName = 'ゲストユー�
                 ) : (
                   <button
                     onClick={() => handleNavigation('/login')}
-                    className={`w-full flex items-center gap-2 px-4 py-3 text-sm ${
+                    className={`w-full flex items-center gap-2 px-4 py-3 text-sm rounded-b-lg ${
                       location.pathname === '/login'
                         ? 'bg-[#E8DFC4] text-[#8B7355]'
                         : 'text-[#6b6b6b] hover:bg-[#F4E9D6] hover:text-[#8B7355]'

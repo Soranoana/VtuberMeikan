@@ -35,20 +35,29 @@ export const sampleProfiles: VTuberProfile[] = [
     tiktokUrl: 'https://www.tiktok.com/@mirai_chan',
     websiteUrl: 'https://www.mirai-chan.com',
     videoUrls: [
-      'https://www.youtube.com/watch?v=dQw4w9WgXcQ',               // 横1
-      'https://www.youtube.com/watch?v=9bZkp7q19f0&vertical=1',    // 縦1
-      'https://www.youtube.com/watch?v=jNQXAC9IVRw',               // 横2
-      'https://www.youtube.com/watch?v=dQw4w9WgXcQ&vertical=1',    // 縦2
-      'https://www.youtube.com/watch?v=kJQP7kiw5Fk',               // 横3
-      'https://www.youtube.com/watch?v=jNQXAC9IVRw&vertical=1',    // 縦3
-      'https://www.youtube.com/watch?v=9bZkp7q19f0',               // 横4
-      'https://www.youtube.com/watch?v=kJQP7kiw5Fk&vertical=1',    // 縦4
-      'https://www.youtube.com/watch?v=ZbZSe6N_BXs',               // 横5
-      'https://www.youtube.com/watch?v=ZbZSe6N_BXs&vertical=1',    // 縦5
-      'https://www.youtube.com/watch?v=OPf0YbXqDm0',               // 横6
-      'https://www.youtube.com/watch?v=OPf0YbXqDm0&vertical=1',    // 縦6
+      'https://www.youtube.com/watch?v=eRsGyueVLvQ',               // 横1
+      'https://youtu.be/NcP8Du0cBkU',                              // 縦1
+      'https://www.youtube.com/watch?v=41hv2tW5Lc4',               // 横2
+      'https://youtu.be/Rhy0eVtudrI',                              // 縦2
+      'https://www.youtube.com/watch?v=Y-rmzh0PI3c',               // 横3
+      'https://youtu.be/K0Ilt-cP-yM',                              // 縦3
+      'https://www.youtube.com/watch?v=u9lj-c29dxI',               // 横4
+      'https://www.youtube.com/shorts/mCugN4-EO8w',                // 縦4
+      'https://www.youtube.com/watch?v=_cMxraX_5RE',               // 横5
+      'https://www.youtube.com/shorts/lck3aPO2dXg',                // 縦5
+      'https://www.youtube.com/watch?v=Q0zri3tzbek',               // 横6
+      'https://www.youtube.com/watch?v=DFs93KJHAHg',               // 縦6
     ],
     freeDescription: '### みらいちゃんについて\n\nみらいちゃんは、スターライトプロダクション所属のVTuberです。ゲーム実況や歌ってみた、お絵かきなど、幅広いジャンルで活動しています。\n\n**好きなこと**\n- ゲーム\n- 歌\n- お絵かき\n\n**嫌いなもの**\n- ホラー\n\n**趣味**\n- イラスト制作\n\n**キャッチフレーズ**\n- 星空から届けるキラキラの笑顔！\n\n**夢**\n- みんなに笑顔を届けたい\n\n**メッセージ**\n- いつも応援ありがとうございます！\n\n**ひとこと**\n- みんなと一緒に楽しい時間を過ごしたいな～！\n\n**活動歴**\n- 2年\n\n**活動ジャンル**\n- ゲーム実況',
+    relationships: [
+      // ルナはみらいを「憧れの先輩」と思っているが、みらいはルナを「仲良し」と思っている
+      { targetId: '2', label: '仲良し', direction: 'both', reverseLabel: '憧れの先輩' },
+      { targetId: '3', label: 'コラボ仲間', direction: 'both' },
+      { targetId: '4', label: '同期', direction: 'both' },
+      // みらいはもみじを「ライバル」と思っているが、もみじはみらいを「尊敬するライバル」と思っている
+      { targetId: '5', label: 'ライバル', direction: 'both', reverseLabel: '尊敬するライバル' },
+      { targetId: '6', label: '先輩', direction: 'from' },
+    ],
   },
   {
     id: '2',
@@ -74,6 +83,12 @@ export const sampleProfiles: VTuberProfile[] = [
     updatedAt: new Date('2024-11-09'),
     viewCount: 28300,
     likeCount: 1200,
+    relationships: [
+      // みらいはルナを「仲良し」と思っているが、ルナはみらいを「憧れの先輩」と思っている
+      { targetId: '1', label: '憧れの先輩', direction: 'both', reverseLabel: '仲良し' },
+      { targetId: '3', label: '歌仲間', direction: 'both' },
+      { targetId: '6', label: '後輩', direction: 'to' },
+    ],
   },
   {
     id: '3',
@@ -98,6 +113,11 @@ export const sampleProfiles: VTuberProfile[] = [
     updatedAt: new Date('2024-11-05'),
     viewCount: 18700,
     likeCount: 800,
+    relationships: [
+      { targetId: '1', label: 'コラボ仲間', direction: 'both' },
+      { targetId: '4', label: '友達', direction: 'both' },
+      { targetId: '5', label: '同期', direction: 'both' },
+    ],
   },
   {
     id: '4',
@@ -122,6 +142,11 @@ export const sampleProfiles: VTuberProfile[] = [
     updatedAt: new Date('2024-11-10'),
     viewCount: 15800,
     likeCount: 600,
+    relationships: [
+      { targetId: '1', label: '同期', direction: 'both' },
+      { targetId: '3', label: '友達', direction: 'both' },
+      { targetId: '6', label: 'コラボ仲間', direction: 'both' },
+    ],
   },
   {
     id: '5',
@@ -146,6 +171,12 @@ export const sampleProfiles: VTuberProfile[] = [
     updatedAt: new Date('2024-11-11'),
     viewCount: 22100,
     likeCount: 900,
+    relationships: [
+      // みらいはもみじを「ライバル」と思っているが、もみじはみらいを「尊敬するライバル」と思っている
+      { targetId: '1', label: '尊敬するライバル', direction: 'both', reverseLabel: 'ライバル' },
+      { targetId: '2', label: '歌仲間', direction: 'both' },
+      { targetId: '3', label: '同期', direction: 'both' },
+    ],
   },
   {
     id: '6',
@@ -181,5 +212,10 @@ export const sampleProfiles: VTuberProfile[] = [
     updatedAt: new Date('2024-11-12'),
     viewCount: 31200,
     likeCount: 1500,
+    relationships: [
+      { targetId: '1', label: '後輩', direction: 'to' },
+      { targetId: '2', label: '先輩', direction: 'from' },
+      { targetId: '4', label: 'コラボ仲間', direction: 'both' },
+    ],
   },
 ];

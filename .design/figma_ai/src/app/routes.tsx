@@ -8,6 +8,8 @@ import { SearchPageWrapper } from './pages/SearchPageWrapper';
 import { UserPageWrapper } from './pages/UserPageWrapper';
 import { LoginPageWrapper } from './pages/LoginPageWrapper';
 import { ContactPageWrapper } from './pages/ContactPageWrapper';
+import { AboutPage } from './pages/AboutPage';
+import { TermsPage } from './pages/TermsPage';
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +24,8 @@ export const router = createBrowserRouter([
       { path: 'vtuber/:id', Component: DetailPage },
       { path: 'new', Component: NewProfilePage },
       { path: 'edit/:id', Component: EditProfilePage },
+      { path: 'about', Component: AboutPage },
+      { path: 'terms', Component: TermsPage },
     ],
   },
 ]);

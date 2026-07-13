@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { AlertCircle, Play } from 'lucide-react';
+import { useApp } from '../context/AppContext';
 
 declare global {
   interface Window {
@@ -37,6 +38,7 @@ interface Props {
 }
 
 export function VideoSection({ videoUrls, profileId }: Props) {
+  const { isMuted } = useApp();
   const sectionRef  = useRef<HTMLDivElement>(null);
   const scrollRef   = useRef<HTMLDivElement>(null);
   const playersRef  = useRef<Map<number, any>>(new Map());
@@ -241,6 +243,14 @@ export function VideoSection({ videoUrls, profileId }: Props) {
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiReady, videoInfosKey, profileId]);
+
+  // ---- isMuted 変化を全プレイヤーに反映 ----
+  useEffect(() => {
+    playersRef.current.forEach(p => {
+      if (isMuted) p?.mute?.();
+      else p?.unMute?.();
+    });
+  }, [isMuted]);
 
   if (videoInfos.length === 0) return null;
 

@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useApp } from '../context/AppContext';
 import { VTuberProfile } from '../App';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -119,7 +120,7 @@ export function UserPage({
   onLogout,
   onChangeUserName,
 }: UserPageProps) {
-  const [selectedTheme, setSelectedTheme] = useState('blue');
+  const { selectedTheme, setSelectedTheme } = useApp();
   const [showNameDialog, setShowNameDialog] = useState(false);
   const [editingName, setEditingName] = useState(userName);
   const [hideUserName, setHideUserName] = useState(false);
@@ -509,21 +510,21 @@ export function UserPage({
               <table className="w-full text-sm sm:text-base">
                 <tbody>
                   <tr className="border-b border-blue-100">
-                    <td className="py-2 sm:py-3 px-2 sm:px-4 text-gray-600 font-semibold">テーマカラー</td>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 text-gray-600 font-semibold">テーマ</td>
                     <td className="py-2 sm:py-3 px-2 sm:px-4">
                       <select 
                         value={selectedTheme}
                         onChange={(e) => setSelectedTheme(e.target.value)}
                         className="w-full sm:w-auto px-3 sm:px-4 py-1.5 sm:py-2 border-2 border-blue-200 rounded-lg focus:border-blue-400 focus:outline-none bg-white text-sm sm:text-base"
                       >
-                        <option value="blue">ルー（デフォルト）</option>
-                        <option value="pink">ピンク</option>
-                        <option value="green">グリーン</option>
-                        <option value="purple">パープル</option>
+                        <option value="light">ライトモード</option>
+                        <option value="dark">ダークモード（実装中）</option>
+                        <option value="unknown1">？？？？（実装中。乞うご期待）</option>
+                        <option value="unknown1">？？？？（実装中。乞うご期待）</option>
                       </select>
                     </td>
                   </tr>
-                  <tr>
+                  {/* <tr>
                     <td className="py-2 sm:py-3 px-2 sm:px-4 text-gray-600 font-semibold">表示モード</td>
                     <td className="py-2 sm:py-3 px-2 sm:px-4">
                       <select className="w-full sm:w-auto px-3 sm:px-4 py-1.5 sm:py-2 border-2 border-blue-200 rounded-lg focus:border-blue-400 focus:outline-none bg-white text-sm sm:text-base">
@@ -532,7 +533,7 @@ export function UserPage({
                         <option value="auto">自動</option>
                       </select>
                     </td>
-                  </tr>
+                  </tr> */}
                 </tbody>
               </table>
             </div>
