@@ -1,3 +1,17 @@
+// 言語ごとに異なるテキストフィールド
+export interface VTuberLocalization {
+  name?: string;
+  nickname?: string;
+  catchphrase?: string;
+  oneWord?: string;
+  dream?: string;
+  message?: string;
+  favoriteThings?: string;
+  dislikedThings?: string;
+  hobby?: string;
+  freeDescription?: string;
+}
+
 export interface VTuberRelationship {
   targetId: string;
   label: string;
@@ -44,4 +58,5 @@ export interface VTuberProfile {
   fanartTag?: string;
   r18FanartTag?: string;
   relationships?: VTuberRelationship[];
+  localizations?: { [lang: string]: VTuberLocalization };
 }

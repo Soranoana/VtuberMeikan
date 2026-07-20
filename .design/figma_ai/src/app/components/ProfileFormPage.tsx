@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router';
+import { VTuberLocalization } from '../types';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
@@ -49,11 +50,37 @@ interface ProfileFormPageProps {
   initialData?: VTuberProfile;
 }
 
+// 言語ごとに内容が異なるフィールド
+const LOCALIZED_FIELDS = [
+  'name', 'nickname', 'catchphrase', 'oneWord',
+  'dream', 'message', 'favoriteThings', 'dislikedThings',
+  'hobby', 'freeDescription',
+] as const;
+type LocalizedFieldKey = typeof LOCALIZED_FIELDS[number];
+
+const EDIT_LANGS = [
+  { code: 'ja', label: '日本語', flag: '🇯🇵' },
+  { code: 'en', label: 'English', flag: '🇬🇧' },
+  { code: 'zh', label: '中文', flag: '🇨🇳' },
+] as const;
+
+function emptyLocalization(): Required<VTuberLocalization> {
+  return { name: '', nickname: '', catchphrase: '', oneWord: '', dream: '', message: '', favoriteThings: '', dislikedThings: '', hobby: '', freeDescription: '' };
+}
+
 export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileFormPageProps) {
   const navigate = useNavigate();
   const [isConfirmMode, setIsConfirmMode] = useState(false);
   const [termsAgreed, setTermsAgreed] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [activeEditLang, setActiveEditLang] = useState<'ja' | 'en' | 'zh'>('ja');
+
+  // 言語ごとのローカライズフィールド（ja は formData と同期、en/zh は langForms で管理）
+  const [langForms, setLangForms] = useState<{ en: Required<VTuberLocalization>; zh: Required<VTuberLocalization> }>({
+    en: { ...emptyLocalization(), ...initialData?.localizations?.en },
+    zh: { ...emptyLocalization(), ...initialData?.localizations?.zh },
+  });
+
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
     nickname: initialData?.nickname || '',
@@ -83,6 +110,12 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
     fanartTag: initialData?.fanartTag || '',
     r18FanartTag: initialData?.r18FanartTag || '',
   });
+
+  // 現在の言語のローカライズフィールド値を取得
+  const getLocalizedValue = useCallback((field: LocalizedFieldKey): string => {
+    if (activeEditLang === 'ja') return formData[field];
+    return langForms[activeEditLang][field];
+  }, [activeEditLang, formData, langForms]);
 
   const [imageUrls, setImageUrls] = useState<string[]>(() => {
     if (initialData?.imageUrls?.length) return initialData.imageUrls;
@@ -144,6 +177,22 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
     const filteredVideoUrls = videoUrls.filter(url => url.trim() !== '');
     const filteredSnsLinks = snsLinks.filter(l => l.url.trim() !== '').map(({ id: _id, ...rest }) => rest);
 
+    // 英語・中国語のローカライズデータ（空でないフィールドのみ保存）
+    const buildLocale = (lang: 'en' | 'zh'): VTuberLocalization | undefined => {
+      const src = langForms[lang];
+      const filtered: VTuberLocalization = {};
+      (LOCALIZED_FIELDS as readonly LocalizedFieldKey[]).forEach(k => {
+        if (src[k].trim()) filtered[k] = src[k];
+      });
+      return Object.keys(filtered).length > 0 ? filtered : undefined;
+    };
+
+    const locEn = buildLocale('en');
+    const locZh = buildLocale('zh');
+    const localizations = (locEn || locZh)
+      ? { ...(locEn ? { en: locEn } : {}), ...(locZh ? { zh: locZh } : {}) }
+      : undefined;
+
     onSubmit({
       ...formData,
       tags: tagsArray,
@@ -155,11 +204,24 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
       xUrl: undefined,
       tiktokUrl: undefined,
       websiteUrl: undefined,
+      localizations,
     });
   };
 
+  // ローカライズフィールドかどうかを判定
+  const isLocalizedField = (field: string): field is LocalizedFieldKey =>
+    (LOCALIZED_FIELDS as readonly string[]).includes(field);
+
   const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    if (activeEditLang !== 'ja' && isLocalizedField(field)) {
+      // 英語・中国語タブではローカライズストアへ
+      setLangForms(prev => ({
+        ...prev,
+        [activeEditLang]: { ...prev[activeEditLang], [field]: value },
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [field]: value }));
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,7 +248,15 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
     imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
     videoUrls: videoUrls.filter(url => url.trim() !== ''),
     snsLinks: snsLinks.filter(l => l.url.trim() !== '').map(({ id: _id, ...rest }) => rest),
+    localizations: {
+      en: langForms.en,
+      zh: langForms.zh,
+    },
   };
+
+  // 入力済み言語一覧（タブに ● バッジを表示するため）
+  const hasLangContent = (lang: 'en' | 'zh') =>
+    LOCALIZED_FIELDS.some(f => langForms[lang][f].trim() !== '');
 
   // 確認画面の表示
   if (isConfirmMode) {
@@ -477,6 +547,27 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
             </div>
           </Card>
 
+          {/* 多言語データの確認 */}
+          {(['en', 'zh'] as const).map(lang => {
+            const loc = langForms[lang];
+            const hasData = LOCALIZED_FIELDS.some(f => loc[f].trim() !== '');
+            if (!hasData) return null;
+            const langLabel = lang === 'en' ? '🇬🇧 English' : '🇨🇳 中文';
+            return (
+              <div key={lang} className="bg-white border-2 border-indigo-200 rounded-lg p-5">
+                <h4 className="text-indigo-800 font-semibold mb-3 text-sm">{langLabel} — 入力済み言語データ</h4>
+                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                  {LOCALIZED_FIELDS.map(f => loc[f].trim() ? (
+                    <div key={f}>
+                      <dt className="text-gray-500 text-xs">{f}</dt>
+                      <dd className="text-gray-800 truncate">{loc[f]}</dd>
+                    </div>
+                  ) : null)}
+                </dl>
+              </div>
+            );
+          })}
+
           {/* 利用規約同意チェックボックス */}
           <div className="bg-[#FFFBF0] border border-[#D4C5A9] rounded-xl px-5 py-4">
             <label className="flex items-start gap-3 cursor-pointer group">
@@ -540,6 +631,44 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
         )}
 
         <form onSubmit={handleConfirm} className="space-y-6">
+
+          {/* 言語タブ */}
+          <div className="bg-white border-2 border-indigo-200 rounded-lg p-4 shadow-md">
+            <div className="flex items-center gap-2 mb-3">
+              <Globe className="w-4 h-4 text-indigo-600" />
+              <span className="text-sm font-semibold text-indigo-800">入力言語</span>
+              <span className="text-xs text-gray-500">— 言語タブを切り替えて各言語のプロフィールを入力できます</span>
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              {EDIT_LANGS.map(({ code, label, flag }) => {
+                const hasData = code !== 'ja' && hasLangContent(code as 'en' | 'zh');
+                return (
+                  <button
+                    key={code}
+                    type="button"
+                    onClick={() => setActiveEditLang(code as typeof activeEditLang)}
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium border-2 transition-all ${
+                      activeEditLang === code
+                        ? 'bg-indigo-600 border-indigo-600 text-white shadow'
+                        : 'bg-white border-indigo-200 text-indigo-700 hover:border-indigo-400 hover:bg-indigo-50'
+                    }`}
+                  >
+                    <span>{flag}</span>
+                    <span>{label}</span>
+                    {hasData && (
+                      <span className={`w-1.5 h-1.5 rounded-full ${activeEditLang === code ? 'bg-indigo-200' : 'bg-indigo-500'}`} />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            {activeEditLang !== 'ja' && (
+              <p className="text-xs text-indigo-600 mt-2 bg-indigo-50 rounded px-3 py-1.5">
+                ✏️ <strong>{EDIT_LANGS.find(l => l.code === activeEditLang)?.label}</strong> タブでは「名前・キャッチフレーズ・説明文」等のテキスト項目がこの言語専用で保存されます。所属・URL・タグ等は日本語タブのみ編集できます。
+              </p>
+            )}
+          </div>
+
           {/* 画像アップロード */}
           <div className="bg-white border-2 border-blue-200 rounded-lg p-6 shadow-md">
             <h3 className="text-blue-900 mb-4 flex items-center gap-2">
@@ -624,13 +753,14 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="name" className="text-blue-900">
+                <Label htmlFor="name" className="text-blue-900 flex items-center gap-1.5">
                   名前 <span className="text-red-500">*</span>
+                  {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
                 </Label>
                 <Input
                   id="name"
-                  required
-                  value={formData.name}
+                  required={activeEditLang === 'ja'}
+                  value={getLocalizedValue('name')}
                   onChange={(e) => handleChange('name', e.target.value)}
                   className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
                   placeholder="例: 星空みらい"
@@ -638,12 +768,13 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="nickname" className="text-blue-900">
+                <Label htmlFor="nickname" className="text-blue-900 flex items-center gap-1.5">
                   ニックネーム
+                  {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
                 </Label>
                 <Input
                   id="nickname"
-                  value={formData.nickname}
+                  value={getLocalizedValue('nickname')}
                   onChange={(e) => handleChange('nickname', e.target.value)}
                   className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
                   placeholder="例: みらいちゃん"
@@ -652,130 +783,140 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
 
               <div className="space-y-2">
                 <Label htmlFor="affiliation" className="text-blue-900">
-                  所属
+                  所属 {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
                 </Label>
                 <Input
                   id="affiliation"
                   value={formData.affiliation}
                   onChange={(e) => handleChange('affiliation', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
+                  disabled={activeEditLang !== 'ja'}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="例: スターライトプロダクション"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="birthday" className="text-blue-900">
-                  誕生日
+                  誕生日 {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
                 </Label>
                 <Input
                   id="birthday"
                   value={formData.birthday}
                   onChange={(e) => handleChange('birthday', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
+                  disabled={activeEditLang !== 'ja'}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="例: 7月15日"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="debut" className="text-blue-900">
-                  デビュー日
+                  デビュー日 {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
                 </Label>
                 <Input
                   id="debut"
                   value={formData.debut}
                   onChange={(e) => handleChange('debut', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
+                  disabled={activeEditLang !== 'ja'}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="例: 2023年4月"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="activityHistory" className="text-blue-900">
-                  活動歴
+                  活動歴 {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
                 </Label>
                 <Input
                   id="activityHistory"
                   value={formData.activityHistory}
                   onChange={(e) => handleChange('activityHistory', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
+                  disabled={activeEditLang !== 'ja'}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="例: 2年"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="activityGenre" className="text-blue-900">
-                  活動ジャンル
+                  活動ジャンル {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
                 </Label>
                 <Input
                   id="activityGenre"
                   value={formData.activityGenre}
                   onChange={(e) => handleChange('activityGenre', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
+                  disabled={activeEditLang !== 'ja'}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="例: ゲーム実況"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="bloodType" className="text-blue-900">
-                  血液型
+                  血液型 {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
                 </Label>
                 <Input
                   id="bloodType"
                   value={formData.bloodType}
                   onChange={(e) => handleChange('bloodType', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
+                  disabled={activeEditLang !== 'ja'}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="例: A型"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="height" className="text-blue-900">
-                  身長
+                  身長 {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
                 </Label>
                 <Input
                   id="height"
                   value={formData.height}
                   onChange={(e) => handleChange('height', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
+                  disabled={activeEditLang !== 'ja'}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="例: 158cm"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="weight" className="text-blue-900">
-                  体重
+                  体重 {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
                 </Label>
                 <Input
                   id="weight"
                   value={formData.weight}
                   onChange={(e) => handleChange('weight', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
+                  disabled={activeEditLang !== 'ja'}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="例: 52kg"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="location" className="text-blue-900">
-                  住んでいるところ
+                  住んでいるところ {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
                 </Label>
                 <Input
                   id="location"
                   value={formData.location}
                   onChange={(e) => handleChange('location', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
+                  disabled={activeEditLang !== 'ja'}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="例: 東京"
                 />
               </div>
 
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="tags" className="text-blue-900">
-                  タグ（カンマ区切り）
+                  タグ（カンマ区切り） {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
                 </Label>
                 <Input
                   id="tags"
                   value={formData.tags}
                   onChange={(e) => handleChange('tags', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
+                  disabled={activeEditLang !== 'ja'}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="例: ゲーム実況, 歌ってみた, お絵かき"
                 />
               </div>
@@ -787,8 +928,11 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
             <h3 className="text-blue-900 mb-4 flex items-center gap-2">
               <Link className="w-5 h-5" />
               SNS・リンク
+              {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
             </h3>
-            <SnsLinksEditor links={snsLinks} onChange={setSnsLinks} />
+            <div className={activeEditLang !== 'ja' ? 'opacity-50 pointer-events-none' : ''}>
+              <SnsLinksEditor links={snsLinks} onChange={setSnsLinks} />
+            </div>
           </div>
 
           {/* 動画リンク */}
@@ -797,8 +941,9 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
               <Video className="w-5 h-5" />
               動画リンク
               <span className="text-sm text-gray-500">（最大12個）</span>
+              {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
             </h3>
-            
+            <div className={activeEditLang !== 'ja' ? 'opacity-50 pointer-events-none' : ''}>
             <div className="space-y-4">
               {videoUrls.map((url, index) => (
                 <div key={index} className="space-y-2">
@@ -842,6 +987,7 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
                 <p className="text-sm text-gray-500">最大数（12個）に達しました</p>
               )}
             </div>
+            </div>
           </div>
 
           {/* 中部広告2 */}
@@ -855,12 +1001,13 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
             
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="oneWord" className="text-blue-900">
+                <Label htmlFor="oneWord" className="text-blue-900 flex items-center gap-1.5">
                   ひとこと
+                  {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
                 </Label>
                 <Input
                   id="oneWord"
-                  value={formData.oneWord}
+                  value={getLocalizedValue('oneWord')}
                   onChange={(e) => handleChange('oneWord', e.target.value)}
                   className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
                   placeholder="例: みんなと一緒に楽しい時間を過ごしたいな～！"
@@ -868,12 +1015,13 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="catchphrase" className="text-blue-900">
+                <Label htmlFor="catchphrase" className="text-blue-900 flex items-center gap-1.5">
                   キャッチフレーズ
+                  {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
                 </Label>
                 <Input
                   id="catchphrase"
-                  value={formData.catchphrase}
+                  value={getLocalizedValue('catchphrase')}
                   onChange={(e) => handleChange('catchphrase', e.target.value)}
                   className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
                   placeholder="例: みんなに元気を届けるVTuber！"
@@ -881,12 +1029,13 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="favoriteThings" className="text-blue-900">
+                <Label htmlFor="favoriteThings" className="text-blue-900 flex items-center gap-1.5">
                   好きなもの
+                  {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
                 </Label>
                 <Input
                   id="favoriteThings"
-                  value={formData.favoriteThings}
+                  value={getLocalizedValue('favoriteThings')}
                   onChange={(e) => handleChange('favoriteThings', e.target.value)}
                   className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
                   placeholder="例: ゲーム、歌うこと、甘いもの"
@@ -894,12 +1043,13 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="dislikedThings" className="text-blue-900">
+                <Label htmlFor="dislikedThings" className="text-blue-900 flex items-center gap-1.5">
                   苦手なもの
+                  {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
                 </Label>
                 <Input
                   id="dislikedThings"
-                  value={formData.dislikedThings}
+                  value={getLocalizedValue('dislikedThings')}
                   onChange={(e) => handleChange('dislikedThings', e.target.value)}
                   className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
                   placeholder="例: 虫、ホラー"
@@ -907,12 +1057,13 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="hobby" className="text-blue-900">
+                <Label htmlFor="hobby" className="text-blue-900 flex items-center gap-1.5">
                   趣味・特技
+                  {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
                 </Label>
                 <Input
                   id="hobby"
-                  value={formData.hobby}
+                  value={getLocalizedValue('hobby')}
                   onChange={(e) => handleChange('hobby', e.target.value)}
                   className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
                   placeholder="例: イラスト、ピアノ"
@@ -920,12 +1071,13 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="dream" className="text-blue-900">
+                <Label htmlFor="dream" className="text-blue-900 flex items-center gap-1.5">
                   将来の夢
+                  {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
                 </Label>
                 <Input
                   id="dream"
-                  value={formData.dream}
+                  value={getLocalizedValue('dream')}
                   onChange={(e) => handleChange('dream', e.target.value)}
                   className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
                   placeholder="例: たくさんの人を笑顔にしたい"
@@ -933,12 +1085,13 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="message" className="text-blue-900">
+                <Label htmlFor="message" className="text-blue-900 flex items-center gap-1.5">
                   メッセージ
+                  {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
                 </Label>
                 <Textarea
                   id="message"
-                  value={formData.message}
+                  value={getLocalizedValue('message')}
                   onChange={(e) => handleChange('message', e.target.value)}
                   className="border-blue-200 focus:border-blue-400 bg-blue-50/30 min-h-[100px]"
                   placeholder="例: いつも応援ありがとうございます！一緒に楽しい時間を過ごしましょう！"
@@ -947,39 +1100,42 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
 
               <div className="space-y-2">
                 <Label htmlFor="streamingTags" className="text-blue-900">
-                  配信タグ
+                  配信タグ {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
                 </Label>
                 <Input
                   id="streamingTags"
                   value={formData.streamingTags}
                   onChange={(e) => handleChange('streamingTags', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
+                  disabled={activeEditLang !== 'ja'}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="例: #星空みらい配信"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="fanartTag" className="text-blue-900">
-                  ファンアートタグ
+                  ファンアートタグ {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
                 </Label>
                 <Input
                   id="fanartTag"
                   value={formData.fanartTag}
                   onChange={(e) => handleChange('fanartTag', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
+                  disabled={activeEditLang !== 'ja'}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="例: #星空みらいファンアート"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="r18FanartTag" className="text-blue-900">
-                  R18ファンアートタグ
+                  R18ファンアートタグ {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
                 </Label>
                 <Input
                   id="r18FanartTag"
                   value={formData.r18FanartTag}
                   onChange={(e) => handleChange('r18FanartTag', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
+                  disabled={activeEditLang !== 'ja'}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="例: #星空みらいR18"
                 />
               </div>
@@ -989,7 +1145,10 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
           {/* 自由記入欄 */}
           <div className="bg-white border-2 border-blue-200 rounded-lg p-6 shadow-md">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-blue-900">プロフィール詳細（マークダウン対応）</h3>
+              <h3 className="text-blue-900 flex items-center gap-1.5">
+                プロフィール詳細（マークダウン対応）
+                {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
+              </h3>
               <Button
                 type="button"
                 variant="outline"
@@ -1013,11 +1172,11 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
 
             {showMarkdownPreview ? (
               <div className="prose prose-sm max-w-none p-4 border-2 border-blue-200 rounded-lg bg-blue-50/30 min-h-[300px]">
-                <ReactMarkdown>{formData.freeDescription || '*プレビューがここに表示されます*'}</ReactMarkdown>
+                <ReactMarkdown>{getLocalizedValue('freeDescription') || '*プレビューがここに表示されます*'}</ReactMarkdown>
               </div>
             ) : (
               <Textarea
-                value={formData.freeDescription}
+                value={getLocalizedValue('freeDescription')}
                 onChange={(e) => handleChange('freeDescription', e.target.value)}
                 className="border-blue-200 focus:border-blue-400 bg-blue-50/30 min-h-[300px] font-mono text-sm"
                 placeholder="マークダウン形式で自由に記入できます&#10;&#10;例:&#10;## 自己紹介&#10;はじめまして！〇〇です。&#10;&#10;### 好きなゲーム&#10;- ゲーム1&#10;- ゲーム2&#10;&#10;**太字** *斜体* など使えます"
