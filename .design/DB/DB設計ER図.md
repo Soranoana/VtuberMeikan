@@ -1,5 +1,9 @@
 # DB設計ER図
 
+MermaidのER図は向きを細かく制御しづらいため、結合の少ない領域ごとに分割しています。表示時は各図が縦に並ぶので、1枚の横長図より追いやすくなります。
+
+## 1. VTuberプロフィール関連
+
 ```mermaid
 erDiagram
     vtuber_profiles {
@@ -14,6 +18,9 @@ erDiagram
     }
     activity_status {
         uuid activity_status_uuid PK
+    }
+    users {
+        uuid users_uuid PK
     }
     sns_link {
         uuid sns_link_uuid PK
@@ -177,4 +184,101 @@ erDiagram
     profile_tag }o--|| tag : tag
 
     profile_activity }o--|| vtuber_profiles : profile
+```
+
+## 2. ユーザー・管理系
+
+```mermaid
+erDiagram
+    users {
+        uuid users_uuid PK
+        uuid user_role_physical_name FK
+        uuid login_service FK
+        uuid disp_theme FK
+        uuid language FK
+    }
+    user_role {
+        uuid user_role_uuid PK
+    }
+    sns_support {
+        uuid sns_support_uuid PK
+        uuid image_id FK
+    }
+    theme {
+        uuid theme_uuid PK
+    }
+    language {
+        uuid language_uuid PK
+    }
+    images_contents {
+        uuid images_contents_uuid PK
+        uuid user_id FK
+    }
+    images_system {
+        uuid images_system_uuid PK
+    }
+    screen_element {
+        uuid screen_element_uuid PK
+    }
+    screen_word {
+        uuid screen_word_uuid PK
+        uuid language_physical_name FK
+        uuid message_id FK
+    }
+    page_author {
+        uuid page_author_uuid PK
+        uuid user_id FK
+        uuid vtuber_profiles_id FK
+        uuid fix_item FK
+    }
+    contact {
+        uuid contact_uuid PK
+        uuid priority_physical_name FK
+        uuid response_status_physical_name FK
+    }
+    priority {
+        uuid priority_uuid PK
+    }
+    response_status {
+        uuid response_status_uuid PK
+    }
+    profile_report {
+        uuid profile_report_uuid PK
+        uuid user_id FK
+        uuid vtuber_profiles_id FK
+        uuid report_reason_physical_name FK
+    }
+    report_reason {
+        uuid report_reason_uuid PK
+    }
+
+    users }o--|| user_role : role
+    users }o--|| sns_support : login_service
+    users }o--|| theme : theme
+    users }o--|| language : language
+
+    sns_support }o--|| images_system : image
+
+    images_contents }o--|| users : owner
+
+    screen_word }o--|| language : language
+    screen_word }o--|| screen_element : element
+
+    page_author }o--|| users : author
+    page_author }o--|| screen_word : fix_item
+
+    contact }o--|| priority : priority
+    contact }o--|| response_status : response
+
+    profile_report }o--|| users : reporter
+    profile_report }o--|| report_reason : reason
+```
+
+## 3. 単独テーブル
+
+```mermaid
+erDiagram
+    badge {
+        uuid badge_uuid PK
+    }
 ```
