@@ -452,8 +452,8 @@ erDiagram
 
     movie_link }o--|| vtuber_profiles : profile
 
-    relation }o--|| vtuber_profiles : from
-    relation }o--|| vtuber_profiles : to
+    relation }o--|| vtuber_profiles : source
+    relation }o--|| vtuber_profiles : target
 
     vtuber_profiles_lang }o--|| vtuber_profiles : profile
     vtuber_profiles_lang }o--|| language : language
