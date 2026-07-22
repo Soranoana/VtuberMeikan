@@ -31,11 +31,6 @@ erDiagram
         uuid movie_link_uuid PK
         uuid vtuber_profiles_id FK
     }
-    relation {
-        uuid relation_uuid PK
-        uuid node_from FK
-        uuid node_to FK
-    }
     vtuber_profiles_lang {
         uuid vtuber_profiles_lang_uuid PK
         uuid vtuber_profiles_id FK
@@ -47,7 +42,6 @@ erDiagram
 
     vtuber_profiles ||--o{ bbs_res : has
     vtuber_profiles ||--o{ movie_link : has
-    vtuber_profiles ||--o{ relation : node
     vtuber_profiles }o--|| users : owned_by
     vtuber_profiles }o--|| join_group : belongs_to
     vtuber_profiles }o--|| activity_status : status
@@ -59,8 +53,6 @@ erDiagram
 
     movie_link }o--|| vtuber_profiles : profile
 
-    relation }o--|| vtuber_profiles : source
-    relation }o--|| vtuber_profiles : target
 ```
 
 ## 2. プロフィール拡張

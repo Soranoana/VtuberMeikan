@@ -12,11 +12,11 @@
 
 | カラム物理名 | カラム論理名 | 型 | 既定値 | 非NULL | 備考 | 出現テーブル数 |
 |---|---|---|---|---|---|---:|
-| create_datetime | 作成日 | timestamptz | CURRENT_TIMESTAMP | x |  | 28 |
-| create_user | 作成ユーザー | varchar(32) | CURRENT_USER | x | 物理名を保存 | 28 |
-| update_datetime | 更新日 | timestamptz | CURRENT_TIMESTAMP | x |  | 28 |
-| update_user | 更新ユーザー | varchar(32) | CURRENT_USER | x | 物理名を保存 | 28 |
-| soft_delete_flag | 論理削除フラグ | boolean | 0 | x |  | 28 |
+| create_datetime | 作成日 | timestamptz | CURRENT_TIMESTAMP | x |  | 27 |
+| create_user | 作成ユーザー | varchar(32) | CURRENT_USER | x | 物理名を保存 | 27 |
+| update_datetime | 更新日 | timestamptz | CURRENT_TIMESTAMP | x |  | 27 |
+| update_user | 更新ユーザー | varchar(32) | CURRENT_USER | x | 物理名を保存 | 27 |
+| soft_delete_flag | 論理削除フラグ | boolean | 0 | x |  | 27 |
 
 ## テーブル一覧
 
@@ -46,7 +46,6 @@
 | 22 | screen_element | 画面要素 | 904 | システム管理(静的) | 画面要素名の一覧を管理する |  |
 | 23 | likes | いいね | 1096 | コンテンツ(動的) | ユーザーからユーザーへのいいねを管理するカンリ |  |
 | 24 | movie_link | 動画リンク | 968 | コンテンツ(動的) | プロフィールにリンクされる動画を管理するドウガカンリ |  |
-| 25 | relation | 関係値 | 1288 | コンテンツ(動的) | 相関図に使用するプロフィール間の関係値（ノード）を管理するソウカンズシヨウカンカンケイアタイカンリ |  |
 | 26 | vtuber_profiles_lang | Vtuberプロフィール(各言語) | 6152 | コンテンツ(動的) | プロフィール本体。特に言語に依存する項目トクゲンゴイゾンコウモク |  |
 | 27 | profile_tag | プロフィールのタグ | 1032 | コンテンツ(動的) | プロフィールに紐づくタグを管理するヒモカンリ |  |
 | 28 | profile_activity | プロフィールの活動ジャンル | 1032 | コンテンツ(動的) | プロフィールに紐づく活動ジャンルを管理するヒモカツドウカンリ |  |
@@ -412,20 +411,6 @@
 | 8 | update_user | 更新ユーザー | varchar(32) | 256 |  |  |  | x |  | CURRENT_USER | 物理名を保存 |
 | 9 | soft_delete_flag | 論理削除フラグ | boolean | 8 |  |  |  | x |  | 0 |  |
 
-### relation（関係値）
-
-| No | カラム物理名 | カラム論理名 | 型 | bit数 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
-|---:|---|---|---|---:|---|---|---|---|---|---|---|
-| 1 | relation_uuid | UUID | uuid | 128 | x |  |  | x(PK制約)セイヤク | x(PK制約)セイヤク | gen_random_uuid() |  |
-| 2 | node_from | ノード元 | uuid | 128 |  | x | vtuber_profiles.vtuber_profiles_uuid | x | △ |  |  |
-| 3 | node_to | ノード先 | uuid | 128 |  | x | vtuber_profiles.vtuber_profiles_uuid | x | △ |  |  |
-| 4 | node_name | 関係名 | varchar(32) | 256 |  |  |  | x |  |  |  |
-| 5 | create_datetime | 作成日 | timestamptz | 64 |  |  |  | x |  | CURRENT_TIMESTAMP |  |
-| 6 | create_user | 作成ユーザー | varchar(32) | 256 |  |  |  | x |  | CURRENT_USER | 物理名を保存 |
-| 7 | update_datetime | 更新日 | timestamptz | 64 |  |  |  | x |  | CURRENT_TIMESTAMP |  |
-| 8 | update_user | 更新ユーザー | varchar(32) | 256 |  |  |  | x |  | CURRENT_USER | 物理名を保存 |
-| 9 | soft_delete_flag | 論理削除フラグ | boolean | 8 |  |  |  | x |  | 0 |  |
-
 ### vtuber_profiles_lang（Vtuberプロフィール(各言語)）
 
 | No | カラム物理名 | カラム論理名 | 型 | bit数 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
@@ -581,11 +566,6 @@ erDiagram
         uuid movie_link_uuid PK
         uuid vtuber_profiles_id FK
     }
-    relation {
-        uuid relation_uuid PK
-        uuid node_from FK
-        uuid node_to FK
-    }
     vtuber_profiles_lang {
         uuid vtuber_profiles_lang_uuid PK
         uuid vtuber_profiles_id FK
@@ -606,8 +586,6 @@ erDiagram
     vtuber_profiles ||--o{ page_author : has
     vtuber_profiles ||--o{ profile_report : has
     vtuber_profiles ||--o{ movie_link : has
-    vtuber_profiles ||--o{ relation : node_from
-    vtuber_profiles ||--o{ relation : node_to
     vtuber_profiles ||--o{ vtuber_profiles_lang : has
     vtuber_profiles ||--o{ profile_tag : has
     vtuber_profiles ||--o{ profile_activity : has
@@ -650,9 +628,6 @@ erDiagram
     likes }o--|| users : target_user
 
     movie_link }o--|| vtuber_profiles : profile
-
-    relation }o--|| vtuber_profiles : source
-    relation }o--|| vtuber_profiles : target
 
     vtuber_profiles_lang }o--|| vtuber_profiles : profile
     vtuber_profiles_lang }o--|| language : language
