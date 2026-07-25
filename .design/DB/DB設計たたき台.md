@@ -46,10 +46,9 @@
 | 22 | screen_element | 画面要素 | システム管理(静的) | 画面要素名の一覧を管理する |
 | 23 | likes | いいね | コンテンツ(動的) | ユーザーからユーザーへのいいねを管理する |
 | 24 | movie_link | 動画リンク | コンテンツ(動的) | プロフィールにリンクされる動画を管理する |
-| 25 | relation | 関係値 | コンテンツ(動的) | 相関図に使用するプロフィール間の関係値（ノード）を管理する |
-| 26 | vtuber_profiles_lang | Vtuberプロフィール(各言語) | コンテンツ(動的) | プロフィール本体。特に言語に依存する項目 |
-| 27 | profile_tag | プロフィールのタグ | コンテンツ(動的) | プロフィールに紐づくタグを管理する |
-| 28 | profile_activity | プロフィールの活動ジャンル | コンテンツ(動的) | プロフィールに紐づく活動ジャンルを管理する |
+| 25 | vtuber_profiles_lang | Vtuberプロフィール(各言語) | コンテンツ(動的) | プロフィール本体。特に言語に依存する項目 |
+| 26 | profile_tag | プロフィールのタグ | コンテンツ(動的) | プロフィールに紐づくタグを管理する |
+| 27 | profile_activity | プロフィールの活動ジャンル | コンテンツ(動的) | プロフィールに紐づく活動ジャンルを管理する |
 
 ## テーブル定義詳細
 
@@ -286,15 +285,6 @@
 | 2 | movie_id | 動画ID | bigserial |  |  |  | x | x |  |  |
 | 3 | vtuber_profiles_id | VプロフィールID | uuid |  | x | vtuber_profiles.vtuber_profiles_uuid | x |  |  |  |
 | 4 | url | 動画URL | text |  |  |  | x |  |  |  |
-
-### relation（関係値）
-
-| No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
-|---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | relation_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | node_from | ノード元 | uuid |  | x | vtuber_profiles.vtuber_profiles_uuid | x | △ |  | node_from + node_to で UNIQUEにする |
-| 3 | node_to | ノード先 | uuid |  | x | vtuber_profiles.vtuber_profiles_uuid | x | △ |  | node_from + node_to で UNIQUEにする |
-| 4 | node_name | 関係名 | varchar(32) |  |  |  | x |  |  |  |
 
 ### vtuber_profiles_lang（Vtuberプロフィール(各言語)）
 
