@@ -512,4 +512,142 @@ erDiagram
     profile_activity }o--|| vtuber_profiles : profile
 ```
 
+---
+
+## ENUM型定義
+
+PostgreSQLの `CREATE TYPE` で定義するENUM型の一覧。
+
+| 型名（物理名） | 論理名 | 値一覧 | 使用テーブル.カラム |
+|---|---|---|---|
+| `likes_type_enum` | いいね種別 | `profile`, `edit` | `likes.likes_type` |
+| `message_type_enum` | 文言種別 | `screen_element`, `other_tables` | `screen_word.message_type` |
+
+### DDL例
+
+```sql
+CREATE TYPE likes_type_enum AS ENUM ('profile', 'edit');
+CREATE TYPE message_type_enum AS ENUM ('screen_element', 'other_tables');
+```
+
+---
+
+## インデックス設計
+
+### 基本方針
+- PKはPostgreSQLが自動でインデックスを作成するため記載しない
+- UNIQUE制約もPostgreSQLが自動でインデックスを作成するため別途不要
+- FK列（外部キー）と絞り込み・ソートに使うカラムに作成する
+
+### インデックス一覧
+
+| No | テーブル物理名 | インデックス名 | 対象カラム | 種別 | 備考 |
+|---:|---|---|---|---|---|
+| 1 | vtuber_profiles | idx_vtuber_profiles_user_id | user_id | 通常 | FK |
+| 2 | vtuber_profiles | idx_vtuber_profiles_join_group | join_group | 通常 | FK |
+| 3 | vtuber_profiles | idx_vtuber_profiles_activity_status | activity_status | 通常 | FK |
+| 4 | vtuber_profiles_lang | uq_vtuber_profiles_lang_profile_lang | (vtuber_profiles_id, lang) | UNIQUE | 複合UNIQUE兼用 |
+| 5 | profile_tag | uq_profile_tag_profile_tag | (vtuber_profiles_id, tag) | UNIQUE | 複合UNIQUE兼用 |
+| 6 | profile_activity | uq_profile_activity_profile_activity | (vtuber_profiles_id, activity) | UNIQUE | 複合UNIQUE兼用 |
+| 7 | sns_link | idx_sns_link_profile | vtuber_profiles_id | 通常 | FK |
+| 8 | bbs_res | idx_bbs_res_profile | vtuber_profiles_id | 通常 | FK |
+| 9 | bbs_res | idx_bbs_res_user | user_id | 通常 | FK |
+| 10 | bbs_res | idx_bbs_res_datetime | res_datetime DESC | 通常 | 投稿日時降順ソート |
+| 11 | page_author | idx_page_author_profile | vtuber_profiles_id | 通常 | FK |
+| 12 | page_author | idx_page_author_user | user_id | 通常 | FK |
+| 13 | movie_link | idx_movie_link_profile | vtuber_profiles_id | 通常 | FK |
+| 14 | profile_report | idx_profile_report_profile | vtuber_profiles_id | 通常 | FK |
+| 15 | profile_report | idx_profile_report_user | user_id | 通常 | FK |
+| 16 | likes | uq_likes_do_target_type | (likes_do_user, likes_target_user, likes_type) | UNIQUE | 複合UNIQUE兼用 |
+| 17 | likes | idx_likes_target_user | likes_target_user | 通常 | FK（被いいねの検索） |
+| 18 | relation | uq_relation_from_to | (node_from, node_to) | UNIQUE | 複合UNIQUE兼用 |
+| 19 | screen_word | idx_screen_word_lang_element | (language_physical_name, message_id) | 通常 | 言語×要素で検索 |
+| 20 | images_contents | idx_images_contents_user | user_id | 通常 | FK |
+
+---
+
+## 採番ルール
+
+URLや画面表示に使う人間が読めるIDの自動払い出しルール。  
+DB内部の連携はUUIDで行い、このIDはURL・表示用途のみ。
+
+| カラム | テーブル | フォーマット | 例 | 実装方式 |
+|---|---|---|---|---|
+| `vtuber_profiles_id` | `vtuber_profiles` | `VP` + 6桁ゼロ埋め連番 | `VP000001` | シーケンス + 関数 |
+| `user_id` | `users` | `US` + 6桁ゼロ埋め連番 | `US000001` | シーケンス + 関数 |
+
+### DDL例
+
+```sql
+-- vtuber_profiles_id 用シーケンス
+CREATE SEQUENCE vtuber_profiles_id_seq START 1;
+
+CREATE OR REPLACE FUNCTION generate_vtuber_profiles_id()
+RETURNS VARCHAR(8) AS $$
+BEGIN
+    RETURN 'VP' || LPAD(nextval('vtuber_profiles_id_seq')::TEXT, 6, '0');
+END;
+$$ LANGUAGE plpgsql;
+
+-- users.user_id 用シーケンス
+CREATE SEQUENCE users_id_seq START 1;
+
+CREATE OR REPLACE FUNCTION generate_users_id()
+RETURNS VARCHAR(8) AS $$
+BEGIN
+    RETURN 'US' || LPAD(nextval('users_id_seq')::TEXT, 6, '0');
+END;
+$$ LANGUAGE plpgsql;
+```
+
+テーブル作成時のDEFALT設定例：
+
+```sql
+vtuber_profiles_id VARCHAR(8) NOT NULL UNIQUE DEFAULT generate_vtuber_profiles_id()
+user_id            VARCHAR(8) NOT NULL UNIQUE DEFAULT generate_users_id()
+```
+
+---
+
+## マイグレーション管理方針
+
+個人開発のため、**手動SQLファイル管理**を採用する。
+
+### ファイル命名規則
+
+```
+V{3桁連番}__{内容の概要}.sql
+例: V001__init_schema.sql
+```
+
+### フォルダ構成
+
+```
+.design/DB/migrations/
+  ├── V001__init_enum_types.sql          -- ENUM型定義
+  ├── V002__init_master_tables.sql       -- マスターテーブル作成
+  ├── V003__init_content_tables.sql      -- コンテンツテーブル作成
+  ├── V004__init_sequences_functions.sql -- シーケンス・採番関数
+  ├── V005__init_indexes.sql             -- インデックス作成
+  ├── V006__init_triggers.sql            -- トリガー作成
+  └── V007__init_master_data.sql         -- マスターデータ投入
+```
+
+### 変更履歴（CHANGELOG）
+
+| バージョン | ファイル名 | 内容 | 適用日 |
+|---|---|---|---|
+| V001 | V001__init_enum_types.sql | ENUM型（likes_type_enum, message_type_enum）作成 | - |
+| V002 | V002__init_master_tables.sql | 静的マスターテーブル全件作成 | - |
+| V003 | V003__init_content_tables.sql | 動的コンテンツテーブル全件作成 | - |
+| V004 | V004__init_sequences_functions.sql | 採番シーケンス・関数作成 | - |
+| V005 | V005__init_indexes.sql | インデックス全件作成 | - |
+| V006 | V006__init_triggers.sql | 監査列自動更新トリガー作成 | - |
+| V007 | V007__init_master_data.sql | activity_status, language, user_role等の初期値投入 | - |
+
+### 運用ルール
+1. スキーマ変更が必要になったら番号を1つ増やして新規ファイルを作成する
+2. 既存ファイルは原則編集しない（変更内容は新しいファイルで `ALTER TABLE` 等を記述）
+3. ローカルのDocker環境で動作確認してから本番に適用する
+
 
