@@ -109,7 +109,11 @@ erDiagram
     }
     sns_support {
         uuid sns_support_uuid PK
+        uuid sns_name_physical_name FK
         uuid image_id FK
+    }
+    language {
+        uuid language_uuid PK
     }
     images_contents {
         uuid images_contents_uuid PK
@@ -122,7 +126,9 @@ erDiagram
     sns_link }o--|| vtuber_profiles : profile
     sns_link }o--|| sns_support : icon
 
+    sns_support }o--|| language : sns_name
     sns_support }o--|| images_system : image
+    users }o--|| sns_support : login_service
 
     images_contents }o--|| users : owner
 ```
