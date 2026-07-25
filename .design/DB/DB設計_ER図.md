@@ -166,7 +166,6 @@ erDiagram
     screen_word {
         uuid screen_word_uuid PK
         uuid language_physical_name FK
-        uuid message_id FK
     }
     badge {
         uuid badge_uuid PK
@@ -186,7 +185,6 @@ erDiagram
     users }o--|| language : language
 
     screen_word }o--|| language : language
-    screen_word }o--|| screen_element : element
 ```
 
 ## 5. 通報・問い合わせ

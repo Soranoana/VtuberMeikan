@@ -162,7 +162,7 @@
 |---:|---|---|---|---|---|---|---|---|---|---|
 | 1 | screen_word_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
 | 2 | language_physical_name | 表示言語(物理名) | uuid |  | x | language.language_uuid |  |  |  |  |
-| 3 | message_id | メッセージID | uuid |  | x | screen_element.screen_element_uuid |  |  |  |  |
+| 3 | message_id | メッセージID | uuid |  |  |  |  |  |  |  |
 | 4 | display_message | 文言 | text |  |  |  |  |  |  |  |
 | 5 | message_type | 文言種別 | enum |  |  |  |  |  |  | "screen_element","other_tables" |
 
