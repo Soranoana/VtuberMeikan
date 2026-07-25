@@ -171,7 +171,7 @@
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
 | 1 | sns_support_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | sns_name_physical_name | サービス名(物理名) | uuid |  | x | language.language_uuid | x | x |  |  |
+| 2 | sns_name_physical_name | サービス名(物理名) | varchar(32) |  |  |  | x | x |  |  |
 | 4 | image_id | 画像ID | uuid |  | x | images_system.images_system_uuid | x |  |  | SVG形式 |
 | 5 | use_login_service | ログインサービス有効フラグ | boolean |  |  |  | x |  | TRUE |  |
 | 6 | use_sns_link | SNSリンク有効フラグ | boolean |  |  |  | x |  | TRUE |  |
@@ -205,8 +205,8 @@
 | 5 | user_name_hidden_flag | 画面非表示フラグ | boolean |  |  |  | x |  | FALSE |  |
 | 6 | login_service | ログインサービス | uuid |  | x | sns_support.sns_support_uuid |  |  |  |  |
 | 7 | register_date | 登録日 | timestamptz |  |  |  | x |  | CURRENT_TIMESTAMP |  |
-| 8 | disp_theme | 画面テーマ | uuid |  | x | theme.theme_uuid | x |  | "default" |  |
-| 9 | language | 表示言語 | uuid |  | x | language.language_uuid | x |  | "japan" |  |
+| 8 | disp_theme | 画面テーマ | uuid |  | x | theme.theme_uuid | x |  | "default"のUUID |  |
+| 9 | language | 表示言語 | uuid |  | x | language.language_uuid | x |  | "japan"のUUID |  |
 
 ### theme（画面テーマ）
 
@@ -385,7 +385,6 @@ erDiagram
     }
     sns_support {
         uuid sns_support_uuid PK
-        uuid sns_name_physical_name FK
         uuid image_id FK
     }
     profile_report {

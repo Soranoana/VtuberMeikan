@@ -116,7 +116,6 @@ erDiagram
     }
     sns_support {
         uuid sns_support_uuid PK
-        uuid sns_name_physical_name FK
         uuid image_id FK
     }
     language {
