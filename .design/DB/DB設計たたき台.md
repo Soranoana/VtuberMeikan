@@ -86,14 +86,14 @@
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
 | 1 | badge_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | badge_physical_name | バッジ名(物理名) | varchar(24) |  |  |  | x | x |  |  |
+| 2 | badge_physical_name | バッジ名(物理名) | varchar(24) |  |  |  | x | x |  | 論理名はscreen_wordテーブルで管理する。具体的な要素の候補：よく見られているVtuber、新人Vtuber、最近更新されたVTuber |
 
 ### activity_status（活動状態）
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
 | 1 | activity_status_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | activity_status_physical_name | 活動状態名(物理名) | varchar(8) |  |  |  | x | x |  |  |
+| 2 | activity_status_physical_name | 活動状態名(物理名) | varchar(8) |  |  |  | x | x |  | 論理名はscreen_wordテーブルで管理する。具体的な要素の候補：活動開始前(VTuber準備中)、活動中、卒業済み |
 
 ### sns_link（SNSリンク）
 
@@ -160,7 +160,7 @@
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
 | 1 | language_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | language_physical_name | 表示言語(物理名) | varchar(16) |  |  |  | x | x |  |  |
+| 2 | language_physical_name | 表示言語(物理名) | varchar(16) |  |  |  | x | x |  | 論理名はscreen_wordテーブルで管理する |
 | 4 | language_image | 言語画像 | bigserial |  |  |  |  |  |  | SVG |
 | 5 | enable | 有効フラグ | boolean |  |  |  | x |  | 0 |  |
 
@@ -172,13 +172,14 @@
 | 2 | language_physical_name | 表示言語(物理名) | uuid |  | x | language.language_uuid |  |  |  |  |
 | 3 | message_id | メッセージID | uuid |  | x | screen_element.screen_element_uuid |  |  |  |  |
 | 4 | display_message | 文言 | text |  |  |  |  |  |  |  |
+| 5 | message_type | 文言種別 | enum |  |  |  |  |  |  | "screen_element","other_tables" |
 
 ### sns_support（サポートするSNS）
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
 | 1 | sns_support_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | sns_name_physical_name | サービス名(物理名) | varchar(9) |  |  |  | x | x |  |  |
+| 2 | sns_name_physical_name | サービス名(物理名) | uuid |  | x | language.language_uuid | x | x |  |  |
 | 4 | image_id | 画像ID | uuid |  | x | images_system.images_system_uuid | x |  |  | SVG形式 |
 | 5 | use_login_service | ログインサービス有効フラグ | boolean |  |  |  | x |  | 1 |  |
 | 6 | use_sns_link | SNSリンク有効フラグ | boolean |  |  |  | x |  | 1 |  |
@@ -199,7 +200,7 @@
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
 | 1 | report_reason_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | report_reason_physical_name | 通報理由(物理名) | varchar(16) |  |  |  | x | x |  |  |
+| 2 | report_reason_physical_name | 通報理由(物理名) | varchar(16) |  |  |  | x | x |  | 論理名はscreen_wordテーブルで管理する |
 
 ### users（ユーザー）
 
@@ -220,14 +221,14 @@
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
 | 1 | theme_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | theme_physical_name | 画面テーマ(物理名) | varchar(16) |  |  |  | x | x |  |  |
+| 2 | theme_physical_name | 画面テーマ(物理名) | varchar(16) |  |  |  | x | x |  | 論理名はscreen_wordテーブルで管理する |
 
 ### user_role（ユーザー権限）
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
 | 1 | user_role_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | user_role_physical_name | ユーザー権限(物理名) | varchar(8) |  |  |  | x | x |  |  |
+| 2 | user_role_physical_name | ユーザー権限(物理名) | varchar(8) |  |  |  | x | x |  | 論理名はscreen_wordテーブルで管理する |
 
 ### images_contents（画像(ユーザー投稿)）
 
@@ -392,6 +393,7 @@ erDiagram
     }
     sns_support {
         uuid sns_support_uuid PK
+        uuid sns_name_physical_name FK
         uuid image_id FK
     }
     profile_report {
@@ -487,6 +489,7 @@ erDiagram
     screen_word }o--|| language : language
     screen_word }o--|| screen_element : element
 
+    sns_support }o--|| language : sns_name
     sns_support }o--|| images_system : image
 
     profile_report }o--|| users : reporter
