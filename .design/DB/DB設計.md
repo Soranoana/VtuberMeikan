@@ -8,7 +8,7 @@
 | create_user | 作成ユーザー | varchar(32) | CURRENT_USER | x |  | 物理名を保存 |
 | update_datetime | 更新日 | timestamptz | CURRENT_TIMESTAMP | x |  |  |
 | update_user | 更新ユーザー | varchar(32) | CURRENT_USER | x |  | 物理名を保存 |
-| soft_delete_flag | 論理削除フラグ | boolean | 0 | x |  |  |
+| soft_delete_flag | 論理削除フラグ | boolean | FALSE | x |  |  |
 
 ## テーブル一覧
 
@@ -154,7 +154,7 @@
 | 1 | language_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
 | 2 | language_physical_name | 表示言語(物理名) | varchar(16) |  |  |  | x | x |  | 論理名はscreen_wordテーブルで管理する |
 | 4 | language_image | 言語画像 | bigserial |  |  |  |  |  |  | SVG |
-| 5 | enable | 有効フラグ | boolean |  |  |  | x |  | 0 |  |
+| 5 | enable | 有効フラグ | boolean |  |  |  | x |  | FALSE |  |
 
 ### screen_word（画面文言）
 
@@ -173,8 +173,8 @@
 | 1 | sns_support_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
 | 2 | sns_name_physical_name | サービス名(物理名) | uuid |  | x | language.language_uuid | x | x |  |  |
 | 4 | image_id | 画像ID | uuid |  | x | images_system.images_system_uuid | x |  |  | SVG形式 |
-| 5 | use_login_service | ログインサービス有効フラグ | boolean |  |  |  | x |  | 1 |  |
-| 6 | use_sns_link | SNSリンク有効フラグ | boolean |  |  |  | x |  | 1 |  |
+| 5 | use_login_service | ログインサービス有効フラグ | boolean |  |  |  | x |  | TRUE |  |
+| 6 | use_sns_link | SNSリンク有効フラグ | boolean |  |  |  | x |  | TRUE |  |
 
 ### profile_report（プロフィール通報）
 
@@ -202,7 +202,7 @@
 | 2 | user_id | ユーザーID | varchar(8) |  |  |  | x | x | 自動払い出し |  |
 | 3 | user_name | ユーザー名 | varchar(64) |  |  |  |  |  |  |  |
 | 4 | user_role_physical_name | ユーザー権限(物理名) | uuid |  | x | user_role.user_role_uuid |  |  |  |  |
-| 5 | user_name_hidden_flag | 画面非表示フラグ | boolean |  |  |  | x |  | 0 |  |
+| 5 | user_name_hidden_flag | 画面非表示フラグ | boolean |  |  |  | x |  | FALSE |  |
 | 6 | login_service | ログインサービス | uuid |  | x | sns_support.sns_support_uuid |  |  |  |  |
 | 7 | register_date | 登録日 | timestamptz |  |  |  | x |  | CURRENT_TIMESTAMP |  |
 | 8 | disp_theme | 画面テーマ | uuid |  | x | theme.theme_uuid | x |  | "default" |  |
