@@ -6,42 +6,42 @@
 ```mermaid
 erDiagram
     vtuber_profiles {
-        uuid vtuber_profiles_uuid PK
-        uuid user_id FK
-        uuid join_group FK
-        uuid activity_status FK
+        serial vtuber_profiles_sequence_id PK
+        serial user_id FK
+        serial join_group FK
+        serial activity_status FK
     }
     join_group {
-        uuid join_group_uuid PK
-        uuid operation_status FK
+        serial join_group_sequence_id PK
+        serial operation_status FK
     }
     activity_status {
-        uuid activity_status_uuid PK
+        serial activity_status_sequence_id PK
     }
     users {
-        uuid users_uuid PK
+        serial users_sequence_id PK
     }
     bbs_res {
-        uuid bbs_res_uuid PK
-        uuid vtuber_profiles_id FK
-        uuid user_id FK
+        serial bbs_res_sequence_id PK
+        serial vtuber_profiles_id FK
+        serial user_id FK
     }
     movie_link {
-        uuid movie_link_uuid PK
-        uuid vtuber_profiles_id FK
+        serial movie_link_sequence_id PK
+        serial vtuber_profiles_id FK
     }
     relation {
-        uuid relation_uuid PK
-        uuid node_from FK
-        uuid node_to FK
+        serial relation_sequence_id PK
+        serial node_from FK
+        serial node_to FK
     }
     vtuber_profiles_lang {
-        uuid vtuber_profiles_lang_uuid PK
-        uuid vtuber_profiles_id FK
-        uuid lang FK
+        serial vtuber_profiles_lang_sequence_id PK
+        serial vtuber_profiles_id FK
+        serial lang FK
     }
     tag {
-        uuid tag_uuid PK
+        serial tag_sequence_id PK
     }
 
     vtuber_profiles ||--o{ bbs_res : has
@@ -67,27 +67,27 @@ erDiagram
 ```mermaid
 erDiagram
     language {
-        uuid language_uuid PK
+        serial language_sequence_id PK
     }
     vtuber_profiles {
-        uuid vtuber_profiles_uuid PK
+        serial vtuber_profiles_sequence_id PK
     }
     vtuber_profiles_lang {
-        uuid vtuber_profiles_lang_uuid PK
-        uuid vtuber_profiles_id FK
-        uuid lang FK
+        serial vtuber_profiles_lang_sequence_id PK
+        serial vtuber_profiles_id FK
+        serial lang FK
     }
     tag {
-        uuid tag_uuid PK
+        serial tag_sequence_id PK
     }
     profile_tag {
-        uuid profile_tag_uuid PK
-        uuid vtuber_profiles_id FK
-        uuid tag FK
+        serial profile_tag_sequence_id PK
+        serial vtuber_profiles_id FK
+        serial tag FK
     }
     profile_activity {
-        uuid profile_activity_uuid PK
-        uuid vtuber_profiles_id FK
+        serial profile_activity_sequence_id PK
+        serial vtuber_profiles_id FK
     }
 
     vtuber_profiles_lang }o--|| vtuber_profiles : profile
@@ -104,29 +104,29 @@ erDiagram
 ```mermaid
 erDiagram
     vtuber_profiles {
-        uuid vtuber_profiles_uuid PK
+        serial vtuber_profiles_sequence_id PK
     }
     users {
-        uuid users_uuid PK
+        serial users_sequence_id PK
     }
     sns_link {
-        uuid sns_link_uuid PK
-        uuid vtuber_profiles_id FK
-        uuid sns_icon FK
+        serial sns_link_sequence_id PK
+        serial vtuber_profiles_id FK
+        serial sns_icon FK
     }
     sns_support {
-        uuid sns_support_uuid PK
-        uuid image_id FK
+        serial sns_support_sequence_id PK
+        serial image_id FK
     }
     language {
-        uuid language_uuid PK
+        serial language_sequence_id PK
     }
     images_contents {
-        uuid images_contents_uuid PK
-        uuid user_id FK
+        serial images_contents_sequence_id PK
+        serial user_id FK
     }
     images_system {
-        uuid images_system_uuid PK
+        serial images_system_sequence_id PK
     }
 
     sns_link }o--|| vtuber_profiles : profile
@@ -144,39 +144,39 @@ erDiagram
 ```mermaid
 erDiagram
     users {
-        uuid users_uuid PK
-        uuid user_role_physical_name FK
-        uuid login_service FK
-        uuid disp_theme FK
-        uuid language FK
+        serial users_sequence_id PK
+        serial user_role_physical_name FK
+        serial login_service FK
+        serial disp_theme FK
+        serial language FK
     }
     user_role {
-        uuid user_role_uuid PK
+        serial user_role_sequence_id PK
     }
     theme {
-        uuid theme_uuid PK
+        serial theme_sequence_id PK
     }
     language {
-        uuid language_uuid PK
+        serial language_sequence_id PK
     }
     screen_element {
-        uuid screen_element_uuid PK
+        serial screen_element_sequence_id PK
     }
     screen_word {
-        uuid screen_word_uuid PK
-        uuid language_physical_name FK
+        serial screen_word_sequence_id PK
+        serial language_physical_name FK
     }
     badge {
-        uuid badge_uuid PK
+        serial badge_sequence_id PK
     }
     priority {
-        uuid priority_uuid PK
+        serial priority_sequence_id PK
     }
     response_status {
-        uuid response_status_uuid PK
+        serial response_status_sequence_id PK
     }
     report_reason {
-        uuid report_reason_uuid PK
+        serial report_reason_sequence_id PK
     }
 
     users }o--|| user_role : role
@@ -191,44 +191,44 @@ erDiagram
 ```mermaid
 erDiagram
     users {
-        uuid users_uuid PK
+        serial users_sequence_id PK
     }
     vtuber_profiles {
-        uuid vtuber_profiles_uuid PK
+        serial vtuber_profiles_sequence_id PK
     }
     page_author {
-        uuid page_author_uuid PK
-        uuid user_id FK
-        uuid vtuber_profiles_id FK
-        uuid fix_item FK
+        serial page_author_sequence_id PK
+        serial user_id FK
+        serial vtuber_profiles_id FK
+        serial fix_item FK
     }
     screen_word {
-        uuid screen_word_uuid PK
+        serial screen_word_sequence_id PK
     }
     contact {
-        uuid contact_uuid PK
-        uuid priority_physical_name FK
-        uuid response_status_physical_name FK
+        serial contact_sequence_id PK
+        serial priority_physical_name FK
+        serial response_status_physical_name FK
     }
     priority {
-        uuid priority_uuid PK
+        serial priority_sequence_id PK
     }
     response_status {
-        uuid response_status_uuid PK
+        serial response_status_sequence_id PK
     }
     profile_report {
-        uuid profile_report_uuid PK
-        uuid user_id FK
-        uuid vtuber_profiles_id FK
-        uuid report_reason_physical_name FK
+        serial profile_report_sequence_id PK
+        serial user_id FK
+        serial vtuber_profiles_id FK
+        serial report_reason_physical_name FK
     }
     report_reason {
-        uuid report_reason_uuid PK
+        serial report_reason_sequence_id PK
     }
     likes {
-        uuid likes_uuid PK
-        uuid likes_do_user FK
-        uuid likes_target_user FK
+        serial likes_sequence_id PK
+        serial likes_do_user FK
+        serial likes_target_user FK
     }
 
     page_author }o--|| users : author

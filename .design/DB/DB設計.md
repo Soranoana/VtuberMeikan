@@ -50,50 +50,50 @@
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | vtuber_profiles_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | vtuber_profiles_id | VプロフィールID | varchar(8) |  |  |  | x | x |  | URLに使用する（DB連携はUUIDで管理 |
-| 3 | user_id | ユーザーID | uuid |  | x | users.users_uuid |  |  |  |  |
-| 4 | join_group | 所属 | uuid |  | x | join_group.join_group_uuid |  |  |  |  |
+| 1 | vtuber_profiles_sequence_id | VtuberプロフィールID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
+| 2 | vtuber_profiles_id | VプロフィールID | varchar(8) |  |  |  | x | x |  | URLに使用する。可変 |
+| 3 | user_id | ユーザーID | serial |  | x | users.users_sequence_id |  |  |  |  |
+| 4 | join_group | 所属 | serial |  | x | join_group.join_group_sequence_id |  |  |  |  |
 | 5 | debut_date | デビュー日 | timestamptz |  |  |  |  |  |  |  |
-| 6 | activity_status | 活動状態 | uuid |  | x | activity_status.activity_status_uuid | x |  |  |  |
+| 6 | activity_status | 活動状態 | serial |  | x | activity_status.activity_status_sequence_id | x |  |  |  |
 
 ### join_group（所属）
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | join_group_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
+| 1 | join_group_sequence_id | 所属ID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
 | 2 | group_name | 所属名 | varchar(64) |  |  |  | x | x |  |  |
-| 3 | operation_status | 運営状態 | uuid |  | x | activity_status.activity_status_uuid |  |  |  |  |
+| 3 | operation_status | 運営状態 | serial |  | x | activity_status.activity_status_sequence_id |  |  |  |  |
 | 4 | group_detail | 所属説明 | text |  |  |  |  |  |  |  |
 
 ### tag（タグ）
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | tag_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
+| 1 | tag_sequence_id | タグID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
 | 2 | tag | タグ名 | text |  |  |  | x | x |  |  |
 
 ### badge（バッジ）
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | badge_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
+| 1 | badge_sequence_id | バッジID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
 | 2 | badge_physical_name | バッジ名(物理名) | varchar(24) |  |  |  | x | x |  | 論理名はscreen_wordテーブルで管理する。具体的な要素の候補：よく見られているVtuber、新人Vtuber、最近更新されたVTuber |
 
 ### activity_status（活動状態）
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | activity_status_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
+| 1 | activity_status_sequence_id | 活動状態ID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
 | 2 | activity_status_physical_name | 活動状態名(物理名) | varchar(8) |  |  |  | x | x |  | 論理名はscreen_wordテーブルで管理する。具体的な要素の候補：活動開始前(VTuber準備中)、活動中、卒業済み |
 
 ### sns_link（SNSリンク）
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | sns_link_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | vtuber_profiles_id | VプロフィールID | uuid |  | x | vtuber_profiles.vtuber_profiles_uuid | x |  |  |  |
-| 3 | sns_icon | SNSアイコン | uuid |  | x | sns_support.sns_support_uuid |  |  |  | 選択なしも含む |
+| 1 | sns_link_sequence_id | SNSリンクID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
+| 2 | vtuber_profiles_id | VプロフィールID | serial |  | x | vtuber_profiles.vtuber_profiles_sequence_id | x |  |  |  |
+| 3 | sns_icon | SNSアイコン | serial |  | x | sns_support.sns_support_sequence_id |  |  |  | 選択なしも含む |
 | 4 | sns_link_label | ラベル名 | varchar(32) |  |  |  |  |  | SNSアイコンに紐づくSNS名 |  |
 | 5 | sns_url | URL | text |  |  |  | x |  |  |  |
 
@@ -101,9 +101,9 @@
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | bbs_res_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | vtuber_profiles_id | VプロフィールID | uuid |  | x | vtuber_profiles.vtuber_profiles_uuid | x |  |  |  |
-| 3 | user_id | ユーザーID | uuid |  | x | users.users_uuid | x |  |  |  |
+| 1 | bbs_res_sequence_id | BBSID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
+| 2 | vtuber_profiles_id | VプロフィールID | serial |  | x | vtuber_profiles.vtuber_profiles_sequence_id | x |  |  |  |
+| 3 | user_id | ユーザーID | serial |  | x | users.users_sequence_id | x |  |  |  |
 | 4 | res_text | レス内容 | text |  |  |  | x |  |  |  |
 | 5 | res_datetime | 投稿日時時刻 | timestamptz |  |  |  | x |  |  |  |
 
@@ -111,10 +111,10 @@
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | page_author_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | user_id | ユーザーID | uuid |  | x | users.users_uuid | x |  |  |  |
-| 3 | vtuber_profiles_id | ユーザーID | uuid |  | x | vtuber_profiles.vtuber_profiles_uuid | x |  |  |  |
-| 4 | fix_item | 修正項目 | uuid |  | x | screen_word.screen_word_uuid | x |  |  |  |
+| 1 | page_author_sequence_id | ページ編集者ID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
+| 2 | user_id | ユーザーID | serial |  | x | users.users_sequence_id | x |  |  |  |
+| 3 | vtuber_profiles_id | ユーザーID | serial |  | x | vtuber_profiles.vtuber_profiles_sequence_id | x |  |  |  |
+| 4 | fix_item | 修正項目 | serial |  | x | screen_word.screen_word_sequence_id | x |  |  |  |
 | 5 | fix_before | 修正前 | text |  |  |  | x |  |  |  |
 | 6 | fix_after | 修正後 | text |  |  |  | x |  |  |  |
 | 7 | fix_datetime | 修正日時 | timestamptz |  |  |  | x |  | CURRENT_TIMESTAMP |  |
@@ -124,18 +124,18 @@
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | contact_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
+| 1 | contact_sequence_id | 問い合わせID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
 | 2 | mail_address | メールアドレス | varchar(255) |  |  |  | x |  |  |  |
 | 3 | subject | 件名 | varchar(255) |  |  |  | x |  |  |  |
 | 4 | contact_detail | 問い合わせ内容 | text |  |  |  | x |  |  |  |
-| 5 | priority_physical_name | 優先度(物理名) | uuid |  | x | priority.priority_uuid |  |  |  |  |
-| 6 | response_status_physical_name | 対応状況(物理名) | uuid |  | x | response_status.response_status_uuid |  |  |  |  |
+| 5 | priority_physical_name | 優先度(物理名) | serial |  | x | priority.priority_sequence_id |  |  |  |  |
+| 6 | response_status_physical_name | 対応状況(物理名) | serial |  | x | response_status.response_status_sequence_id |  |  |  |  |
 
 ### priority（優先度）
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | priority_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
+| 1 | priority_sequence_id | 優先度ID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
 | 2 | priority_physical_name | 優先度(物理名) | varchar(8) |  |  |  | x | x |  |  |
 | 3 | priority_logical_name | 優先度(論理名) | varchar(8) |  |  |  |  |  |  | 管理者向けのため、日本語固定 |
 
@@ -143,7 +143,7 @@
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | response_status_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
+| 1 | response_status_sequence_id | 対応状況ID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
 | 2 | response_status_physical_name | 対応状況(物理名) | varchar(8) |  |  |  | x | x |  |  |
 | 3 | response_status_logical_name | 対応状況(論理名) | varchar(8) |  |  |  |  |  |  | 管理者向けのため、日本語固定 |
 
@@ -151,7 +151,7 @@
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | language_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
+| 1 | language_sequence_id | 表示言語ID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
 | 2 | language_physical_name | 表示言語(物理名) | varchar(16) |  |  |  | x | x |  | 論理名はscreen_wordテーブルで管理する |
 | 4 | language_image | 言語画像 | bigserial |  |  |  |  |  |  | SVG |
 | 5 | enable | 有効フラグ | boolean |  |  |  | x |  | FALSE |  |
@@ -160,9 +160,9 @@
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | screen_word_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | language_physical_name | 表示言語(物理名) | uuid |  | x | language.language_uuid |  |  |  |  |
-| 3 | message_id | メッセージID | uuid |  |  |  |  |  |  |  |
+| 1 | screen_word_sequence_id | 画面文言ID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
+| 2 | language_physical_name | 表示言語(物理名) | serial |  | x | language.language_sequence_id |  |  |  |  |
+| 3 | message_id | メッセージID | serial |  |  |  |  |  |  |  |
 | 4 | display_message | 文言 | text |  |  |  |  |  |  |  |
 | 5 | message_type | 文言種別 | enum |  |  |  |  |  |  | "screen_element","other_tables" |
 
@@ -170,9 +170,9 @@
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | sns_support_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
+| 1 | sns_support_sequence_id | サポートするSNSID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
 | 2 | sns_name_physical_name | サービス名(物理名) | varchar(32) |  |  |  | x | x |  |  |
-| 4 | image_id | 画像ID | uuid |  | x | images_system.images_system_uuid | x |  |  | SVG形式 |
+| 4 | image_id | 画像ID | serial |  | x | images_system.images_system_sequence_id | x |  |  | SVG形式 |
 | 5 | use_login_service | ログインサービス有効フラグ | boolean |  |  |  | x |  | TRUE |  |
 | 6 | use_sns_link | SNSリンク有効フラグ | boolean |  |  |  | x |  | TRUE |  |
 
@@ -180,10 +180,10 @@
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | profile_report_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | user_id | ユーザーID | uuid |  | x | users.users_uuid |  |  |  |  |
-| 3 | vtuber_profiles_id | VプロフィールID | uuid |  | x | vtuber_profiles.vtuber_profiles_uuid | x |  |  |  |
-| 4 | report_reason_physical_name | 通報理由(物理名) | uuid |  | x | report_reason.report_reason_uuid | x |  |  |  |
+| 1 | profile_report_sequence_id | プロフィール通報ID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
+| 2 | user_id | ユーザーID | serial |  | x | users.users_sequence_id |  |  |  |  |
+| 3 | vtuber_profiles_id | VプロフィールID | serial |  | x | vtuber_profiles.vtuber_profiles_sequence_id | x |  |  |  |
+| 4 | report_reason_physical_name | 通報理由(物理名) | serial |  | x | report_reason.report_reason_sequence_id | x |  |  |  |
 | 5 | report_detail | 詳細 | text |  |  |  | x |  |  |  |
 | 6 | report_datetime | 通報日時 | timestamptz |  |  |  | x |  | CURRENT_TIMESTAMP |  |
 
@@ -191,44 +191,44 @@
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | report_reason_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
+| 1 | report_reason_sequence_id | 通報理由ID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
 | 2 | report_reason_physical_name | 通報理由(物理名) | varchar(16) |  |  |  | x | x |  | 論理名はscreen_wordテーブルで管理する |
 
 ### users（ユーザー）
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | users_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
+| 1 | users_sequence_id | ユーザーID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
 | 2 | user_id | ユーザーID | varchar(8) |  |  |  | x | x | 自動払い出し |  |
 | 3 | user_name | ユーザー名 | varchar(64) |  |  |  |  |  |  |  |
-| 4 | user_role_physical_name | ユーザー権限(物理名) | uuid |  | x | user_role.user_role_uuid |  |  |  |  |
+| 4 | user_role_physical_name | ユーザー権限(物理名) | serial |  | x | user_role.user_role_sequence_id |  |  |  |  |
 | 5 | user_name_hidden_flag | 画面非表示フラグ | boolean |  |  |  | x |  | FALSE |  |
-| 6 | login_service | ログインサービス | uuid |  | x | sns_support.sns_support_uuid |  |  |  |  |
+| 6 | login_service | ログインサービス | serial |  | x | sns_support.sns_support_sequence_id |  |  |  |  |
 | 7 | register_date | 登録日 | timestamptz |  |  |  | x |  | CURRENT_TIMESTAMP |  |
-| 8 | disp_theme | 画面テーマ | uuid |  | x | theme.theme_uuid | x |  | "default"のUUID |  |
-| 9 | language | 表示言語 | uuid |  | x | language.language_uuid | x |  | "japan"のUUID |  |
+| 8 | disp_theme | 画面テーマ | serial |  | x | theme.theme_sequence_id | x |  | "default"のID |  |
+| 9 | language | 表示言語 | serial |  | x | language.language_sequence_id | x |  | "japan"のID |  |
 
 ### theme（画面テーマ）
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | theme_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
+| 1 | theme_sequence_id | 画面テーマID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
 | 2 | theme_physical_name | 画面テーマ(物理名) | varchar(16) |  |  |  | x | x |  | 論理名はscreen_wordテーブルで管理する |
 
 ### user_role（ユーザー権限）
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | user_role_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
+| 1 | user_role_sequence_id | ユーザー権限ID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
 | 2 | user_role_physical_name | ユーザー権限(物理名) | varchar(8) |  |  |  | x | x |  | 論理名はscreen_wordテーブルで管理する |
 
 ### images_contents（画像(ユーザー投稿)）
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | images_contents_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
+| 1 | images_contents_sequence_id | 画像(ユーザー投稿)ID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
 | 2 | image_id | 画像ID | bigserial |  |  |  | x | x |  |  |
-| 3 | user_id | ユーザーID | uuid |  | x | users.users_uuid | x |  |  |  |
+| 3 | user_id | ユーザーID | serial |  | x | users.users_sequence_id | x |  |  |  |
 | 4 | gcs_bucket | バケット名 | varchar(100) |  |  |  | x |  |  |  |
 | 5 | gcs_object_name | オブジェクトパス | varchar(512) |  |  |  | x |  |  |  |
 | 6 | cdn_url | CDNのURL | varchar(512) |  |  |  |  |  |  |  |
@@ -242,7 +242,7 @@
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | images_system_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
+| 1 | images_system_sequence_id | 画像(システム管理)ID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
 | 2 | image_id | 画像ID | bigserial |  |  |  | x | x |  |  |
 | 3 | gcs_bucket | バケット名 | varchar(100) |  |  |  | x |  |  |  |
 | 4 | gcs_object_name | オブジェクトパス | varchar(512) |  |  |  | x |  |  |  |
@@ -257,16 +257,16 @@
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | screen_element_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
+| 1 | screen_element_sequence_id | 画面要素ID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
 | 2 | message_id | メッセージID | varchar(16) |  |  |  | x | x |  |  |
 
 ### likes（いいね）
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | likes_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | likes_do_user | いいねした人 | uuid |  | x | users.users_uuid | x | △ |  | likes_do_user + likes_target_user + likes_type で UNIQUEにする |
-| 3 | likes_target_user | いいねされた人 | uuid |  | x | users.users_uuid | x | △ |  | likes_do_user + likes_target_user + likes_type で UNIQUEにする |
+| 1 | likes_sequence_id | いいねID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
+| 2 | likes_do_user | いいねした人 | serial |  | x | users.users_sequence_id | x | △ |  | likes_do_user + likes_target_user + likes_type で UNIQUEにする |
+| 3 | likes_target_user | いいねされた人 | serial |  | x | users.users_sequence_id | x | △ |  | likes_do_user + likes_target_user + likes_type で UNIQUEにする |
 | 4 | likes_type | いいね種別 | enum |  |  |  | x | △ |  | プロフィール、編集の2種。likes_do_user + likes_target_user + likes_type で UNIQUEにする |
 | 5 | likes_datetime | いいねした日 | timestamptz |  |  |  | x |  |  |  |
 
@@ -274,27 +274,27 @@
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | movie_link_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
+| 1 | movie_link_sequence_id | 動画リンクID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
 | 2 | movie_id | 動画ID | bigserial |  |  |  | x | x |  |  |
-| 3 | vtuber_profiles_id | VプロフィールID | uuid |  | x | vtuber_profiles.vtuber_profiles_uuid | x |  |  |  |
+| 3 | vtuber_profiles_id | VプロフィールID | serial |  | x | vtuber_profiles.vtuber_profiles_sequence_id | x |  |  |  |
 | 4 | url | 動画URL | text |  |  |  | x |  |  |  |
 
 ### relation（関係値）
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | relation_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | node_from | ノード元 | uuid |  | x | vtuber_profiles.vtuber_profiles_uuid | x | △ |  | node_from + node_to で UNIQUEにする |
-| 3 | node_to | ノード先 | uuid |  | x | vtuber_profiles.vtuber_profiles_uuid | x | △ |  | node_from + node_to で UNIQUEにする |
+| 1 | relation_sequence_id | 関係値ID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
+| 2 | node_from | ノード元 | serial |  | x | vtuber_profiles.vtuber_profiles_sequence_id | x | △ |  | node_from + node_to で UNIQUEにする |
+| 3 | node_to | ノード先 | serial |  | x | vtuber_profiles.vtuber_profiles_sequence_id | x | △ |  | node_from + node_to で UNIQUEにする |
 | 4 | node_name | 関係名 | varchar(32) |  |  |  | x |  |  |  |
 
 ### vtuber_profiles_lang（Vtuberプロフィール(各言語)）
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | vtuber_profiles_lang_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | vtuber_profiles_id | VプロフィールID | uuid |  | x | vtuber_profiles.vtuber_profiles_uuid | x | △ |  | vtuber_profiles_id + lang で UNIQUEにする |
-| 3 | lang | 言語 | uuid |  | x | language.language_uuid | x | △ |  | vtuber_profiles_id + lang で UNIQUEにする |
+| 1 | vtuber_profiles_lang_sequence_id | Vtuberプロフィール(各言語)ID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
+| 2 | vtuber_profiles_id | VプロフィールID | serial |  | x | vtuber_profiles.vtuber_profiles_sequence_id | x | △ |  | vtuber_profiles_id + lang で UNIQUEにする |
+| 3 | lang | 言語 | serial |  | x | language.language_sequence_id | x | △ |  | vtuber_profiles_id + lang で UNIQUEにする |
 | 4 | name | 名前 | varchar(128) |  |  |  | x |  |  |  |
 | 5 | nickname | ニックネーム | varchar(128) |  |  |  |  |  |  |  |
 | 6 | birthday | 誕生日 | varchar(32) |  |  |  |  |  |  |  |
@@ -313,16 +313,16 @@
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | profile_tag_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | vtuber_profiles_id | VプロフィールID | uuid |  | x | vtuber_profiles.vtuber_profiles_uuid | x | △ |  | vtuber_profiles_id + tag で UNIQUEにする |
-| 3 | tag | タグ名 | uuid |  | x | tag.tag_uuid | x | △ |  | vtuber_profiles_id + tag で UNIQUEにする |
+| 1 | profile_tag_sequence_id | プロフィールのタグID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
+| 2 | vtuber_profiles_id | VプロフィールID | serial |  | x | vtuber_profiles.vtuber_profiles_sequence_id | x | △ |  | vtuber_profiles_id + tag で UNIQUEにする |
+| 3 | tag | タグ名 | serial |  | x | tag.tag_sequence_id | x | △ |  | vtuber_profiles_id + tag で UNIQUEにする |
 
 ### profile_activity（プロフィールの活動ジャンル）
 
 | No | カラム物理名 | カラム論理名 | 型 | PK | FK | FK参照先 | 非NULL | Unique | デフォルト | 備考 |
 |---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | profile_activity_uuid | UUID | uuid | x |  |  | x(PK制約) | x(PK制約) | gen_random_uuid() |  |
-| 2 | vtuber_profiles_id | VプロフィールID | uuid |  | x | vtuber_profiles.vtuber_profiles_uuid | x | △ |  | vtuber_profiles_id + activity で UNIQUEにする |
+| 1 | profile_activity_sequence_id | プロフィールの活動ジャンルID | serial | x |  |  | x(PK制約) | x(PK制約) | SEQUENCE |  |
+| 2 | vtuber_profiles_id | VプロフィールID | serial |  | x | vtuber_profiles.vtuber_profiles_sequence_id | x | △ |  | vtuber_profiles_id + activity で UNIQUEにする |
 | 3 | activity | 活動ジャンル | varchar(16) |  |  |  | x | △ |  | vtuber_profiles_id + activity で UNIQUEにする |
 
 ## ER図
@@ -330,122 +330,122 @@
 ```mermaid
 erDiagram
     vtuber_profiles {
-        uuid vtuber_profiles_uuid PK
-        uuid user_id FK
-        uuid join_group FK
-        uuid activity_status FK
+        serial vtuber_profiles_sequence_id PK
+        serial user_id FK
+        serial join_group FK
+        serial activity_status FK
     }
     join_group {
-        uuid join_group_uuid PK
-        uuid operation_status FK
+        serial join_group_sequence_id PK
+        serial operation_status FK
     }
     tag {
-        uuid tag_uuid PK
+        serial tag_sequence_id PK
     }
     badge {
-        uuid badge_uuid PK
+        serial badge_sequence_id PK
     }
     activity_status {
-        uuid activity_status_uuid PK
+        serial activity_status_sequence_id PK
     }
     sns_link {
-        uuid sns_link_uuid PK
-        uuid vtuber_profiles_id FK
-        uuid sns_icon FK
+        serial sns_link_sequence_id PK
+        serial vtuber_profiles_id FK
+        serial sns_icon FK
     }
     bbs_res {
-        uuid bbs_res_uuid PK
-        uuid vtuber_profiles_id FK
-        uuid user_id FK
+        serial bbs_res_sequence_id PK
+        serial vtuber_profiles_id FK
+        serial user_id FK
     }
     page_author {
-        uuid page_author_uuid PK
-        uuid user_id FK
-        uuid vtuber_profiles_id FK
-        uuid fix_item FK
+        serial page_author_sequence_id PK
+        serial user_id FK
+        serial vtuber_profiles_id FK
+        serial fix_item FK
     }
     contact {
-        uuid contact_uuid PK
-        uuid priority_physical_name FK
-        uuid response_status_physical_name FK
+        serial contact_sequence_id PK
+        serial priority_physical_name FK
+        serial response_status_physical_name FK
     }
     priority {
-        uuid priority_uuid PK
+        serial priority_sequence_id PK
     }
     response_status {
-        uuid response_status_uuid PK
+        serial response_status_sequence_id PK
     }
     language {
-        uuid language_uuid PK
+        serial language_sequence_id PK
     }
     screen_word {
-        uuid screen_word_uuid PK
-        uuid language_physical_name FK
-        uuid message_id FK
+        serial screen_word_sequence_id PK
+        serial language_physical_name FK
+        serial message_id FK
     }
     sns_support {
-        uuid sns_support_uuid PK
-        uuid image_id FK
+        serial sns_support_sequence_id PK
+        serial image_id FK
     }
     profile_report {
-        uuid profile_report_uuid PK
-        uuid user_id FK
-        uuid vtuber_profiles_id FK
-        uuid report_reason_physical_name FK
+        serial profile_report_sequence_id PK
+        serial user_id FK
+        serial vtuber_profiles_id FK
+        serial report_reason_physical_name FK
     }
     report_reason {
-        uuid report_reason_uuid PK
+        serial report_reason_sequence_id PK
     }
     users {
-        uuid users_uuid PK
-        uuid user_role_physical_name FK
-        uuid login_service FK
-        uuid disp_theme FK
-        uuid language FK
+        serial users_sequence_id PK
+        serial user_role_physical_name FK
+        serial login_service FK
+        serial disp_theme FK
+        serial language FK
     }
     theme {
-        uuid theme_uuid PK
+        serial theme_sequence_id PK
     }
     user_role {
-        uuid user_role_uuid PK
+        serial user_role_sequence_id PK
     }
     images_contents {
-        uuid images_contents_uuid PK
-        uuid user_id FK
+        serial images_contents_sequence_id PK
+        serial user_id FK
     }
     images_system {
-        uuid images_system_uuid PK
+        serial images_system_sequence_id PK
     }
     screen_element {
-        uuid screen_element_uuid PK
+        serial screen_element_sequence_id PK
     }
     likes {
-        uuid likes_uuid PK
-        uuid likes_do_user FK
-        uuid likes_target_user FK
+        serial likes_sequence_id PK
+        serial likes_do_user FK
+        serial likes_target_user FK
     }
     movie_link {
-        uuid movie_link_uuid PK
-        uuid vtuber_profiles_id FK
+        serial movie_link_sequence_id PK
+        serial vtuber_profiles_id FK
     }
     relation {
-        uuid relation_uuid PK
-        uuid node_from FK
-        uuid node_to FK
+        serial relation_sequence_id PK
+        serial node_from FK
+        serial node_to FK
     }
     vtuber_profiles_lang {
-        uuid vtuber_profiles_lang_uuid PK
-        uuid vtuber_profiles_id FK
-        uuid lang FK
+        serial vtuber_profiles_lang_sequence_id PK
+        serial vtuber_profiles_id FK
+        serial lang FK
     }
     profile_tag {
-        uuid profile_tag_uuid PK
-        uuid vtuber_profiles_id FK
-        uuid tag FK
+        serial profile_tag_sequence_id PK
+        serial vtuber_profiles_id FK
+        serial tag FK
     }
     profile_activity {
-        uuid profile_activity_uuid PK
-        uuid vtuber_profiles_id FK
+        serial profile_activity_sequence_id PK
+        serial vtuber_profiles_id FK
     }
 
     vtuber_profiles ||--o{ sns_link : has
@@ -568,7 +568,7 @@ CREATE TYPE message_type_enum AS ENUM ('screen_element', 'other_tables');
 ## 採番ルール
 
 URLや画面表示に使う人間が読めるIDの自動払い出しルール。  
-DB内部の連携はUUIDで行い、このIDはURL・表示用途のみ。
+DB内部の連携はIDで行い、このIDはURL・表示用途のみ。
 
 | カラム | テーブル | フォーマット | 例 | 実装方式 |
 |---|---|---|---|---|
