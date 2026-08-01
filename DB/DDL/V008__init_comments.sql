@@ -1,0 +1,336 @@
+-- =====================================================================
+-- V008__init_comments.sql
+-- テーブル・カラムの論理名をCOMMENTとして付与
+-- =====================================================================
+
+COMMENT ON TABLE vtuber_profiles IS 'Vtuberプロフィール';
+COMMENT ON COLUMN vtuber_profiles.vtuber_profiles_sequence_id IS 'VtuberプロフィールID';
+COMMENT ON COLUMN vtuber_profiles.vtuber_profiles_id IS 'VプロフィールID';
+COMMENT ON COLUMN vtuber_profiles.user_id IS 'ユーザーID';
+COMMENT ON COLUMN vtuber_profiles.join_group IS '所属';
+COMMENT ON COLUMN vtuber_profiles.debut_date IS 'デビュー日';
+COMMENT ON COLUMN vtuber_profiles.activity_status IS '活動状態';
+COMMENT ON COLUMN vtuber_profiles.create_datetime IS '作成日';
+COMMENT ON COLUMN vtuber_profiles.create_user IS '作成ユーザー';
+COMMENT ON COLUMN vtuber_profiles.update_datetime IS '更新日';
+COMMENT ON COLUMN vtuber_profiles.update_user IS '更新ユーザー';
+COMMENT ON COLUMN vtuber_profiles.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE join_group IS '所属';
+COMMENT ON COLUMN join_group.join_group_sequence_id IS '所属ID';
+COMMENT ON COLUMN join_group.group_name IS '所属名';
+COMMENT ON COLUMN join_group.operation_status IS '運営状態';
+COMMENT ON COLUMN join_group.group_detail IS '所属説明';
+COMMENT ON COLUMN join_group.create_datetime IS '作成日';
+COMMENT ON COLUMN join_group.create_user IS '作成ユーザー';
+COMMENT ON COLUMN join_group.update_datetime IS '更新日';
+COMMENT ON COLUMN join_group.update_user IS '更新ユーザー';
+COMMENT ON COLUMN join_group.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE tag IS 'タグ';
+COMMENT ON COLUMN tag.tag_sequence_id IS 'タグID';
+COMMENT ON COLUMN tag.tag IS 'タグ名';
+COMMENT ON COLUMN tag.create_datetime IS '作成日';
+COMMENT ON COLUMN tag.create_user IS '作成ユーザー';
+COMMENT ON COLUMN tag.update_datetime IS '更新日';
+COMMENT ON COLUMN tag.update_user IS '更新ユーザー';
+COMMENT ON COLUMN tag.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE badge IS 'バッジ';
+COMMENT ON COLUMN badge.badge_sequence_id IS 'バッジID';
+COMMENT ON COLUMN badge.badge_physical_name IS 'バッジ名(物理名)';
+COMMENT ON COLUMN badge.create_datetime IS '作成日';
+COMMENT ON COLUMN badge.create_user IS '作成ユーザー';
+COMMENT ON COLUMN badge.update_datetime IS '更新日';
+COMMENT ON COLUMN badge.update_user IS '更新ユーザー';
+COMMENT ON COLUMN badge.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE activity_status IS '活動状態';
+COMMENT ON COLUMN activity_status.activity_status_sequence_id IS '活動状態ID';
+COMMENT ON COLUMN activity_status.activity_status_physical_name IS '活動状態名(物理名)';
+COMMENT ON COLUMN activity_status.create_datetime IS '作成日';
+COMMENT ON COLUMN activity_status.create_user IS '作成ユーザー';
+COMMENT ON COLUMN activity_status.update_datetime IS '更新日';
+COMMENT ON COLUMN activity_status.update_user IS '更新ユーザー';
+COMMENT ON COLUMN activity_status.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE sns_link IS 'SNSリンク';
+COMMENT ON COLUMN sns_link.sns_link_sequence_id IS 'SNSリンクID';
+COMMENT ON COLUMN sns_link.vtuber_profiles_id IS 'VプロフィールID';
+COMMENT ON COLUMN sns_link.sns_icon IS 'SNSアイコン';
+COMMENT ON COLUMN sns_link.sns_link_label IS 'ラベル名';
+COMMENT ON COLUMN sns_link.sns_url IS 'URL';
+COMMENT ON COLUMN sns_link.create_datetime IS '作成日';
+COMMENT ON COLUMN sns_link.create_user IS '作成ユーザー';
+COMMENT ON COLUMN sns_link.update_datetime IS '更新日';
+COMMENT ON COLUMN sns_link.update_user IS '更新ユーザー';
+COMMENT ON COLUMN sns_link.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE bbs_res IS 'BBS';
+COMMENT ON COLUMN bbs_res.bbs_res_sequence_id IS 'BBSID';
+COMMENT ON COLUMN bbs_res.vtuber_profiles_id IS 'VプロフィールID';
+COMMENT ON COLUMN bbs_res.user_id IS 'ユーザーID';
+COMMENT ON COLUMN bbs_res.res_text IS 'レス内容';
+COMMENT ON COLUMN bbs_res.res_datetime IS '投稿日時時刻';
+COMMENT ON COLUMN bbs_res.create_datetime IS '作成日';
+COMMENT ON COLUMN bbs_res.create_user IS '作成ユーザー';
+COMMENT ON COLUMN bbs_res.update_datetime IS '更新日';
+COMMENT ON COLUMN bbs_res.update_user IS '更新ユーザー';
+COMMENT ON COLUMN bbs_res.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE page_author IS 'ページ編集者';
+COMMENT ON COLUMN page_author.page_author_sequence_id IS 'ページ編集者ID';
+COMMENT ON COLUMN page_author.user_id IS 'ユーザーID';
+COMMENT ON COLUMN page_author.vtuber_profiles_id IS 'VプロフィールID';
+COMMENT ON COLUMN page_author.fix_item IS '修正項目';
+COMMENT ON COLUMN page_author.fix_before IS '修正前';
+COMMENT ON COLUMN page_author.fix_after IS '修正後';
+COMMENT ON COLUMN page_author.fix_datetime IS '修正日時';
+COMMENT ON COLUMN page_author.report_count IS '通報数';
+COMMENT ON COLUMN page_author.create_datetime IS '作成日';
+COMMENT ON COLUMN page_author.create_user IS '作成ユーザー';
+COMMENT ON COLUMN page_author.update_datetime IS '更新日';
+COMMENT ON COLUMN page_author.update_user IS '更新ユーザー';
+COMMENT ON COLUMN page_author.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE contact IS '問い合わせ';
+COMMENT ON COLUMN contact.contact_sequence_id IS '問い合わせID';
+COMMENT ON COLUMN contact.mail_address IS 'メールアドレス';
+COMMENT ON COLUMN contact.subject IS '件名';
+COMMENT ON COLUMN contact.contact_detail IS '問い合わせ内容';
+COMMENT ON COLUMN contact.priority_physical_name IS '優先度(物理名)';
+COMMENT ON COLUMN contact.response_status_physical_name IS '対応状況(物理名)';
+COMMENT ON COLUMN contact.create_datetime IS '作成日';
+COMMENT ON COLUMN contact.create_user IS '作成ユーザー';
+COMMENT ON COLUMN contact.update_datetime IS '更新日';
+COMMENT ON COLUMN contact.update_user IS '更新ユーザー';
+COMMENT ON COLUMN contact.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE priority IS '優先度';
+COMMENT ON COLUMN priority.priority_sequence_id IS '優先度ID';
+COMMENT ON COLUMN priority.priority_physical_name IS '優先度(物理名)';
+COMMENT ON COLUMN priority.priority_logical_name IS '優先度(論理名)';
+COMMENT ON COLUMN priority.create_datetime IS '作成日';
+COMMENT ON COLUMN priority.create_user IS '作成ユーザー';
+COMMENT ON COLUMN priority.update_datetime IS '更新日';
+COMMENT ON COLUMN priority.update_user IS '更新ユーザー';
+COMMENT ON COLUMN priority.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE response_status IS '対応状況';
+COMMENT ON COLUMN response_status.response_status_sequence_id IS '対応状況ID';
+COMMENT ON COLUMN response_status.response_status_physical_name IS '対応状況(物理名)';
+COMMENT ON COLUMN response_status.response_status_logical_name IS '対応状況(論理名)';
+COMMENT ON COLUMN response_status.create_datetime IS '作成日';
+COMMENT ON COLUMN response_status.create_user IS '作成ユーザー';
+COMMENT ON COLUMN response_status.update_datetime IS '更新日';
+COMMENT ON COLUMN response_status.update_user IS '更新ユーザー';
+COMMENT ON COLUMN response_status.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE language IS '表示言語';
+COMMENT ON COLUMN language.language_sequence_id IS '表示言語ID';
+COMMENT ON COLUMN language.language_physical_name IS '表示言語(物理名)';
+COMMENT ON COLUMN language.language_image IS '言語画像';
+COMMENT ON COLUMN language.enable IS '有効フラグ';
+COMMENT ON COLUMN language.create_datetime IS '作成日';
+COMMENT ON COLUMN language.create_user IS '作成ユーザー';
+COMMENT ON COLUMN language.update_datetime IS '更新日';
+COMMENT ON COLUMN language.update_user IS '更新ユーザー';
+COMMENT ON COLUMN language.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE screen_word IS '画面文言';
+COMMENT ON COLUMN screen_word.screen_word_sequence_id IS '画面文言ID';
+COMMENT ON COLUMN screen_word.language_physical_name IS '表示言語(物理名)';
+COMMENT ON COLUMN screen_word.message_id IS 'メッセージID';
+COMMENT ON COLUMN screen_word.display_message IS '文言';
+COMMENT ON COLUMN screen_word.message_id_table IS 'メッセージID参照元テーブル';
+COMMENT ON COLUMN screen_word.create_datetime IS '作成日';
+COMMENT ON COLUMN screen_word.create_user IS '作成ユーザー';
+COMMENT ON COLUMN screen_word.update_datetime IS '更新日';
+COMMENT ON COLUMN screen_word.update_user IS '更新ユーザー';
+COMMENT ON COLUMN screen_word.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE sns_support IS 'サポートするSNS';
+COMMENT ON COLUMN sns_support.sns_support_sequence_id IS 'サポートするSNSID';
+COMMENT ON COLUMN sns_support.sns_name_physical_name IS 'サービス名(物理名)';
+COMMENT ON COLUMN sns_support.image_id IS '画像ID';
+COMMENT ON COLUMN sns_support.use_login_service IS 'ログインサービス有効フラグ';
+COMMENT ON COLUMN sns_support.use_sns_link IS 'SNSリンク有効フラグ';
+COMMENT ON COLUMN sns_support.create_datetime IS '作成日';
+COMMENT ON COLUMN sns_support.create_user IS '作成ユーザー';
+COMMENT ON COLUMN sns_support.update_datetime IS '更新日';
+COMMENT ON COLUMN sns_support.update_user IS '更新ユーザー';
+COMMENT ON COLUMN sns_support.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE profile_report IS 'プロフィール通報';
+COMMENT ON COLUMN profile_report.profile_report_sequence_id IS 'プロフィール通報ID';
+COMMENT ON COLUMN profile_report.user_id IS 'ユーザーID';
+COMMENT ON COLUMN profile_report.vtuber_profiles_id IS 'VプロフィールID';
+COMMENT ON COLUMN profile_report.report_reason_physical_name IS '通報理由(物理名)';
+COMMENT ON COLUMN profile_report.report_detail IS '詳細';
+COMMENT ON COLUMN profile_report.report_datetime IS '通報日時';
+COMMENT ON COLUMN profile_report.create_datetime IS '作成日';
+COMMENT ON COLUMN profile_report.create_user IS '作成ユーザー';
+COMMENT ON COLUMN profile_report.update_datetime IS '更新日';
+COMMENT ON COLUMN profile_report.update_user IS '更新ユーザー';
+COMMENT ON COLUMN profile_report.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE report_reason IS '通報理由';
+COMMENT ON COLUMN report_reason.report_reason_sequence_id IS '通報理由ID';
+COMMENT ON COLUMN report_reason.report_reason_physical_name IS '通報理由(物理名)';
+COMMENT ON COLUMN report_reason.create_datetime IS '作成日';
+COMMENT ON COLUMN report_reason.create_user IS '作成ユーザー';
+COMMENT ON COLUMN report_reason.update_datetime IS '更新日';
+COMMENT ON COLUMN report_reason.update_user IS '更新ユーザー';
+COMMENT ON COLUMN report_reason.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE users IS 'ユーザー';
+COMMENT ON COLUMN users.users_sequence_id IS 'ユーザーID';
+COMMENT ON COLUMN users.user_id IS 'ユーザーID';
+COMMENT ON COLUMN users.user_name IS 'ユーザー名';
+COMMENT ON COLUMN users.user_role_physical_name IS 'ユーザー権限(物理名)';
+COMMENT ON COLUMN users.user_name_hidden_flag IS '画面非表示フラグ';
+COMMENT ON COLUMN users.login_service IS 'ログインサービス';
+COMMENT ON COLUMN users.register_date IS '登録日';
+COMMENT ON COLUMN users.disp_theme IS '画面テーマ';
+COMMENT ON COLUMN users.language IS '表示言語';
+COMMENT ON COLUMN users.create_datetime IS '作成日';
+COMMENT ON COLUMN users.create_user IS '作成ユーザー';
+COMMENT ON COLUMN users.update_datetime IS '更新日';
+COMMENT ON COLUMN users.update_user IS '更新ユーザー';
+COMMENT ON COLUMN users.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE theme IS '画面テーマ';
+COMMENT ON COLUMN theme.theme_sequence_id IS '画面テーマID';
+COMMENT ON COLUMN theme.theme_physical_name IS '画面テーマ(物理名)';
+COMMENT ON COLUMN theme.create_datetime IS '作成日';
+COMMENT ON COLUMN theme.create_user IS '作成ユーザー';
+COMMENT ON COLUMN theme.update_datetime IS '更新日';
+COMMENT ON COLUMN theme.update_user IS '更新ユーザー';
+COMMENT ON COLUMN theme.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE user_role IS 'ユーザー権限';
+COMMENT ON COLUMN user_role.user_role_sequence_id IS 'ユーザー権限ID';
+COMMENT ON COLUMN user_role.user_role_physical_name IS 'ユーザー権限(物理名)';
+COMMENT ON COLUMN user_role.create_datetime IS '作成日';
+COMMENT ON COLUMN user_role.create_user IS '作成ユーザー';
+COMMENT ON COLUMN user_role.update_datetime IS '更新日';
+COMMENT ON COLUMN user_role.update_user IS '更新ユーザー';
+COMMENT ON COLUMN user_role.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE images_contents IS '画像(ユーザー投稿)';
+COMMENT ON COLUMN images_contents.images_contents_sequence_id IS '画像(ユーザー投稿)ID';
+COMMENT ON COLUMN images_contents.user_id IS 'ユーザーID';
+COMMENT ON COLUMN images_contents.gcs_bucket IS 'バケット名';
+COMMENT ON COLUMN images_contents.gcs_object_name IS 'オブジェクトパス';
+COMMENT ON COLUMN images_contents.cdn_url IS 'CDNのURL';
+COMMENT ON COLUMN images_contents.content_type IS 'コンテンツタイプ(拡張子等)';
+COMMENT ON COLUMN images_contents.width IS '画像幅';
+COMMENT ON COLUMN images_contents.height IS '画像高';
+COMMENT ON COLUMN images_contents.file_size IS 'ファイルサイズ';
+COMMENT ON COLUMN images_contents.alt_text IS '付加テキスト';
+COMMENT ON COLUMN images_contents.create_datetime IS '作成日';
+COMMENT ON COLUMN images_contents.create_user IS '作成ユーザー';
+COMMENT ON COLUMN images_contents.update_datetime IS '更新日';
+COMMENT ON COLUMN images_contents.update_user IS '更新ユーザー';
+COMMENT ON COLUMN images_contents.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE images_system IS '画像(システム管理)';
+COMMENT ON COLUMN images_system.images_system_sequence_id IS '画像(システム管理)ID';
+COMMENT ON COLUMN images_system.gcs_bucket IS 'バケット名';
+COMMENT ON COLUMN images_system.gcs_object_name IS 'オブジェクトパス';
+COMMENT ON COLUMN images_system.cdn_url IS 'CDNのURL';
+COMMENT ON COLUMN images_system.content_type IS 'コンテンツタイプ(拡張子等)';
+COMMENT ON COLUMN images_system.width IS '画像幅';
+COMMENT ON COLUMN images_system.height IS '画像高';
+COMMENT ON COLUMN images_system.file_size IS 'ファイルサイズ';
+COMMENT ON COLUMN images_system.alt_text IS '付加テキスト';
+COMMENT ON COLUMN images_system.create_datetime IS '作成日';
+COMMENT ON COLUMN images_system.create_user IS '作成ユーザー';
+COMMENT ON COLUMN images_system.update_datetime IS '更新日';
+COMMENT ON COLUMN images_system.update_user IS '更新ユーザー';
+COMMENT ON COLUMN images_system.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE screen_element IS '画面要素';
+COMMENT ON COLUMN screen_element.screen_element_sequence_id IS '画面要素ID';
+COMMENT ON COLUMN screen_element.message_id IS 'メッセージID';
+COMMENT ON COLUMN screen_element.create_datetime IS '作成日';
+COMMENT ON COLUMN screen_element.create_user IS '作成ユーザー';
+COMMENT ON COLUMN screen_element.update_datetime IS '更新日';
+COMMENT ON COLUMN screen_element.update_user IS '更新ユーザー';
+COMMENT ON COLUMN screen_element.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE likes IS 'いいね';
+COMMENT ON COLUMN likes.likes_sequence_id IS 'いいねID';
+COMMENT ON COLUMN likes.likes_do_user IS 'いいねした人';
+COMMENT ON COLUMN likes.likes_target_user IS 'いいねされた人';
+COMMENT ON COLUMN likes.likes_type IS 'いいね種別';
+COMMENT ON COLUMN likes.likes_datetime IS 'いいねした日';
+COMMENT ON COLUMN likes.create_datetime IS '作成日';
+COMMENT ON COLUMN likes.create_user IS '作成ユーザー';
+COMMENT ON COLUMN likes.update_datetime IS '更新日';
+COMMENT ON COLUMN likes.update_user IS '更新ユーザー';
+COMMENT ON COLUMN likes.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE movie_link IS '動画リンク';
+COMMENT ON COLUMN movie_link.movie_link_sequence_id IS '動画リンクID';
+COMMENT ON COLUMN movie_link.vtuber_profiles_id IS 'VプロフィールID';
+COMMENT ON COLUMN movie_link.url IS '動画URL';
+COMMENT ON COLUMN movie_link.create_datetime IS '作成日';
+COMMENT ON COLUMN movie_link.create_user IS '作成ユーザー';
+COMMENT ON COLUMN movie_link.update_datetime IS '更新日';
+COMMENT ON COLUMN movie_link.update_user IS '更新ユーザー';
+COMMENT ON COLUMN movie_link.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE relation IS '関係値';
+COMMENT ON COLUMN relation.relation_sequence_id IS '関係値ID';
+COMMENT ON COLUMN relation.node_from IS 'ノード元';
+COMMENT ON COLUMN relation.node_to IS 'ノード先';
+COMMENT ON COLUMN relation.node_name IS '関係名';
+COMMENT ON COLUMN relation.create_datetime IS '作成日';
+COMMENT ON COLUMN relation.create_user IS '作成ユーザー';
+COMMENT ON COLUMN relation.update_datetime IS '更新日';
+COMMENT ON COLUMN relation.update_user IS '更新ユーザー';
+COMMENT ON COLUMN relation.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE vtuber_profiles_lang IS 'Vtuberプロフィール(各言語)';
+COMMENT ON COLUMN vtuber_profiles_lang.vtuber_profiles_lang_sequence_id IS 'Vtuberプロフィール(各言語)ID';
+COMMENT ON COLUMN vtuber_profiles_lang.vtuber_profiles_id IS 'VプロフィールID';
+COMMENT ON COLUMN vtuber_profiles_lang.lang IS '言語';
+COMMENT ON COLUMN vtuber_profiles_lang.name IS '名前';
+COMMENT ON COLUMN vtuber_profiles_lang.nickname IS 'ニックネーム';
+COMMENT ON COLUMN vtuber_profiles_lang.birthday IS '誕生日';
+COMMENT ON COLUMN vtuber_profiles_lang.blood_type IS '血液型';
+COMMENT ON COLUMN vtuber_profiles_lang.height IS '身長';
+COMMENT ON COLUMN vtuber_profiles_lang.mutter IS 'ひとこと';
+COMMENT ON COLUMN vtuber_profiles_lang.catchphrase IS 'キャッチフレーズ';
+COMMENT ON COLUMN vtuber_profiles_lang.favorite IS '好きなもの';
+COMMENT ON COLUMN vtuber_profiles_lang.dis_favorite IS '苦手なもの';
+COMMENT ON COLUMN vtuber_profiles_lang.hobby IS '趣味・特技';
+COMMENT ON COLUMN vtuber_profiles_lang.dream IS '将来の夢';
+COMMENT ON COLUMN vtuber_profiles_lang.messages IS 'メッセージ';
+COMMENT ON COLUMN vtuber_profiles_lang.profile_detail IS 'プロフィール詳細';
+COMMENT ON COLUMN vtuber_profiles_lang.create_datetime IS '作成日';
+COMMENT ON COLUMN vtuber_profiles_lang.create_user IS '作成ユーザー';
+COMMENT ON COLUMN vtuber_profiles_lang.update_datetime IS '更新日';
+COMMENT ON COLUMN vtuber_profiles_lang.update_user IS '更新ユーザー';
+COMMENT ON COLUMN vtuber_profiles_lang.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE profile_tag IS 'プロフィールのタグ';
+COMMENT ON COLUMN profile_tag.profile_tag_sequence_id IS 'プロフィールのタグID';
+COMMENT ON COLUMN profile_tag.vtuber_profiles_id IS 'VプロフィールID';
+COMMENT ON COLUMN profile_tag.tag IS 'タグ名';
+COMMENT ON COLUMN profile_tag.create_datetime IS '作成日';
+COMMENT ON COLUMN profile_tag.create_user IS '作成ユーザー';
+COMMENT ON COLUMN profile_tag.update_datetime IS '更新日';
+COMMENT ON COLUMN profile_tag.update_user IS '更新ユーザー';
+COMMENT ON COLUMN profile_tag.soft_delete_flag IS '論理削除フラグ';
+
+COMMENT ON TABLE profile_activity IS 'プロフィールの活動ジャンル';
+COMMENT ON COLUMN profile_activity.profile_activity_sequence_id IS 'プロフィールの活動ジャンルID';
+COMMENT ON COLUMN profile_activity.vtuber_profiles_id IS 'VプロフィールID';
+COMMENT ON COLUMN profile_activity.activity IS '活動ジャンル';
+COMMENT ON COLUMN profile_activity.create_datetime IS '作成日';
+COMMENT ON COLUMN profile_activity.create_user IS '作成ユーザー';
+COMMENT ON COLUMN profile_activity.update_datetime IS '更新日';
+COMMENT ON COLUMN profile_activity.update_user IS '更新ユーザー';
+COMMENT ON COLUMN profile_activity.soft_delete_flag IS '論理削除フラグ';
