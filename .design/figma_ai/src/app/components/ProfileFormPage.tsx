@@ -568,6 +568,37 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
             );
           })}
 
+          {/* 相関図データの確認 */}
+          {relationships.length > 0 && (
+            <div className="bg-white border-2 border-violet-200 rounded-lg p-5">
+              <h4 className="text-violet-800 font-semibold mb-3 text-sm flex items-center gap-1.5">
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/>
+                  <path d="M12 7v4M8.5 17.5l-1.5-3M15.5 17.5l1.5-3"/>
+                </svg>
+                相関図 — {relationships.length}件の関係値
+              </h4>
+              <div className="space-y-1.5">
+                {relationships.map((rel, i) => {
+                  const target = allProfiles.find(p => p.id === rel.targetId);
+                  const dir = rel.direction ?? 'both';
+                  const arrow = dir === 'to' ? '→' : dir === 'from' ? '←' : '↔';
+                  return (
+                    <div key={i} className="flex items-center gap-2 text-sm">
+                      <span className="text-gray-500 text-xs w-4">{i + 1}.</span>
+                      <span className="font-medium text-gray-800">{target?.name ?? rel.targetId}</span>
+                      <span className="text-violet-500 font-bold">{arrow}</span>
+                      <span className="text-gray-600">{rel.label}</span>
+                      {rel.reverseLabel && (
+                        <span className="text-gray-400 text-xs">/ {rel.reverseLabel}</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* 利用規約同意チェックボックス */}
           <div className="bg-[#FFFBF0] border border-[#D4C5A9] rounded-xl px-5 py-4">
             <label className="flex items-start gap-3 cursor-pointer group">
