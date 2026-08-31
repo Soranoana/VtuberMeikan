@@ -39,10 +39,15 @@ import {
   AlertTriangle,
   Info,
   Trash2,
+  Languages,
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { SnsLinksEditor, SnsIconDisplay, newSnsLink, type SnsLink } from './SnsLinksEditor';
 import { DeleteRequestModal } from './DeleteRequestModal';
+import { RelationshipsEditor } from './RelationshipsEditor';
+import { VideoPreview } from './VideoPreview';
+import { useApp } from '../context/AppContext';
+import { VTuberRelationship } from '../types';
 
 interface ProfileFormPageProps {
   onSubmit: (profile: Omit<VTuberProfile, 'id' | 'createdAt'>) => void;
@@ -68,12 +73,39 @@ function emptyLocalization(): Required<VTuberLocalization> {
   return { name: '', nickname: '', catchphrase: '', oneWord: '', dream: '', message: '', favoriteThings: '', dislikedThings: '', hobby: '', freeDescription: '' };
 }
 
+// ---- Birthday helpers -------------------------------------------------------
+
+// "7月15日" → "2000-07-15" (date input value)
+function birthdayToDateInput(birthday: string): string {
+  const m = birthday.match(/^(\d{1,2})月(\d{1,2})日$/);
+  if (!m) return '';
+  return `2000-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}`;
+}
+
+// "2000-07-15" → "7月15日"
+function dateInputToBirthday(dateVal: string): string {
+  if (!dateVal) return '';
+  const parts = dateVal.split('-');
+  if (parts.length < 3) return dateVal;
+  return `${parseInt(parts[1])}月${parseInt(parts[2])}日`;
+}
+
+// ----------------------------------------------------------------------------
+
 export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileFormPageProps) {
   const navigate = useNavigate();
+  const { profiles: allProfiles } = useApp();
+  const [relationships, setRelationships] = useState<VTuberRelationship[]>(initialData?.relationships ?? []);
   const [isConfirmMode, setIsConfirmMode] = useState(false);
   const [termsAgreed, setTermsAgreed] = useState(false);
+  // 誕生日入力モード: date = 日付形式（タグ連携あり）, free = 自由記入
+  const [birthdayMode, setBirthdayMode] = useState<'date' | 'free'>(() =>
+    /^\d{1,2}月\d{1,2}日$/.test(initialData?.birthday ?? '') ? 'date' : 'free'
+  );
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [activeEditLang, setActiveEditLang] = useState<'ja' | 'en' | 'zh'>('ja');
+  // 自動翻訳：選択中の翻訳先言語セット
+  const [autoTranslateTo, setAutoTranslateTo] = useState<Set<string>>(new Set());
 
   // 言語ごとのローカライズフィールド（ja は formData と同期、en/zh は langForms で管理）
   const [langForms, setLangForms] = useState<{ en: Required<VTuberLocalization>; zh: Required<VTuberLocalization> }>({
@@ -162,6 +194,18 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
     setVideoUrls(newVideoUrls);
   };
 
+  // ---- 自動翻訳（選択管理のみ・実行は未実装） ---------------------------------
+
+  function toggleAutoTranslate(code: string) {
+    setAutoTranslateTo(prev => {
+      const next = new Set(prev);
+      next.has(code) ? next.delete(code) : next.add(code);
+      return next;
+    });
+  }
+
+  // -------------------------------------------------------------------------
+
   const handleConfirm = (e: React.FormEvent) => {
     e.preventDefault();
     setTermsAgreed(false);
@@ -205,6 +249,7 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
       tiktokUrl: undefined,
       websiteUrl: undefined,
       localizations,
+      relationships: relationships.length > 0 ? relationships : undefined,
     });
   };
 
@@ -252,6 +297,7 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
       en: langForms.en,
       zh: langForms.zh,
     },
+    relationships: relationships.length > 0 ? relationships : undefined,
   };
 
   // 入力済み言語一覧（タブに ● バッジを表示するため）
@@ -665,39 +711,89 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
 
           {/* 言語タブ */}
           <div className="bg-white border-2 border-indigo-200 rounded-lg p-4 shadow-md">
-            <div className="flex items-center gap-2 mb-3">
-              <Globe className="w-4 h-4 text-indigo-600" />
-              <span className="text-sm font-semibold text-indigo-800">入力言語</span>
-              <span className="text-xs text-gray-500">— 言語タブを切り替えて各言語のプロフィールを入力できます</span>
-            </div>
-            <div className="flex gap-2 flex-wrap">
-              {EDIT_LANGS.map(({ code, label, flag }) => {
-                const hasData = code !== 'ja' && hasLangContent(code as 'en' | 'zh');
-                return (
+            <div className="grid grid-cols-[7rem_1fr] gap-y-2.5 items-center">
+
+              {/* 行1: 入力言語 */}
+              <div className="flex items-center gap-1.5">
+                <Globe className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+                <span className="text-sm font-semibold text-indigo-800">入力言語</span>
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                {EDIT_LANGS.map(({ code, label, flag }) => {
+                  const hasData = code !== 'ja' && hasLangContent(code as 'en' | 'zh');
+                  return (
+                    <button
+                      key={code}
+                      type="button"
+                      onClick={() => setActiveEditLang(code as typeof activeEditLang)}
+                      className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium border-2 transition-all ${
+                        activeEditLang === code
+                          ? 'bg-indigo-600 border-indigo-600 text-white shadow'
+                          : 'bg-white border-indigo-200 text-indigo-700 hover:border-indigo-400 hover:bg-indigo-50'
+                      }`}
+                    >
+                      <span>{flag}</span>
+                      <span>{label}</span>
+                      {hasData && (
+                        <span className={`w-1.5 h-1.5 rounded-full ${activeEditLang === code ? 'bg-indigo-200' : 'bg-indigo-500'}`} />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* 行2: 自動翻訳 — ラベル（ツールチップ付き） */}
+              <div className="flex items-center gap-1.5">
+                <Languages className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+                <span className="text-sm font-semibold text-indigo-800">自動翻訳</span>
+                {/* 注意事項ツールチップ */}
+                <div className="relative group">
                   <button
-                    key={code}
                     type="button"
-                    onClick={() => setActiveEditLang(code as typeof activeEditLang)}
-                    className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium border-2 transition-all ${
-                      activeEditLang === code
-                        ? 'bg-indigo-600 border-indigo-600 text-white shadow'
-                        : 'bg-white border-indigo-200 text-indigo-700 hover:border-indigo-400 hover:bg-indigo-50'
-                    }`}
+                    className="w-4 h-4 rounded-full bg-indigo-100 text-indigo-600 text-[10px] font-bold flex items-center justify-center hover:bg-indigo-200 transition-colors leading-none select-none"
+                    aria-label="自動翻訳の注意事項"
                   >
-                    <span>{flag}</span>
-                    <span>{label}</span>
-                    {hasData && (
-                      <span className={`w-1.5 h-1.5 rounded-full ${activeEditLang === code ? 'bg-indigo-200' : 'bg-indigo-500'}`} />
-                    )}
+                    !
                   </button>
-                );
-              })}
+                  <div className="absolute left-0 bottom-full mb-2 min-w-[260px] w-72 bg-gray-900 text-white text-xs rounded-lg px-3.5 py-3 shadow-xl z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150">
+                    <p className="font-semibold mb-2 text-white/90">自動翻訳について</p>
+                    <ul className="space-y-1.5 text-white/80 leading-relaxed">
+                      <li>・ 翻訳先に選択した言語へ、入力済み項目を自動翻訳します</li>
+                      <li>・ 機械翻訳のため、翻訳後は内容の確認・修正をおすすめします</li>
+                      <li>・ 1フィールドが 480 文字を超える場合は先頭のみ翻訳されます</li>
+                      <li>・ EN / ZH タブでは名前・説明文等のテキスト項目のみが保存されます。所属・URL・タグ等は日本語タブのみで編集できます</li>
+                    </ul>
+                    <div className="absolute top-full left-4 border-4 border-transparent border-t-gray-900" />
+                  </div>
+                </div>
+              </div>
+              {/* 全言語ボタン：入力言語と同じスタイル、選択中はアクティブ色、入力言語はdisabled */}
+              <div className="flex gap-2 flex-wrap">
+                {EDIT_LANGS.map(({ code, label, flag }) => {
+                  const isActive = code === activeEditLang;
+                  const isSelected = autoTranslateTo.has(code);
+                  return (
+                    <button
+                      key={code}
+                      type="button"
+                      disabled={isActive}
+                      onClick={() => toggleAutoTranslate(code)}
+                      className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium border-2 transition-all ${
+                        isActive
+                          ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
+                          : isSelected
+                            ? 'bg-indigo-600 border-indigo-600 text-white shadow'
+                            : 'bg-white border-indigo-200 text-indigo-700 hover:border-indigo-400 hover:bg-indigo-50'
+                      }`}
+                    >
+                      <span>{flag}</span>
+                      <span>{label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
             </div>
-            {activeEditLang !== 'ja' && (
-              <p className="text-xs text-indigo-600 mt-2 bg-indigo-50 rounded px-3 py-1.5">
-                ✏️ <strong>{EDIT_LANGS.find(l => l.code === activeEditLang)?.label}</strong> タブでは「名前・キャッチフレーズ・説明文」等のテキスト項目がこの言語専用で保存されます。所属・URL・タグ等は日本語タブのみ編集できます。
-              </p>
-            )}
           </div>
 
           {/* 画像アップロード */}
@@ -827,17 +923,53 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="birthday" className="text-blue-900">
+                <Label className="text-blue-900">
                   誕生日 {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
                 </Label>
-                <Input
-                  id="birthday"
-                  value={formData.birthday}
-                  onChange={(e) => handleChange('birthday', e.target.value)}
-                  disabled={activeEditLang !== 'ja'}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="例: 7月15日"
-                />
+                {/* 入力形式の切り替え */}
+                <div className="flex gap-4">
+                  {(['date', 'free'] as const).map((mode) => (
+                    <label key={mode} className="flex items-center gap-1.5 cursor-pointer select-none">
+                      <input
+                        type="radio"
+                        name="birthdayMode"
+                        value={mode}
+                        checked={birthdayMode === mode}
+                        onChange={() => setBirthdayMode(mode)}
+                        disabled={activeEditLang !== 'ja'}
+                        className="accent-blue-600"
+                      />
+                      <span className="text-sm text-gray-700">
+                        {mode === 'date' ? '日付形式' : '自由記入'}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+                {birthdayMode === 'date' ? (
+                  <Input
+                    id="birthday"
+                    type="date"
+                    value={birthdayToDateInput(formData.birthday)}
+                    onChange={(e) => handleChange('birthday', dateInputToBirthday(e.target.value))}
+                    disabled={activeEditLang !== 'ja'}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed w-44"
+                  />
+                ) : (
+                  <>
+                    <Input
+                      id="birthday"
+                      value={formData.birthday}
+                      onChange={(e) => handleChange('birthday', e.target.value)}
+                      disabled={activeEditLang !== 'ja'}
+                      className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                      placeholder="例:平成20年、魔界歴5067年、雨の月 など"
+                    />
+                    <p className="flex items-start gap-1.5 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+                      <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+                      自由記入形式の場合、誕生日当日でも「誕生日」のタグが表示されません。
+                    </p>
+                  </>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -846,6 +978,7 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
                 </Label>
                 <Input
                   id="debut"
+                  type="date"
                   value={formData.debut}
                   onChange={(e) => handleChange('debut', e.target.value)}
                   disabled={activeEditLang !== 'ja'}
@@ -1000,6 +1133,7 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
                       <X className="w-4 h-4" />
                     </Button>
                   </div>
+                  <VideoPreview url={url} />
                 </div>
               ))}
               {videoUrls.length < 12 && (
@@ -1018,6 +1152,27 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
                 <p className="text-sm text-gray-500">最大数（12個）に達しました</p>
               )}
             </div>
+            </div>
+          </div>
+
+          {/* 相関図 */}
+          <div className="bg-white border-2 border-violet-200 rounded-lg p-6 shadow-md">
+            <h3 className="text-violet-900 mb-4 flex items-center gap-2">
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/>
+                <path d="M12 7v4M8.5 17.5l-1.5-3M15.5 17.5l1.5-3"/>
+              </svg>
+              相関図
+              <span className="text-sm text-gray-500">（他のVTuberとの関係値）</span>
+              {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
+            </h3>
+            <div className={activeEditLang !== 'ja' ? 'opacity-50 pointer-events-none' : ''}>
+              <RelationshipsEditor
+                relationships={relationships}
+                onChange={setRelationships}
+                allProfiles={allProfiles}
+                currentProfileId={initialData?.id}
+              />
             </div>
           </div>
 
