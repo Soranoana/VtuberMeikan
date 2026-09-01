@@ -59,4 +59,5 @@ export interface VTuberProfile {
   r18FanartTag?: string;
   relationships?: VTuberRelationship[];
   localizations?: { [lang: string]: VTuberLocalization };
+  lockedFields?: string[];
 }

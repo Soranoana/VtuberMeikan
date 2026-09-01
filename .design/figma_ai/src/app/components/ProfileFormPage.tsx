@@ -48,6 +48,7 @@ import { RelationshipsEditor } from './RelationshipsEditor';
 import { VideoPreview } from './VideoPreview';
 import { useApp } from '../context/AppContext';
 import { VTuberRelationship } from '../types';
+import { LockToggleBtn, LockedFieldWrapper } from './LockField';
 
 interface ProfileFormPageProps {
   onSubmit: (profile: Omit<VTuberProfile, 'id' | 'createdAt'>) => void;
@@ -94,7 +95,7 @@ function dateInputToBirthday(dateVal: string): string {
 
 export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileFormPageProps) {
   const navigate = useNavigate();
-  const { profiles: allProfiles } = useApp();
+  const { profiles: allProfiles, isLoggedIn } = useApp();
   const [relationships, setRelationships] = useState<VTuberRelationship[]>(initialData?.relationships ?? []);
   const [isConfirmMode, setIsConfirmMode] = useState(false);
   const [termsAgreed, setTermsAgreed] = useState(false);
@@ -106,6 +107,21 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
   const [activeEditLang, setActiveEditLang] = useState<'ja' | 'en' | 'zh'>('ja');
   // 自動翻訳：選択中の翻訳先言語セット
   const [autoTranslateTo, setAutoTranslateTo] = useState<Set<string>>(new Set());
+
+  // ロック機能: 星空みらい（id=1）の編集ページのみ有効
+  const isOwnerPage = !!initialData && initialData.id === '1';
+  const [lockedFields, setLockedFields] = useState<Set<string>>(
+    new Set(initialData?.lockedFields ?? [])
+  );
+  const toggleLockField = (key: string) => {
+    if (!isLoggedIn || !isOwnerPage) return;
+    setLockedFields(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      return next;
+    });
+  };
+  const fieldDisabled = (key: string) => isOwnerPage && !isLoggedIn && lockedFields.has(key);
 
   // 言語ごとのローカライズフィールド（ja は formData と同期、en/zh は langForms で管理）
   const [langForms, setLangForms] = useState<{ en: Required<VTuberLocalization>; zh: Required<VTuberLocalization> }>({
@@ -250,6 +266,7 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
       websiteUrl: undefined,
       localizations,
       relationships: relationships.length > 0 ? relationships : undefined,
+      lockedFields: lockedFields.size > 0 ? [...lockedFields] : undefined,
     });
   };
 
@@ -824,15 +841,19 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
                   accept="image/*"
                   multiple
                   onChange={handleImageUpload}
+                  disabled={fieldDisabled('images_add')}
                   className="hidden"
                 />
-                <label
-                  htmlFor="imageFile"
-                  className="flex items-center justify-center gap-2 w-full px-4 py-4 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors text-blue-700"
-                >
-                  <Upload className="w-5 h-5" />
-                  <span>画像を選択（複数枚可）</span>
-                </label>
+                <div className="flex items-center gap-2">
+                  <label
+                    htmlFor="imageFile"
+                    className={`flex items-center justify-center gap-2 flex-1 px-4 py-4 border-2 border-dashed border-blue-300 rounded-lg transition-colors text-blue-700 ${fieldDisabled('images_add') ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-blue-50'}`}
+                  >
+                    <Upload className="w-5 h-5" />
+                    <span>画像を選択（複数枚可）</span>
+                  </label>
+                  <LockToggleBtn fieldKey="images_add" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('images_add')} onToggle={toggleLockField} />
+                </div>
                 <p className="text-xs text-gray-500 mt-1.5 text-center">最初にアップロードした画像がメイン画像として表示されます</p>
               </div>
 
@@ -841,25 +862,34 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
                 <div>
                   <p className="text-sm text-blue-900 mb-2 font-medium">アップロード済み画像（{imageUrls.length}枚）</p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                    {imageUrls.map((url, index) => (
-                      <div key={index} className="relative group aspect-square">
-                        <img
-                          src={url}
-                          alt={`画像 ${index + 1}`}
-                          className="w-full h-full object-cover rounded-lg border-2 border-blue-200"
-                        />
-                        {index === 0 && (
-                          <span className="absolute top-1 left-1 bg-blue-600 text-white text-xs px-1.5 py-0.5 rounded font-medium">メイン</span>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveImage(index)}
-                          className="absolute top-1 right-1 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    ))}
+                    {imageUrls.map((url, index) => {
+                      const imgKey = `image_${index}`;
+                      const imgDisabled = fieldDisabled(imgKey);
+                      return (
+                        <div key={index} className={`relative group aspect-square ${imgDisabled ? 'opacity-60' : ''}`}>
+                          <img
+                            src={url}
+                            alt={`画像 ${index + 1}`}
+                            className="w-full h-full object-cover rounded-lg border-2 border-blue-200"
+                          />
+                          {index === 0 && (
+                            <span className="absolute top-1 left-1 bg-blue-600 text-white text-xs px-1.5 py-0.5 rounded font-medium">メイン</span>
+                          )}
+                          <div className="absolute bottom-1 right-1 flex items-center gap-0.5">
+                            <LockToggleBtn fieldKey={imgKey} isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has(imgKey)} onToggle={toggleLockField} />
+                          </div>
+                          {!imgDisabled && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImage(index)}
+                              className="absolute top-1 right-1 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -883,48 +913,60 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
                 <Label htmlFor="name" className="text-blue-900 flex items-center gap-1.5">
                   名前 <span className="text-red-500">*</span>
                   {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
+                  <LockToggleBtn fieldKey="name" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('name')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="name"
-                  required={activeEditLang === 'ja'}
-                  value={getLocalizedValue('name')}
-                  onChange={(e) => handleChange('name', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
-                  placeholder="例: 星空みらい"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('name')}>
+                  <Input
+                    id="name"
+                    required={activeEditLang === 'ja'}
+                    value={getLocalizedValue('name')}
+                    onChange={(e) => handleChange('name', e.target.value)}
+                    disabled={fieldDisabled('name')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: 星空みらい"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="nickname" className="text-blue-900 flex items-center gap-1.5">
                   ニックネーム
                   {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
+                  <LockToggleBtn fieldKey="nickname" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('nickname')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="nickname"
-                  value={getLocalizedValue('nickname')}
-                  onChange={(e) => handleChange('nickname', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
-                  placeholder="例: みらいちゃん"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('nickname')}>
+                  <Input
+                    id="nickname"
+                    value={getLocalizedValue('nickname')}
+                    onChange={(e) => handleChange('nickname', e.target.value)}
+                    disabled={fieldDisabled('nickname')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: みらいちゃん"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="affiliation" className="text-blue-900">
+                <Label htmlFor="affiliation" className="text-blue-900 flex items-center gap-1.5">
                   所属 {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
+                  <LockToggleBtn fieldKey="affiliation" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('affiliation')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="affiliation"
-                  value={formData.affiliation}
-                  onChange={(e) => handleChange('affiliation', e.target.value)}
-                  disabled={activeEditLang !== 'ja'}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="例: スターライトプロダクション"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('affiliation')}>
+                  <Input
+                    id="affiliation"
+                    value={formData.affiliation}
+                    onChange={(e) => handleChange('affiliation', e.target.value)}
+                    disabled={activeEditLang !== 'ja' || fieldDisabled('affiliation')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: スターライトプロダクション"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2">
-                <Label className="text-blue-900">
+                <Label className="text-blue-900 flex items-center gap-1.5">
                   誕生日 {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
+                  <LockToggleBtn fieldKey="birthday" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('birthday')} onToggle={toggleLockField} />
                 </Label>
                 {/* 入力形式の切り替え */}
                 <div className="flex gap-4">
@@ -936,7 +978,7 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
                         value={mode}
                         checked={birthdayMode === mode}
                         onChange={() => setBirthdayMode(mode)}
-                        disabled={activeEditLang !== 'ja'}
+                        disabled={activeEditLang !== 'ja' || fieldDisabled('birthday')}
                         className="accent-blue-600"
                       />
                       <span className="text-sm text-gray-700">
@@ -946,24 +988,28 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
                   ))}
                 </div>
                 {birthdayMode === 'date' ? (
-                  <Input
-                    id="birthday"
-                    type="date"
-                    value={birthdayToDateInput(formData.birthday)}
-                    onChange={(e) => handleChange('birthday', dateInputToBirthday(e.target.value))}
-                    disabled={activeEditLang !== 'ja'}
-                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed w-44"
-                  />
-                ) : (
-                  <>
+                  <LockedFieldWrapper disabled={fieldDisabled('birthday')}>
                     <Input
                       id="birthday"
-                      value={formData.birthday}
-                      onChange={(e) => handleChange('birthday', e.target.value)}
-                      disabled={activeEditLang !== 'ja'}
-                      className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                      placeholder="例:平成20年、魔界歴5067年、雨の月 など"
+                      type="date"
+                      value={birthdayToDateInput(formData.birthday)}
+                      onChange={(e) => handleChange('birthday', dateInputToBirthday(e.target.value))}
+                      disabled={activeEditLang !== 'ja' || fieldDisabled('birthday')}
+                      className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed w-44"
                     />
+                  </LockedFieldWrapper>
+                ) : (
+                  <>
+                    <LockedFieldWrapper disabled={fieldDisabled('birthday')}>
+                      <Input
+                        id="birthday"
+                        value={formData.birthday}
+                        onChange={(e) => handleChange('birthday', e.target.value)}
+                        disabled={activeEditLang !== 'ja' || fieldDisabled('birthday')}
+                        className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                        placeholder="例:平成20年、魔界歴5067年、雨の月 など"
+                      />
+                    </LockedFieldWrapper>
                     <p className="flex items-start gap-1.5 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
                       <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
                       自由記入形式の場合、誕生日当日でも「誕生日」のタグが表示されません。
@@ -973,116 +1019,140 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="debut" className="text-blue-900">
+                <Label htmlFor="debut" className="text-blue-900 flex items-center gap-1.5">
                   デビュー日 {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
+                  <LockToggleBtn fieldKey="debut" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('debut')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="debut"
-                  type="date"
-                  value={formData.debut}
-                  onChange={(e) => handleChange('debut', e.target.value)}
-                  disabled={activeEditLang !== 'ja'}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="例: 2023年4月"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('debut')}>
+                  <Input
+                    id="debut"
+                    type="date"
+                    value={formData.debut}
+                    onChange={(e) => handleChange('debut', e.target.value)}
+                    disabled={activeEditLang !== 'ja' || fieldDisabled('debut')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: 2023年4月"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="activityHistory" className="text-blue-900">
+                <Label htmlFor="activityHistory" className="text-blue-900 flex items-center gap-1.5">
                   活動歴 {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
+                  <LockToggleBtn fieldKey="activityHistory" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('activityHistory')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="activityHistory"
-                  value={formData.activityHistory}
-                  onChange={(e) => handleChange('activityHistory', e.target.value)}
-                  disabled={activeEditLang !== 'ja'}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="例: 2年"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('activityHistory')}>
+                  <Input
+                    id="activityHistory"
+                    value={formData.activityHistory}
+                    onChange={(e) => handleChange('activityHistory', e.target.value)}
+                    disabled={activeEditLang !== 'ja' || fieldDisabled('activityHistory')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: 2年"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="activityGenre" className="text-blue-900">
+                <Label htmlFor="activityGenre" className="text-blue-900 flex items-center gap-1.5">
                   活動ジャンル {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
+                  <LockToggleBtn fieldKey="activityGenre" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('activityGenre')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="activityGenre"
-                  value={formData.activityGenre}
-                  onChange={(e) => handleChange('activityGenre', e.target.value)}
-                  disabled={activeEditLang !== 'ja'}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="例: ゲーム実況"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('activityGenre')}>
+                  <Input
+                    id="activityGenre"
+                    value={formData.activityGenre}
+                    onChange={(e) => handleChange('activityGenre', e.target.value)}
+                    disabled={activeEditLang !== 'ja' || fieldDisabled('activityGenre')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: ゲーム実況"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="bloodType" className="text-blue-900">
+                <Label htmlFor="bloodType" className="text-blue-900 flex items-center gap-1.5">
                   血液型 {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
+                  <LockToggleBtn fieldKey="bloodType" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('bloodType')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="bloodType"
-                  value={formData.bloodType}
-                  onChange={(e) => handleChange('bloodType', e.target.value)}
-                  disabled={activeEditLang !== 'ja'}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="例: A型"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('bloodType')}>
+                  <Input
+                    id="bloodType"
+                    value={formData.bloodType}
+                    onChange={(e) => handleChange('bloodType', e.target.value)}
+                    disabled={activeEditLang !== 'ja' || fieldDisabled('bloodType')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: A型"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="height" className="text-blue-900">
+                <Label htmlFor="height" className="text-blue-900 flex items-center gap-1.5">
                   身長 {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
+                  <LockToggleBtn fieldKey="height" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('height')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="height"
-                  value={formData.height}
-                  onChange={(e) => handleChange('height', e.target.value)}
-                  disabled={activeEditLang !== 'ja'}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="例: 158cm"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('height')}>
+                  <Input
+                    id="height"
+                    value={formData.height}
+                    onChange={(e) => handleChange('height', e.target.value)}
+                    disabled={activeEditLang !== 'ja' || fieldDisabled('height')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: 158cm"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="weight" className="text-blue-900">
+                <Label htmlFor="weight" className="text-blue-900 flex items-center gap-1.5">
                   体重 {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
+                  <LockToggleBtn fieldKey="weight" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('weight')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="weight"
-                  value={formData.weight}
-                  onChange={(e) => handleChange('weight', e.target.value)}
-                  disabled={activeEditLang !== 'ja'}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="例: 52kg"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('weight')}>
+                  <Input
+                    id="weight"
+                    value={formData.weight}
+                    onChange={(e) => handleChange('weight', e.target.value)}
+                    disabled={activeEditLang !== 'ja' || fieldDisabled('weight')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: 52kg"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="location" className="text-blue-900">
+                <Label htmlFor="location" className="text-blue-900 flex items-center gap-1.5">
                   住んでいるところ {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
+                  <LockToggleBtn fieldKey="location" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('location')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="location"
-                  value={formData.location}
-                  onChange={(e) => handleChange('location', e.target.value)}
-                  disabled={activeEditLang !== 'ja'}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="例: 東京"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('location')}>
+                  <Input
+                    id="location"
+                    value={formData.location}
+                    onChange={(e) => handleChange('location', e.target.value)}
+                    disabled={activeEditLang !== 'ja' || fieldDisabled('location')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: 東京"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="tags" className="text-blue-900">
+                <Label htmlFor="tags" className="text-blue-900 flex items-center gap-1.5">
                   タグ（カンマ区切り） {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
+                  <LockToggleBtn fieldKey="tags" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('tags')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="tags"
-                  value={formData.tags}
-                  onChange={(e) => handleChange('tags', e.target.value)}
-                  disabled={activeEditLang !== 'ja'}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="例: ゲーム実況, 歌ってみた, お絵かき"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('tags')}>
+                  <Input
+                    id="tags"
+                    value={formData.tags}
+                    onChange={(e) => handleChange('tags', e.target.value)}
+                    disabled={activeEditLang !== 'ja' || fieldDisabled('tags')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: ゲーム実況, 歌ってみた, お絵かき"
+                  />
+                </LockedFieldWrapper>
               </div>
             </div>
           </div>
@@ -1095,7 +1165,14 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
               {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
             </h3>
             <div className={activeEditLang !== 'ja' ? 'opacity-50 pointer-events-none' : ''}>
-              <SnsLinksEditor links={snsLinks} onChange={setSnsLinks} />
+              <SnsLinksEditor
+                links={snsLinks}
+                onChange={setSnsLinks}
+                isOwnerPage={isOwnerPage}
+                isLoggedIn={isLoggedIn}
+                lockedFields={lockedFields}
+                onToggleLock={toggleLockField}
+              />
             </div>
           </div>
 
@@ -1109,44 +1186,56 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
             </h3>
             <div className={activeEditLang !== 'ja' ? 'opacity-50 pointer-events-none' : ''}>
             <div className="space-y-4">
-              {videoUrls.map((url, index) => (
-                <div key={index} className="space-y-2">
-                  <Label htmlFor={`videoUrl-${index}`} className="text-blue-900 flex items-center gap-2">
-                    <Video className="w-4 h-4 text-blue-600" />
-                    動画リンク {index + 1}
-                  </Label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      id={`videoUrl-${index}`}
-                      value={url}
-                      onChange={(e) => handleVideoUrlChange(index, e.target.value)}
-                      className="border-blue-200 focus:border-blue-400 bg-blue-50/30 flex-1"
-                      placeholder="https://www.youtube.com/watch?v=... または https://www.youtube.com/embed/..."
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleRemoveVideoUrl(index)}
-                      className="border-red-300 text-red-600 hover:bg-red-50"
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
+              {videoUrls.map((url, index) => {
+                const vidKey = `videoUrl_${index}`;
+                const vidDisabled = fieldDisabled(vidKey);
+                return (
+                  <div key={index} className={`space-y-2 ${vidDisabled ? 'opacity-60' : ''}`}>
+                    <Label htmlFor={`videoUrl-${index}`} className="text-blue-900 flex items-center gap-2">
+                      <Video className="w-4 h-4 text-blue-600" />
+                      動画リンク {index + 1}
+                      <LockToggleBtn fieldKey={vidKey} isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has(vidKey)} onToggle={toggleLockField} />
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        id={`videoUrl-${index}`}
+                        value={url}
+                        onChange={(e) => handleVideoUrlChange(index, e.target.value)}
+                        disabled={vidDisabled}
+                        className="border-blue-200 focus:border-blue-400 bg-blue-50/30 flex-1 disabled:cursor-not-allowed"
+                        placeholder="https://www.youtube.com/watch?v=... または https://www.youtube.com/embed/..."
+                      />
+                      {!vidDisabled && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleRemoveVideoUrl(index)}
+                          className="border-red-300 text-red-600 hover:bg-red-50"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                    <VideoPreview url={url} />
                   </div>
-                  <VideoPreview url={url} />
-                </div>
-              ))}
+                );
+              })}
               {videoUrls.length < 12 && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleAddVideoUrl}
-                  className="border-blue-300 hover:bg-blue-50"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  動画リンクを追加 ({videoUrls.length}/12)
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAddVideoUrl}
+                    disabled={fieldDisabled('videoUrls_add')}
+                    className="border-blue-300 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    動画リンクを追加 ({videoUrls.length}/12)
+                  </Button>
+                  <LockToggleBtn fieldKey="videoUrls_add" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('videoUrls_add')} onToggle={toggleLockField} />
+                </div>
               )}
               {videoUrls.length >= 12 && (
                 <p className="text-sm text-gray-500">最大数（12個）に達しました</p>
@@ -1172,6 +1261,10 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
                 onChange={setRelationships}
                 allProfiles={allProfiles}
                 currentProfileId={initialData?.id}
+                isOwnerPage={isOwnerPage}
+                isLoggedIn={isLoggedIn}
+                lockedFields={lockedFields}
+                onToggleLock={toggleLockField}
               />
             </div>
           </div>
@@ -1190,140 +1283,177 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
                 <Label htmlFor="oneWord" className="text-blue-900 flex items-center gap-1.5">
                   ひとこと
                   {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
+                  <LockToggleBtn fieldKey="oneWord" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('oneWord')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="oneWord"
-                  value={getLocalizedValue('oneWord')}
-                  onChange={(e) => handleChange('oneWord', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
-                  placeholder="例: みんなと一緒に楽しい時間を過ごしたいな～！"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('oneWord')}>
+                  <Input
+                    id="oneWord"
+                    value={getLocalizedValue('oneWord')}
+                    onChange={(e) => handleChange('oneWord', e.target.value)}
+                    disabled={fieldDisabled('oneWord')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: みんなと一緒に楽しい時間を過ごしたいな～！"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="catchphrase" className="text-blue-900 flex items-center gap-1.5">
                   キャッチフレーズ
                   {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
+                  <LockToggleBtn fieldKey="catchphrase" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('catchphrase')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="catchphrase"
-                  value={getLocalizedValue('catchphrase')}
-                  onChange={(e) => handleChange('catchphrase', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
-                  placeholder="例: みんなに元気を届けるVTuber！"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('catchphrase')}>
+                  <Input
+                    id="catchphrase"
+                    value={getLocalizedValue('catchphrase')}
+                    onChange={(e) => handleChange('catchphrase', e.target.value)}
+                    disabled={fieldDisabled('catchphrase')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: みんなに元気を届けるVTuber！"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="favoriteThings" className="text-blue-900 flex items-center gap-1.5">
                   好きなもの
                   {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
+                  <LockToggleBtn fieldKey="favoriteThings" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('favoriteThings')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="favoriteThings"
-                  value={getLocalizedValue('favoriteThings')}
-                  onChange={(e) => handleChange('favoriteThings', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
-                  placeholder="例: ゲーム、歌うこと、甘いもの"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('favoriteThings')}>
+                  <Input
+                    id="favoriteThings"
+                    value={getLocalizedValue('favoriteThings')}
+                    onChange={(e) => handleChange('favoriteThings', e.target.value)}
+                    disabled={fieldDisabled('favoriteThings')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: ゲーム、歌うこと、甘いもの"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="dislikedThings" className="text-blue-900 flex items-center gap-1.5">
                   苦手なもの
                   {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
+                  <LockToggleBtn fieldKey="dislikedThings" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('dislikedThings')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="dislikedThings"
-                  value={getLocalizedValue('dislikedThings')}
-                  onChange={(e) => handleChange('dislikedThings', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
-                  placeholder="例: 虫、ホラー"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('dislikedThings')}>
+                  <Input
+                    id="dislikedThings"
+                    value={getLocalizedValue('dislikedThings')}
+                    onChange={(e) => handleChange('dislikedThings', e.target.value)}
+                    disabled={fieldDisabled('dislikedThings')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: 虫、ホラー"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="hobby" className="text-blue-900 flex items-center gap-1.5">
                   趣味・特技
                   {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
+                  <LockToggleBtn fieldKey="hobby" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('hobby')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="hobby"
-                  value={getLocalizedValue('hobby')}
-                  onChange={(e) => handleChange('hobby', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
-                  placeholder="例: イラスト、ピアノ"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('hobby')}>
+                  <Input
+                    id="hobby"
+                    value={getLocalizedValue('hobby')}
+                    onChange={(e) => handleChange('hobby', e.target.value)}
+                    disabled={fieldDisabled('hobby')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: イラスト、ピアノ"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="dream" className="text-blue-900 flex items-center gap-1.5">
                   将来の夢
                   {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
+                  <LockToggleBtn fieldKey="dream" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('dream')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="dream"
-                  value={getLocalizedValue('dream')}
-                  onChange={(e) => handleChange('dream', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30"
-                  placeholder="例: たくさんの人を笑顔にしたい"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('dream')}>
+                  <Input
+                    id="dream"
+                    value={getLocalizedValue('dream')}
+                    onChange={(e) => handleChange('dream', e.target.value)}
+                    disabled={fieldDisabled('dream')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: たくさんの人を笑顔にしたい"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="message" className="text-blue-900 flex items-center gap-1.5">
                   メッセージ
                   {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
+                  <LockToggleBtn fieldKey="message" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('message')} onToggle={toggleLockField} />
                 </Label>
-                <Textarea
-                  id="message"
-                  value={getLocalizedValue('message')}
-                  onChange={(e) => handleChange('message', e.target.value)}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 min-h-[100px]"
-                  placeholder="例: いつも応援ありがとうございます！一緒に楽しい時間を過ごしましょう！"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('message')}>
+                  <Textarea
+                    id="message"
+                    value={getLocalizedValue('message')}
+                    onChange={(e) => handleChange('message', e.target.value)}
+                    disabled={fieldDisabled('message')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 min-h-[100px] disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: いつも応援ありがとうございます！一緒に楽しい時間を過ごしましょう！"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="streamingTags" className="text-blue-900">
+                <Label htmlFor="streamingTags" className="text-blue-900 flex items-center gap-1.5">
                   配信タグ {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
+                  <LockToggleBtn fieldKey="streamingTags" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('streamingTags')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="streamingTags"
-                  value={formData.streamingTags}
-                  onChange={(e) => handleChange('streamingTags', e.target.value)}
-                  disabled={activeEditLang !== 'ja'}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="例: #星空みらい配信"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('streamingTags')}>
+                  <Input
+                    id="streamingTags"
+                    value={formData.streamingTags}
+                    onChange={(e) => handleChange('streamingTags', e.target.value)}
+                    disabled={activeEditLang !== 'ja' || fieldDisabled('streamingTags')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: #星空みらい配信"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="fanartTag" className="text-blue-900">
+                <Label htmlFor="fanartTag" className="text-blue-900 flex items-center gap-1.5">
                   ファンアートタグ {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
+                  <LockToggleBtn fieldKey="fanartTag" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('fanartTag')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="fanartTag"
-                  value={formData.fanartTag}
-                  onChange={(e) => handleChange('fanartTag', e.target.value)}
-                  disabled={activeEditLang !== 'ja'}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="例: #星空みらいファンアート"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('fanartTag')}>
+                  <Input
+                    id="fanartTag"
+                    value={formData.fanartTag}
+                    onChange={(e) => handleChange('fanartTag', e.target.value)}
+                    disabled={activeEditLang !== 'ja' || fieldDisabled('fanartTag')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: #星空みらいファンアート"
+                  />
+                </LockedFieldWrapper>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="r18FanartTag" className="text-blue-900">
+                <Label htmlFor="r18FanartTag" className="text-blue-900 flex items-center gap-1.5">
                   R18ファンアートタグ {activeEditLang !== 'ja' && <span className="text-[10px] text-gray-400 ml-1">（日本語タブで編集）</span>}
+                  <LockToggleBtn fieldKey="r18FanartTag" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('r18FanartTag')} onToggle={toggleLockField} />
                 </Label>
-                <Input
-                  id="r18FanartTag"
-                  value={formData.r18FanartTag}
-                  onChange={(e) => handleChange('r18FanartTag', e.target.value)}
-                  disabled={activeEditLang !== 'ja'}
-                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="例: #星空みらいR18"
-                />
+                <LockedFieldWrapper disabled={fieldDisabled('r18FanartTag')}>
+                  <Input
+                    id="r18FanartTag"
+                    value={formData.r18FanartTag}
+                    onChange={(e) => handleChange('r18FanartTag', e.target.value)}
+                    disabled={activeEditLang !== 'ja' || fieldDisabled('r18FanartTag')}
+                    className="border-blue-200 focus:border-blue-400 bg-blue-50/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="例: #星空みらいR18"
+                  />
+                </LockedFieldWrapper>
               </div>
             </div>
           </div>
@@ -1334,6 +1464,7 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
               <h3 className="text-blue-900 flex items-center gap-1.5">
                 プロフィール詳細（マークダウン対応）
                 {activeEditLang !== 'ja' && <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">多言語</span>}
+                <LockToggleBtn fieldKey="freeDescription" isOwnerPage={isOwnerPage} isLoggedIn={isLoggedIn} locked={lockedFields.has('freeDescription')} onToggle={toggleLockField} />
               </h3>
               <Button
                 type="button"
@@ -1361,12 +1492,15 @@ export function ProfileFormPage({ onSubmit, onCancel, initialData }: ProfileForm
                 <ReactMarkdown>{getLocalizedValue('freeDescription') || '*プレビューがここに表示されます*'}</ReactMarkdown>
               </div>
             ) : (
-              <Textarea
-                value={getLocalizedValue('freeDescription')}
-                onChange={(e) => handleChange('freeDescription', e.target.value)}
-                className="border-blue-200 focus:border-blue-400 bg-blue-50/30 min-h-[300px] font-mono text-sm"
-                placeholder="マークダウン形式で自由に記入できます&#10;&#10;例:&#10;## 自己紹介&#10;はじめまして！〇〇です。&#10;&#10;### 好きなゲーム&#10;- ゲーム1&#10;- ゲーム2&#10;&#10;**太字** *斜体* など使えます"
-              />
+              <LockedFieldWrapper disabled={fieldDisabled('freeDescription')}>
+                <Textarea
+                  value={getLocalizedValue('freeDescription')}
+                  onChange={(e) => handleChange('freeDescription', e.target.value)}
+                  disabled={fieldDisabled('freeDescription')}
+                  className="border-blue-200 focus:border-blue-400 bg-blue-50/30 min-h-[300px] font-mono text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  placeholder="マークダウン形式で自由に記入できます&#10;&#10;例:&#10;## 自己紹介&#10;はじめまして！〇〇です。&#10;&#10;### 好きなゲーム&#10;- ゲーム1&#10;- ゲーム2&#10;&#10;**太字** *斜体* など使えます"
+                />
+              </LockedFieldWrapper>
             )}
           </div>
 

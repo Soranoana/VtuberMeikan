@@ -44,6 +44,7 @@ import {
   Check,
   CreditCard,
   GitGraph,
+  Lock,
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { motion, AnimatePresence } from 'motion/react';
@@ -52,6 +53,7 @@ import { VideoSection } from './VideoSection';
 import { BusinessCardModal } from './BusinessCardModal';
 import { RelationshipGraphModal } from './RelationshipGraphModal';
 import { useApp } from '../context/AppContext';
+import { LockBadge } from './LockField';
 
 interface VTuberDetailPageProps {
   profile: VTuberProfile;
@@ -146,6 +148,11 @@ export function VTuberDetailPage({
     if (anyOpen) { pushModal(); return popModal; }
   }, [isReportModalOpen, isReportDoneModalOpen, isImageModalOpen]);
   const canShowBusinessCard = isLoggedIn && loginService === 'Google';
+
+  // ロック機能: 星空みらい（id=1）のページのみ表示
+  const isOwnerPage = profile.id === '1';
+  const lockedFields = profile.lockedFields ?? [];
+  const isLocked = (field: string) => isOwnerPage && lockedFields.includes(field);
 
   const [isCopied, setIsCopied] = useState(false);
   const [showBusinessCard, setShowBusinessCard] = useState(false);
@@ -489,7 +496,7 @@ export function VTuberDetailPage({
                 <div className="space-y-4">
                   {images.length > 0 ? (
                     <>
-                      <div 
+                      <div
                         className="relative aspect-square rounded-lg overflow-hidden shadow-lg cursor-pointer group"
                         onClick={() => {
                           setSelectedImageIndex(0);
@@ -501,6 +508,11 @@ export function VTuberDetailPage({
                           alt={profile.name}
                           className="w-full h-full object-cover transition-transform group-hover:scale-105"
                         />
+                        {isLocked('image_0') && (
+                          <span className="absolute bottom-2 left-2 bg-amber-500/80 rounded-full p-1 pointer-events-none">
+                            <Lock className="w-3 h-3 text-white" />
+                          </span>
+                        )}
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                           <span className="opacity-0 group-hover:opacity-100 text-white bg-black/50 px-4 py-2 rounded-lg transition-opacity">
                             クリックして拡大
@@ -512,7 +524,7 @@ export function VTuberDetailPage({
                       {images.length > 1 && (
                         <div className="grid grid-cols-3 gap-2">
                           {images.slice(1).map((img, index) => (
-                            <div 
+                            <div
                               key={index}
                               className="relative aspect-square rounded-lg overflow-hidden shadow-md cursor-pointer hover:opacity-80 transition-opacity"
                               onClick={() => {
@@ -525,6 +537,11 @@ export function VTuberDetailPage({
                                 alt={`${profile.name} ${index + 2}`}
                                 className="w-full h-full object-cover"
                               />
+                              {isLocked(`image_${index + 1}`) && (
+                                <span className="absolute bottom-1 left-1 bg-amber-500/80 rounded-full p-0.5 pointer-events-none">
+                                  <Lock className="w-2.5 h-2.5 text-white" />
+                                </span>
+                              )}
                             </div>
                           ))}
                         </div>
@@ -560,6 +577,7 @@ export function VTuberDetailPage({
                   >
                     <GitGraph className="w-4 h-4 mr-2" />
                     相関図
+                    <LockBadge show={!!(profile.relationships?.some(r => isLocked(`relationship_${r.targetId}`)) || isLocked('relationships_add'))} />
                   </Button>
 
                   {/* 名刺表示（Googleログイン時のみ） */}
@@ -827,6 +845,7 @@ export function VTuberDetailPage({
                   >
                     <GitGraph className="w-4 h-4 mr-2" />
                     相関図
+                    <LockBadge show={!!(profile.relationships?.some(r => isLocked(`relationship_${r.targetId}`)) || isLocked('relationships_add'))} />
                   </Button>
 
                   {/* 名刺表示（Googleログイン時のみ） */}
@@ -895,6 +914,7 @@ export function VTuberDetailPage({
                         >
                           <SnsIconDisplay icon={link.icon} className="w-5 h-5 flex-shrink-0" />
                           <span className="text-blue-700">{link.label || link.url}</span>
+                          <LockBadge show={isLocked(`snsLink_${idx}`)} />
                         </a>
                       ))}
                       {/* 旧形式（snsLinksがない場合のフォールバック） */}
@@ -937,7 +957,7 @@ export function VTuberDetailPage({
                       <div className="flex items-start gap-3">
                         <Building2 className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="text-sm text-gray-500">所属</p>
+                          <p className="text-sm text-gray-500">所属<LockBadge show={isLocked('affiliation')} /></p>
                           <p className="text-gray-800">{profile.affiliation}</p>
                         </div>
                       </div>
@@ -946,7 +966,7 @@ export function VTuberDetailPage({
                       <div className="flex items-start gap-3">
                         <Cake className="w-5 h-5 text-pink-500 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="text-sm text-gray-500">誕生日</p>
+                          <p className="text-sm text-gray-500">誕生日<LockBadge show={isLocked('birthday')} /></p>
                           <p className="text-gray-800">{profile.birthday}</p>
                         </div>
                       </div>
@@ -955,7 +975,7 @@ export function VTuberDetailPage({
                       <div className="flex items-start gap-3">
                         <Calendar className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="text-sm text-gray-500">デビュー日</p>
+                          <p className="text-sm text-gray-500">デビュー日<LockBadge show={isLocked('debut')} /></p>
                           <p className="text-gray-800">{profile.debut}</p>
                         </div>
                       </div>
@@ -964,7 +984,7 @@ export function VTuberDetailPage({
                       <div className="flex items-start gap-3">
                         <History className="w-5 h-5 text-purple-500 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="text-sm text-gray-500">活動歴</p>
+                          <p className="text-sm text-gray-500">活動歴<LockBadge show={isLocked('activityHistory')} /></p>
                           <p className="text-gray-800">{profile.activityHistory}</p>
                         </div>
                       </div>
@@ -973,7 +993,7 @@ export function VTuberDetailPage({
                       <div className="flex items-start gap-3">
                         <Sparkles className="w-5 h-5 text-yellow-500 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="text-sm text-gray-500">活動ジャンル</p>
+                          <p className="text-sm text-gray-500">活動ジャンル<LockBadge show={isLocked('activityGenre')} /></p>
                           <p className="text-gray-800">{profile.activityGenre}</p>
                         </div>
                       </div>
@@ -982,7 +1002,7 @@ export function VTuberDetailPage({
                       <div className="flex items-start gap-3">
                         <Droplet className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="text-sm text-gray-500">血液型</p>
+                          <p className="text-sm text-gray-500">血液型<LockBadge show={isLocked('bloodType')} /></p>
                           <p className="text-gray-800">{profile.bloodType}</p>
                         </div>
                       </div>
@@ -991,7 +1011,7 @@ export function VTuberDetailPage({
                       <div className="flex items-start gap-3">
                         <Ruler className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="text-sm text-gray-500">身長</p>
+                          <p className="text-sm text-gray-500">身長<LockBadge show={isLocked('height')} /></p>
                           <p className="text-gray-800">{profile.height}</p>
                         </div>
                       </div>
@@ -1000,7 +1020,7 @@ export function VTuberDetailPage({
                       <div className="flex items-start gap-3">
                         <Sparkles className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="text-sm text-gray-500">体重</p>
+                          <p className="text-sm text-gray-500">体重<LockBadge show={isLocked('weight')} /></p>
                           <p className="text-gray-800">{profile.weight}</p>
                         </div>
                       </div>
@@ -1009,7 +1029,7 @@ export function VTuberDetailPage({
                       <div className="flex items-start gap-3">
                         <Globe className="w-5 h-5 text-teal-500 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="text-sm text-gray-500">住んでいるところ</p>
+                          <p className="text-sm text-gray-500">住んでいるところ<LockBadge show={isLocked('location')} /></p>
                           <p className="text-gray-800">{profile.location}</p>
                         </div>
                       </div>
@@ -1025,7 +1045,7 @@ export function VTuberDetailPage({
                       <div className="flex items-start gap-3">
                         <ThumbsUp className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="text-sm text-gray-500">好きなもの</p>
+                          <p className="text-sm text-gray-500">好きなもの<LockBadge show={isLocked('favoriteThings')} /></p>
                           <p className="text-gray-800">{profile.favoriteThings}</p>
                         </div>
                       </div>
@@ -1034,7 +1054,7 @@ export function VTuberDetailPage({
                       <div className="flex items-start gap-3">
                         <ThumbsDown className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="text-sm text-gray-500">苦手なもの</p>
+                          <p className="text-sm text-gray-500">苦手なもの<LockBadge show={isLocked('dislikedThings')} /></p>
                           <p className="text-gray-800">{profile.dislikedThings}</p>
                         </div>
                       </div>
@@ -1043,7 +1063,7 @@ export function VTuberDetailPage({
                       <div className="flex items-start gap-3">
                         <Heart className="w-5 h-5 text-pink-500 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="text-sm text-gray-500">趣味・特技</p>
+                          <p className="text-sm text-gray-500">趣味・特技<LockBadge show={isLocked('hobby')} /></p>
                           <p className="text-gray-800">{profile.hobby}</p>
                         </div>
                       </div>
@@ -1052,7 +1072,7 @@ export function VTuberDetailPage({
                       <div className="flex items-start gap-3">
                         <Target className="w-5 h-5 text-yellow-500 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="text-sm text-gray-500">将来の夢</p>
+                          <p className="text-sm text-gray-500">将来の夢<LockBadge show={isLocked('dream')} /></p>
                           <p className="text-gray-800">{profile.dream}</p>
                         </div>
                       </div>
@@ -1066,6 +1086,7 @@ export function VTuberDetailPage({
                     <h3 className="text-blue-900 mb-3 flex items-center gap-2">
                       <MessageCircle className="w-5 h-5" />
                       メッセージ
+                      <LockBadge show={isLocked('message')} />
                     </h3>
                     <Card className="bg-blue-50/50 border-blue-200 p-4">
                       <p className="text-gray-800 whitespace-pre-wrap">{profile.message}</p>
@@ -1083,19 +1104,19 @@ export function VTuberDetailPage({
                     <div className="space-y-2">
                       {profile.streamingTags && (
                         <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2.5">
-                          <span className="text-sm text-gray-500 w-28 flex-shrink-0">配信タグ</span>
+                          <span className="text-sm text-gray-500 w-28 flex-shrink-0">配信タグ<LockBadge show={isLocked('streamingTags')} /></span>
                           <span className="text-blue-700 font-medium">{profile.streamingTags}</span>
                         </div>
                       )}
                       {profile.fanartTag && (
                         <div className="flex items-center gap-3 bg-pink-50 border border-pink-200 rounded-lg px-4 py-2.5">
-                          <span className="text-sm text-gray-500 w-28 flex-shrink-0">ファンアートタグ</span>
+                          <span className="text-sm text-gray-500 w-28 flex-shrink-0">ファンアートタグ<LockBadge show={isLocked('fanartTag')} /></span>
                           <span className="text-pink-700 font-medium">{profile.fanartTag}</span>
                         </div>
                       )}
                       {profile.r18FanartTag && (
                         <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">
-                          <span className="text-sm text-gray-500 w-28 flex-shrink-0">R18ファンアートタグ</span>
+                          <span className="text-sm text-gray-500 w-28 flex-shrink-0">R18ファンアートタグ<LockBadge show={isLocked('r18FanartTag')} /></span>
                           <span className="text-red-700 font-medium">{profile.r18FanartTag}</span>
                         </div>
                       )}
@@ -1108,7 +1129,7 @@ export function VTuberDetailPage({
             {/* 自由記入欄（マークダウン） */}
             {profile.freeDescription && (
               <div className="mt-8 pt-8 border-t-2 border-blue-200">
-                <h3 className="text-blue-900 mb-4">プロフィール詳細</h3>
+                <h3 className="text-blue-900 mb-4">プロフィール詳細<LockBadge show={isLocked('freeDescription')} /></h3>
                 <Card className="bg-white border-blue-200 p-6">
                   <div className="prose prose-sm max-w-none prose-headings:text-blue-900 prose-a:text-blue-600">
                     <ReactMarkdown>{profile.freeDescription}</ReactMarkdown>
@@ -1125,6 +1146,7 @@ export function VTuberDetailPage({
             <h3 className="text-blue-900 mb-4 flex items-center gap-2">
               <Youtube className="w-5 h-5" />
               動画
+              <LockBadge show={!!(profile.videoUrls?.some((_, i) => isLocked(`videoUrl_${i}`)) || isLocked('videoUrls_add'))} />
             </h3>
             <VideoSection videoUrls={profile.videoUrls!} profileId={profile.id} />
           </div>

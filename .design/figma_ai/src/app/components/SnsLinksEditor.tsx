@@ -1,6 +1,7 @@
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Plus, X, Link } from 'lucide-react';
+import { LockToggleBtn } from './LockField';
 
 export interface SnsLink {
   id: string;
@@ -150,6 +151,10 @@ export function SnsIconDisplay({ icon, className = 'w-5 h-5' }: { icon: string; 
 interface SnsLinksEditorProps {
   links: SnsLink[];
   onChange: (links: SnsLink[]) => void;
+  isOwnerPage?: boolean;
+  isLoggedIn?: boolean;
+  lockedFields?: Set<string>;
+  onToggleLock?: (key: string) => void;
 }
 
 let idCounter = 0;
@@ -157,78 +162,112 @@ export function newSnsLink(): SnsLink {
   return { id: `sns-${++idCounter}-${Date.now()}`, icon: 'none', label: '', url: '' };
 }
 
-export function SnsLinksEditor({ links, onChange }: SnsLinksEditorProps) {
+export function SnsLinksEditor({ links, onChange, isOwnerPage, isLoggedIn, lockedFields, onToggleLock }: SnsLinksEditorProps) {
+  const itemDisabled = (key: string) => !!(isOwnerPage && !isLoggedIn && lockedFields?.has(key));
+
   const add = () => onChange([...links, newSnsLink()]);
-
   const remove = (id: string) => onChange(links.filter(l => l.id !== id));
-
   const update = (id: string, fields: Partial<SnsLink>) =>
     onChange(links.map(l => l.id === id ? { ...l, ...fields } : l));
 
+  const addDisabled = itemDisabled('snsLinks_add');
+
   return (
     <div className="space-y-3">
-      {links.map((link, index) => (
-        <div key={link.id} className="border-2 border-blue-100 rounded-lg p-3 space-y-2 bg-blue-50/30">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-blue-700 font-medium">リンク {index + 1}</span>
-            <button
-              type="button"
-              onClick={() => remove(link.id)}
-              className="text-red-400 hover:text-red-600 transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* アイコン選択 + ラベル */}
-          <div className="flex flex-col sm:flex-row gap-2">
-            <div className="flex items-center gap-2 sm:w-48 sm:flex-shrink-0">
-              <div className="w-6 h-6 flex-shrink-0 flex items-center justify-center">
-                {link.icon !== 'none' && <SnsIconDisplay icon={link.icon} className="w-5 h-5" />}
+      {links.map((link, index) => {
+        const key = `snsLink_${index}`;
+        const disabled = itemDisabled(key);
+        return (
+          <div key={link.id} className={`border-2 border-blue-100 rounded-lg p-3 space-y-2 bg-blue-50/30 ${disabled ? 'opacity-60' : ''}`}>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-blue-700 font-medium">リンク {index + 1}</span>
+              <div className="flex items-center gap-1">
+                {onToggleLock && (
+                  <LockToggleBtn
+                    fieldKey={key}
+                    isOwnerPage={!!isOwnerPage}
+                    isLoggedIn={!!isLoggedIn}
+                    locked={!!lockedFields?.has(key)}
+                    onToggle={onToggleLock}
+                  />
+                )}
+                {!disabled && (
+                  <button
+                    type="button"
+                    onClick={() => remove(link.id)}
+                    className="text-red-400 hover:text-red-600 transition-colors ml-1"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
               </div>
-              <select
-                value={link.icon}
-                onChange={e => {
-                  const newIcon = e.target.value;
-                  const opt = SNS_ICON_OPTIONS.find(o => o.value === newIcon);
-                  const autoLabel = link.label === '' && opt && newIcon !== 'none' ? opt.label : link.label;
-                  update(link.id, { icon: newIcon, label: autoLabel });
-                }}
-                className="flex-1 px-2 py-1.5 border border-blue-200 rounded-md text-sm bg-white focus:border-blue-400 focus:outline-none"
-              >
-                {SNS_ICON_OPTIONS.map(opt => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
             </div>
+
+            {/* アイコン選択 + ラベル */}
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex items-center gap-2 sm:w-48 sm:flex-shrink-0">
+                <div className="w-6 h-6 flex-shrink-0 flex items-center justify-center">
+                  {link.icon !== 'none' && <SnsIconDisplay icon={link.icon} className="w-5 h-5" />}
+                </div>
+                <select
+                  value={link.icon}
+                  disabled={disabled}
+                  onChange={e => {
+                    const newIcon = e.target.value;
+                    const opt = SNS_ICON_OPTIONS.find(o => o.value === newIcon);
+                    const autoLabel = link.label === '' && opt && newIcon !== 'none' ? opt.label : link.label;
+                    update(link.id, { icon: newIcon, label: autoLabel });
+                  }}
+                  className="flex-1 px-2 py-1.5 border border-blue-200 rounded-md text-sm bg-white focus:border-blue-400 focus:outline-none disabled:cursor-not-allowed"
+                >
+                  {SNS_ICON_OPTIONS.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+              <Input
+                value={link.label}
+                onChange={e => update(link.id, { label: e.target.value })}
+                disabled={disabled}
+                placeholder="ラベル（自由入力）"
+                className="border-blue-200 focus:border-blue-400 bg-white text-sm disabled:cursor-not-allowed"
+              />
+            </div>
+
+            {/* URL */}
             <Input
-              value={link.label}
-              onChange={e => update(link.id, { label: e.target.value })}
-              placeholder="ラベル（自由入力）"
-              className="border-blue-200 focus:border-blue-400 bg-white text-sm"
+              value={link.url}
+              onChange={e => update(link.id, { url: e.target.value })}
+              disabled={disabled}
+              placeholder="https://..."
+              className="border-blue-200 focus:border-blue-400 bg-white text-sm disabled:cursor-not-allowed"
             />
           </div>
+        );
+      })}
 
-          {/* URL */}
-          <Input
-            value={link.url}
-            onChange={e => update(link.id, { url: e.target.value })}
-            placeholder="https://..."
-            className="border-blue-200 focus:border-blue-400 bg-white text-sm"
+      <div className="flex items-center gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={add}
+          disabled={addDisabled}
+          className="border-blue-300 text-blue-700 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          リンクを追加
+        </Button>
+        {onToggleLock && (
+          <LockToggleBtn
+            fieldKey="snsLinks_add"
+            isOwnerPage={!!isOwnerPage}
+            isLoggedIn={!!isLoggedIn}
+            locked={!!lockedFields?.has('snsLinks_add')}
+            onToggle={onToggleLock}
           />
-        </div>
-      ))}
-
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onClick={add}
-        className="border-blue-300 text-blue-700 hover:bg-blue-50"
-      >
-        <Plus className="w-4 h-4 mr-2" />
-        リンクを追加
-      </Button>
+        )}
+      </div>
     </div>
   );
 }

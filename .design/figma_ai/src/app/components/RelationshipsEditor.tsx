@@ -4,12 +4,17 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { VTuberProfile, VTuberRelationship } from '../types';
+import { LockToggleBtn } from './LockField';
 
 interface RelationshipsEditorProps {
   relationships: VTuberRelationship[];
   onChange: (rels: VTuberRelationship[]) => void;
   allProfiles: VTuberProfile[];
   currentProfileId?: string;
+  isOwnerPage?: boolean;
+  isLoggedIn?: boolean;
+  lockedFields?: Set<string>;
+  onToggleLock?: (key: string) => void;
 }
 
 function resolveProfile(id: string, allProfiles: VTuberProfile[]): VTuberProfile | undefined {
@@ -64,9 +69,15 @@ export function RelationshipsEditor({
   onChange,
   allProfiles,
   currentProfileId,
+  isOwnerPage,
+  isLoggedIn,
+  lockedFields,
+  onToggleLock,
 }: RelationshipsEditorProps) {
   const [inputId, setInputId] = useState('');
   const [inputLabel, setInputLabel] = useState('');
+
+  const itemDisabled = (key: string) => !!(isOwnerPage && !isLoggedIn && lockedFields?.has(key));
 
   const usedIds = new Set(relationships.map(r => r.targetId));
 
@@ -105,8 +116,10 @@ export function RelationshipsEditor({
         <div className="space-y-2">
           {relationships.map((rel, idx) => {
             const target = resolveProfile(rel.targetId, allProfiles);
+            const lockKey = `relationship_${rel.targetId}`;
+            const disabled = itemDisabled(lockKey);
             return (
-              <div key={idx} className="border-2 border-violet-100 rounded-lg p-3 bg-violet-50/40 flex flex-col sm:flex-row sm:items-center gap-2">
+              <div key={idx} className={`border-2 border-violet-100 rounded-lg p-3 bg-violet-50/40 flex flex-col sm:flex-row sm:items-center gap-2 ${disabled ? 'opacity-60' : ''}`}>
 
                 {/* 相手VTuber情報 */}
                 <div className="flex items-center gap-2 min-w-0 sm:w-56 flex-shrink-0">
@@ -125,18 +138,32 @@ export function RelationshipsEditor({
                 <Input
                   value={rel.label}
                   onChange={e => handleUpdateLabel(idx, e.target.value)}
+                  disabled={disabled}
                   placeholder="関係値"
-                  className="border-violet-200 focus:border-violet-400 bg-white text-sm h-8 flex-1"
+                  className="border-violet-200 focus:border-violet-400 bg-white text-sm h-8 flex-1 disabled:cursor-not-allowed"
                 />
 
-                {/* 削除 */}
-                <button
-                  type="button"
-                  onClick={() => handleRemove(idx)}
-                  className="text-red-400 hover:text-red-600 transition-colors flex-shrink-0 self-start sm:self-center"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                {/* ロックボタン + 削除 */}
+                <div className="flex items-center gap-1 flex-shrink-0 self-start sm:self-center">
+                  {onToggleLock && (
+                    <LockToggleBtn
+                      fieldKey={lockKey}
+                      isOwnerPage={!!isOwnerPage}
+                      isLoggedIn={!!isLoggedIn}
+                      locked={!!lockedFields?.has(lockKey)}
+                      onToggle={onToggleLock}
+                    />
+                  )}
+                  {!disabled && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemove(idx)}
+                      className="text-red-400 hover:text-red-600 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
               </div>
             );
           })}
@@ -148,56 +175,72 @@ export function RelationshipsEditor({
       )}
 
       {/* 追加フォーム */}
-      <div className="border-2 border-dashed border-violet-200 rounded-lg p-4 space-y-3 bg-white">
-        <p className="text-xs font-semibold text-violet-700 uppercase tracking-wide">関係値を追加</p>
+      {(() => {
+        const addDisabled = itemDisabled('relationships_add');
+        return (
+          <div className={`border-2 border-dashed border-violet-200 rounded-lg p-4 space-y-3 bg-white ${addDisabled ? 'opacity-60 pointer-events-none' : ''}`}>
+            <div className="flex items-center gap-2">
+              <p className="text-xs font-semibold text-violet-700 uppercase tracking-wide">関係値を追加</p>
+              {onToggleLock && (
+                <LockToggleBtn
+                  fieldKey="relationships_add"
+                  isOwnerPage={!!isOwnerPage}
+                  isLoggedIn={!!isLoggedIn}
+                  locked={!!lockedFields?.has('relationships_add')}
+                  onToggle={onToggleLock}
+                />
+              )}
+            </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
-          {/* プロフィールID入力 */}
-          <div>
-            <Label className="text-sm text-gray-700 mb-1.5 block">
-              プロフィールID <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              value={inputId}
-              onChange={e => setInputId(e.target.value)}
-              placeholder="例: 2"
-              className="border-violet-200 focus:border-violet-400 text-sm"
-            />
-            <IdStatusMessage
-              id={inputId}
-              allProfiles={allProfiles}
-              currentProfileId={currentProfileId}
-              usedIds={usedIds}
-            />
+              {/* プロフィールID入力 */}
+              <div>
+                <Label className="text-sm text-gray-700 mb-1.5 block">
+                  プロフィールID <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  value={inputId}
+                  onChange={e => setInputId(e.target.value)}
+                  placeholder="例: 2"
+                  className="border-violet-200 focus:border-violet-400 text-sm"
+                />
+                <IdStatusMessage
+                  id={inputId}
+                  allProfiles={allProfiles}
+                  currentProfileId={currentProfileId}
+                  usedIds={usedIds}
+                />
+              </div>
+
+              {/* 関係値入力 */}
+              <div>
+                <Label className="text-sm text-gray-700 mb-1.5 block">
+                  関係値 <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  value={inputLabel}
+                  onChange={e => setInputLabel(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAdd(); } }}
+                  placeholder="例: 仲良し、師匠、コラボ仲間"
+                  className="border-violet-200 focus:border-violet-400 text-sm"
+                />
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              onClick={handleAdd}
+              disabled={!canAdd}
+              className="bg-violet-600 hover:bg-violet-700 text-white disabled:opacity-40"
+              size="sm"
+            >
+              <Plus className="w-4 h-4 mr-1.5" />
+              追加
+            </Button>
           </div>
-
-          {/* 関係値入力 */}
-          <div>
-            <Label className="text-sm text-gray-700 mb-1.5 block">
-              関係値 <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              value={inputLabel}
-              onChange={e => setInputLabel(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAdd(); } }}
-              placeholder="例: 仲良し、師匠、コラボ仲間"
-              className="border-violet-200 focus:border-violet-400 text-sm"
-            />
-          </div>
-        </div>
-
-        <Button
-          type="button"
-          onClick={handleAdd}
-          disabled={!canAdd}
-          className="bg-violet-600 hover:bg-violet-700 text-white disabled:opacity-40"
-          size="sm"
-        >
-          <Plus className="w-4 h-4 mr-1.5" />
-          追加
-        </Button>
-      </div>
+        );
+      })()}
 
     </div>
   );

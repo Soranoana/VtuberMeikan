@@ -58,6 +58,7 @@ export const sampleProfiles: VTuberProfile[] = [
       { targetId: '5', label: 'ライバル', direction: 'both', reverseLabel: '尊敬するライバル' },
       { targetId: '6', label: '先輩', direction: 'from' },
     ],
+    lockedFields: ['birthday', 'message', 'height'],
   },
   {
     id: '2',
